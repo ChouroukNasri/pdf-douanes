@@ -1,0 +1,12 @@
+version: "3.8"
+
+services:
+  pdf_douanes:
+    build: .
+    container_name: pdf_douanes
+    ports:
+      - "8501:8501"
+    volumes:
+      # Les donnees persistent sur le PC meme si le container est supprime
+      - ./data:/app/data
+    restart: unless-stopped
