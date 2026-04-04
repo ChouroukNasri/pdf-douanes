@@ -22,34 +22,41 @@ def init_db():
             upload_date  TEXT,
             numero_avis  TEXT,
             designation  TEXT,
+            usage_text   TEXT,
             tarif_number TEXT,
             ndp          TEXT
         )
     """)
+    # Ajouter la colonne usage_text si elle n'existe pas (migration)
+    try:
+        c.execute("ALTER TABLE documents ADD COLUMN usage_text TEXT DEFAULT ''")
+    except Exception:
+        pass
+
     c.execute("""
         CREATE VIRTUAL TABLE IF NOT EXISTS documents_fts USING fts5(
-            full_text, filename, numero_avis, designation, tarif_number, ndp,
+            full_text, filename, numero_avis, designation, usage_text, tarif_number, ndp,
             content=documents, content_rowid=id
         )
     """)
     c.execute("""
         CREATE TRIGGER IF NOT EXISTS docs_ai AFTER INSERT ON documents BEGIN
-            INSERT INTO documents_fts(rowid, full_text, filename, numero_avis, designation, tarif_number, ndp)
-            VALUES (new.id, new.full_text, new.filename, new.numero_avis, new.designation, new.tarif_number, new.ndp);
+            INSERT INTO documents_fts(rowid, full_text, filename, numero_avis, designation, usage_text, tarif_number, ndp)
+            VALUES (new.id, new.full_text, new.filename, new.numero_avis, new.designation, new.usage_text, new.tarif_number, new.ndp);
         END
     """)
     c.execute("""
         CREATE TRIGGER IF NOT EXISTS docs_ad AFTER DELETE ON documents BEGIN
-            INSERT INTO documents_fts(documents_fts, rowid, full_text, filename, numero_avis, designation, tarif_number, ndp)
-            VALUES ('delete', old.id, old.full_text, old.filename, old.numero_avis, old.designation, old.tarif_number, old.ndp);
+            INSERT INTO documents_fts(documents_fts, rowid, full_text, filename, numero_avis, designation, usage_text, tarif_number, ndp)
+            VALUES ('delete', old.id, old.full_text, old.filename, old.numero_avis, old.designation, old.usage_text, old.tarif_number, old.ndp);
         END
     """)
     c.execute("""
         CREATE TRIGGER IF NOT EXISTS docs_au AFTER UPDATE ON documents BEGIN
-            INSERT INTO documents_fts(documents_fts, rowid, full_text, filename, numero_avis, designation, tarif_number, ndp)
-            VALUES ('delete', old.id, old.full_text, old.filename, old.numero_avis, old.designation, old.tarif_number, old.ndp);
-            INSERT INTO documents_fts(rowid, full_text, filename, numero_avis, designation, tarif_number, ndp)
-            VALUES (new.id, new.full_text, new.filename, new.numero_avis, new.designation, new.tarif_number, new.ndp);
+            INSERT INTO documents_fts(documents_fts, rowid, full_text, filename, numero_avis, designation, usage_text, tarif_number, ndp)
+            VALUES ('delete', old.id, old.full_text, old.filename, old.numero_avis, old.designation, old.usage_text, old.tarif_number, old.ndp);
+            INSERT INTO documents_fts(rowid, full_text, filename, numero_avis, designation, usage_text, tarif_number, ndp)
+            VALUES (new.id, new.full_text, new.filename, new.numero_avis, new.designation, new.usage_text, new.tarif_number, new.ndp);
         END
     """)
     conn.commit()
@@ -60,8 +67,10 @@ def insert_document(data):
     conn = get_connection()
     c = conn.cursor()
     c.execute("""
-        INSERT INTO documents (filename, filepath, full_text, upload_date, numero_avis, designation, tarif_number, ndp)
-        VALUES (:filename, :filepath, :full_text, :upload_date, :numero_avis, :designation, :tarif_number, :ndp)
+        INSERT INTO documents (filename, filepath, full_text, upload_date,
+            numero_avis, designation, usage_text, tarif_number, ndp)
+        VALUES (:filename, :filepath, :full_text, :upload_date,
+            :numero_avis, :designation, :usage_text, :tarif_number, :ndp)
     """, {
         "filename":     data.get("filename", ""),
         "filepath":     data.get("filepath", ""),
@@ -69,6 +78,7 @@ def insert_document(data):
         "upload_date":  datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "numero_avis":  data.get("numero_avis", ""),
         "designation":  data.get("designation", ""),
+        "usage_text":   data.get("usage_text", ""),
         "tarif_number": data.get("tarif_number", ""),
         "ndp":          data.get("ndp", ""),
     })
@@ -92,8 +102,9 @@ def search_documents(query):
         c.execute("""
             SELECT * FROM documents
             WHERE full_text LIKE ? OR numero_avis LIKE ?
-               OR designation LIKE ? OR tarif_number LIKE ? OR ndp LIKE ?
-        """, (like, like, like, like, like))
+               OR designation LIKE ? OR usage_text LIKE ?
+               OR tarif_number LIKE ? OR ndp LIKE ?
+        """, (like, like, like, like, like, like))
     results = [dict(row) for row in c.fetchall()]
     conn.close()
     return results
@@ -124,6 +135,7 @@ def update_document(doc_id, data):
         UPDATE documents SET
             numero_avis  = :numero_avis,
             designation  = :designation,
+            usage_text   = :usage_text,
             tarif_number = :tarif_number,
             ndp          = :ndp
         WHERE id = :id

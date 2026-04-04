@@ -97,15 +97,17 @@ def _ocr_pdf(pdf_path):
 
 def parse_fields(text):
     """
-    Extrait les 4 champs :
+    Extrait les 5 champs :
       - numero_avis
       - designation
+      - usage_text
       - tarif_number
       - ndp
     """
     fields = {
         "numero_avis":  "",
         "designation":  "",
+        "usage_text":   "",
         "tarif_number": "",
         "ndp":          "",
     }
@@ -129,6 +131,14 @@ def parse_fields(text):
             fields["designation"] = _clean(m.group(1))
             break
 
+    # Usage — toute la phrase
+    m = re.search(
+        r'[Uu]sage\s*:\s*(.+?)(?:\n\n|\n-|\nEMET|\ZEMET|\Z)',
+        text, re.IGNORECASE | re.DOTALL
+    )
+    if m:
+        fields["usage_text"] = _clean(m.group(1))
+
     # Numero tarifaire
     patterns_tarif = [
         r'classer\s+au\s+n[o0O][^\d]*(\d{9,10})',
@@ -147,7 +157,7 @@ def parse_fields(text):
             fields["tarif_number"] = raw
             break
 
-    # NDP — detecte : NDP, N.D.P, N.D.P. avec ou sans parentheses
+    # NDP — detecte NDP, N.D.P, N.D.P.
     patterns_ndp = [
         r'N\.?D\.?P\.?\s*[:\s]+(\d{10,15})',
         r'\(\s*N\.?D\.?P\.?\s*[:\s]*(\d{10,15})\s*\)',

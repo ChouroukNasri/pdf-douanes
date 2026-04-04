@@ -130,7 +130,7 @@ if page == "🏠 Accueil":
                 a.metric("N° Avis",      doc.get("numero_avis")  or "—")
                 b.metric("N° Tarifaire", doc.get("tarif_number") or "—")
                 c.metric("NDP",          doc.get("ndp")          or "—")
-                st.write(f"**Désignation :** {doc.get('designation') or '—'}")
+                st.write(f"**Usage :** {doc.get('usage_text') or '—'}")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -255,7 +255,7 @@ elif page == "🔍 Recherche":
                 a.metric("N° Avis",      doc.get("numero_avis")  or "—")
                 b.metric("N° Tarifaire", doc.get("tarif_number") or "—")
                 c.metric("NDP",          doc.get("ndp")          or "—")
-                st.write(f"**Désignation :** {doc.get('designation') or '—'}")
+                st.write(f"**Usage :** {doc.get('usage_text') or '—'}")
                 with st.expander("📄 Texte OCR"):
                     st.text(doc.get("full_text", "")[:3000])
                 st.markdown("---")
@@ -270,8 +270,8 @@ elif page == "📋 Tous les documents":
     if not docs:
         st.info("Aucun document.")
     else:
-        df = pd.DataFrame(docs)[["id","filename","numero_avis","designation","tarif_number","ndp","upload_date"]]
-        df.columns = ["ID","Fichier","N° Avis","Désignation","N° Tarifaire","NDP","Date"]
+        df = pd.DataFrame(docs)[["id","numero_avis","tarif_number","ndp","usage_text","upload_date"]]
+        df.columns = ["ID","N° Avis","N° Tarifaire","NDP","Usage","Date"]
         st.dataframe(df, use_container_width=True, hide_index=True)
 
 
@@ -297,11 +297,13 @@ elif page == "✏️  Modifier / Supprimer":
                 numero_avis  = c1.text_input("N° Avis",      value=doc.get("numero_avis")  or "")
                 tarif_number = c2.text_input("N° Tarifaire", value=doc.get("tarif_number") or "")
                 ndp          = c3.text_input("NDP",          value=doc.get("ndp")          or "")
-                designation  = st.text_area("Désignation",   value=doc.get("designation")  or "", height=80)
+                designation  = st.text_area("Désignation",   value=doc.get("designation")  or "", height=60)
+                usage_text   = st.text_area("Usage",          value=doc.get("usage_text")   or "", height=80)
                 if st.form_submit_button("💾 Enregistrer", type="primary"):
                     db.update_document(doc_id, {
                         "numero_avis":  numero_avis,
                         "designation":  designation,
+                        "usage_text":   usage_text,
                         "tarif_number": tarif_number,
                         "ndp":          ndp,
                     })
