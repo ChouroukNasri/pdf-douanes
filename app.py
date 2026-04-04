@@ -118,7 +118,7 @@ hr { border-color: rgba(0,180,255,0.15) !important; }
 def show_login():
     import base64, os
 
-    # Charger le logo en base64
+    # Charger le logo
     logo_b64 = ""
     logo_path = os.path.join(os.path.dirname(__file__), "logo.png")
     if os.path.exists(logo_path):
@@ -127,104 +127,222 @@ def show_login():
 
     st.markdown("""
     <style>
+    /* ═══ PAGE LOGIN COMPLÈTE ═══ */
     .stApp {
-        background: linear-gradient(135deg, #020b28 0%, #041454 60%, #0a1f6e 100%);
+        background: radial-gradient(ellipse at 30% 20%, #0d2060 0%, #020b28 50%, #010818 100%);
         min-height: 100vh;
     }
-    header[data-testid="stHeader"] { background: transparent !important; }
-    section[data-testid="stSidebar"] { display: none; }
+    header[data-testid="stHeader"]  { display: none !important; }
+    section[data-testid="stSidebar"]{ display: none !important; }
+    #MainMenu, footer                { display: none !important; }
+    .block-container {
+        padding-top: 0 !important;
+        max-width: 100% !important;
+    }
 
-    /* Tout le texte */
-    label, p, span, div { color: rgba(200,225,255,0.9) !important; }
+    /* Icônes features */
+    .features-row {
+        display: flex;
+        justify-content: center;
+        gap: 32px;
+        margin: 20px 0 28px 0;
+    }
+    .feature-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        color: rgba(180,210,255,0.8) !important;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+    }
+    .feature-icon {
+        width: 48px; height: 48px;
+        background: rgba(0,80,200,0.25);
+        border: 1px solid rgba(0,150,255,0.35);
+        border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 22px;
+    }
+    .feature-sep {
+        width: 1px;
+        background: rgba(0,150,255,0.25);
+        margin: 8px 0;
+        align-self: stretch;
+    }
 
-    /* Inputs */
-    input[type="text"], input[type="password"] {
-        background: rgba(0,30,80,0.6) !important;
-        border: 1px solid rgba(0,180,255,0.3) !important;
+    /* Card auth */
+    .auth-card {
+        background: rgba(5,20,70,0.75);
+        border: 1px solid rgba(0,150,255,0.35);
+        border-radius: 20px;
+        padding: 28px 32px;
+        backdrop-filter: blur(20px);
+        box-shadow: 0 8px 40px rgba(0,80,255,0.2), inset 0 1px 0 rgba(255,255,255,0.05);
+        max-width: 560px;
+        margin: 0 auto;
+    }
+    .auth-header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+    .auth-shield {
+        width: 52px; height: 52px;
+        background: rgba(0,80,200,0.3);
+        border: 1px solid rgba(0,150,255,0.4);
+        border-radius: 14px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 26px; flex-shrink: 0;
+    }
+    .auth-title {
+        font-size: 1.25rem !important;
+        font-weight: 800 !important;
         color: #ffffff !important;
-        border-radius: 8px !important;
-        padding: 10px 14px !important;
+        margin: 0 !important;
     }
-    input:focus {
-        border-color: #00c8ff !important;
-        box-shadow: 0 0 0 2px rgba(0,200,255,0.2) !important;
+    .auth-sub {
+        font-size: 0.78rem !important;
+        color: rgba(140,180,230,0.75) !important;
+        margin: 2px 0 0 0 !important;
     }
-    /* Placeholder */
-    input::placeholder { color: rgba(150,180,220,0.5) !important; }
 
-    /* Label champs */
-    .stTextInput label { color: rgba(180,210,255,0.8) !important; font-size:0.85rem !important; }
+    /* Inputs login */
+    .stTextInput input {
+        background: rgba(0,20,65,0.7) !important;
+        border: 1px solid rgba(0,140,255,0.3) !important;
+        color: #ffffff !important;
+        border-radius: 10px !important;
+        padding: 12px 16px !important;
+        font-size: 0.92rem !important;
+    }
+    .stTextInput input:focus {
+        border-color: #0088ff !important;
+        box-shadow: 0 0 0 3px rgba(0,136,255,0.2) !important;
+    }
+    .stTextInput input::placeholder { color: rgba(140,170,220,0.5) !important; }
+    .stTextInput label { color: rgba(160,200,255,0.0) !important; height: 0 !important; }
 
-    /* Bouton connexion */
+    /* Bouton Se connecter */
     .stFormSubmitButton button {
-        background: linear-gradient(90deg, #0050d8, #00a8ff) !important;
+        background: linear-gradient(90deg, #0055e0 0%, #0088ff 100%) !important;
         color: white !important;
         border: none !important;
-        border-radius: 8px !important;
+        border-radius: 10px !important;
         font-weight: 700 !important;
         font-size: 1rem !important;
-        padding: 12px !important;
-        margin-top: 8px;
-        letter-spacing: 0.5px;
+        padding: 14px !important;
+        letter-spacing: 0.5px !important;
+        margin-top: 4px !important;
+        transition: all 0.2s !important;
     }
     .stFormSubmitButton button:hover {
-        background: linear-gradient(90deg, #0060f0, #00c0ff) !important;
-        box-shadow: 0 0 24px rgba(0,180,255,0.5) !important;
-        transform: translateY(-1px);
+        background: linear-gradient(90deg, #0066ff 0%, #00aaff 100%) !important;
+        box-shadow: 0 4px 24px rgba(0,136,255,0.5) !important;
+        transform: translateY(-1px) !important;
     }
 
-    /* Alerts */
-    .stAlert { border-radius: 8px !important; }
+    /* Checkbox */
+    .stCheckbox label { color: rgba(160,200,255,0.75) !important; font-size:0.82rem !important; }
+
+    /* Particules lumineuses (points décoratifs) */
+    .particles {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        pointer-events: none; z-index: 0;
+        background-image:
+            radial-gradient(circle, rgba(0,150,255,0.15) 1px, transparent 1px),
+            radial-gradient(circle, rgba(0,100,255,0.1) 1px, transparent 1px);
+        background-size: 60px 60px, 120px 120px;
+        background-position: 0 0, 30px 30px;
+    }
     </style>
+
+    <div class="particles"></div>
     """, unsafe_allow_html=True)
 
-    st.markdown("<br><br>", unsafe_allow_html=True)
-    col = st.columns([1, 2, 1])[1]
+    logo_html = f'<img src="data:image/png;base64,{logo_b64}" style="width:160px; margin-bottom:8px;">' if logo_b64 else ""
+
+    # ── Zone centrale ──
+    _, col, _ = st.columns([1, 2.2, 1])
     with col:
-        # Card principale
-        logo_html = f'<img src="data:image/png;base64,{logo_b64}" style="width:140px; margin-bottom:16px;">' if logo_b64 else ""
+        st.markdown("<div style='height:32px'></div>", unsafe_allow_html=True)
+
+        # Logo + Titre
         st.markdown(f"""
-        <div style="
-            background: rgba(4,20,84,0.7);
-            border: 1px solid rgba(0,180,255,0.35);
-            border-radius: 24px;
-            padding: 40px 36px 32px 36px;
-            backdrop-filter: blur(16px);
-            box-shadow: 0 0 60px rgba(0,100,255,0.2), 0 0 120px rgba(0,40,160,0.15);
-            text-align: center;
-            margin-bottom: 20px;
-        ">
+        <div style="text-align:center; margin-bottom:4px;">
             {logo_html}
-            <div style="font-size:2rem; font-weight:800; margin-bottom:4px; letter-spacing:1px;">
-                <span style="color:#ffffff;">Douane</span><span style="color:#00c8ff;">Xtract</span>
+            <div style="font-size:2.8rem; font-weight:900; letter-spacing:1px; line-height:1.1; margin-bottom:6px;">
+                <span style="color:#ffffff;">Douane</span><span style="color:#00aaff;">Xtract</span>
             </div>
-            <div style="color:rgba(150,190,255,0.7); font-size:0.8rem; letter-spacing:0.8px; margin-bottom:4px;">
+            <div style="color:rgba(160,200,255,0.75); font-size:0.88rem; letter-spacing:0.5px; margin-bottom:28px;">
                 Base de données — Avis de Classement Tarifaire
             </div>
-            <hr style="border:none; border-top:1px solid rgba(0,180,255,0.2); margin:24px 0 0 0;">
         </div>
-        """, unsafe_allow_html=True)
 
-        # Formulaire de connexion
-        with st.form("login_form"):
-            st.markdown("""
-            <div style="color:rgba(180,210,255,0.6); font-size:0.78rem;
-                        text-align:center; margin-bottom:16px; letter-spacing:0.5px;">
-                Connectez-vous pour accéder à votre espace
+        <!-- Features -->
+        <div class="features-row">
+            <div class="feature-item">
+                <div class="feature-icon">📄</div>
+                <span>Extraire</span>
             </div>
-            """, unsafe_allow_html=True)
+            <div class="feature-sep"></div>
+            <div class="feature-item">
+                <div class="feature-icon">🗄️</div>
+                <span>Comprendre</span>
+            </div>
+            <div class="feature-sep"></div>
+            <div class="feature-item">
+                <div class="feature-icon">📈</div>
+                <span>Valoriser</span>
+            </div>
+            <div class="feature-sep"></div>
+            <div class="feature-item">
+                <div class="feature-icon">🛡️</div>
+                <span>Sécurisé</span>
+            </div>
+        </div>
 
-            email    = st.text_input("📧  Adresse email",  placeholder="votre@email.com")
-            password = st.text_input("🔒  Mot de passe",   type="password", placeholder="••••••••")
-            submit   = st.form_submit_button("🔐  Se connecter", use_container_width=True)
+        <!-- Card Auth -->
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-shield">🔐</div>
+                <div>
+                    <div class="auth-title">Authentification</div>
+                    <div class="auth-sub">Accédez à votre base de données en toute sécurité</div>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
 
+        # Formulaire
+        with st.form("login_form"):
+            email    = st.text_input("email",    placeholder="✉  User@email.com",  label_visibility="collapsed")
+            password = st.text_input("password", placeholder="🔒  Mot de passe",    type="password", label_visibility="collapsed")
+            col_chk, col_mdp = st.columns([1, 1])
+            with col_chk:
+                st.checkbox("Se souvenir de moi", value=False)
+            with col_mdp:
+                st.markdown("""
+                <div style="text-align:right; padding-top:6px;">
+                    <span style="color:#0099ff; font-size:0.78rem; cursor:pointer;">
+                        Mot de passe oublié ?
+                    </span>
+                </div>""", unsafe_allow_html=True)
+            submit = st.form_submit_button("Se connecter  →", use_container_width=True)
+
+        st.markdown("</div>", unsafe_allow_html=True)
+
+        # Footer
         st.markdown("""
-        <div style="text-align:center; color:rgba(120,160,210,0.45);
-                    font-size:0.72rem; margin-top:20px;">
-            Problème de connexion ? Contactez l'administrateur.
+        <div style="text-align:center; margin-top:20px;
+                    color:rgba(100,140,200,0.4); font-size:0.7rem; letter-spacing:0.5px;">
+            DouaneXtract v1.0 &nbsp;·&nbsp; Direction Générale des Douanes Tunisiennes
         </div>
         """, unsafe_allow_html=True)
 
+        # Logique login
         if submit:
             if not email or not password:
                 st.error("⚠️ Veuillez remplir tous les champs.")
