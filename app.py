@@ -201,9 +201,6 @@ def show_login():
             <div style="color:rgba(150,190,255,0.7); font-size:0.8rem; letter-spacing:0.8px; margin-bottom:4px;">
                 Base de données — Avis de Classement Tarifaire
             </div>
-            <div style="color:rgba(0,180,255,0.5); font-size:0.72rem; letter-spacing:0.5px;">
-                Direction Générale des Douanes Tunisiennes
-            </div>
             <hr style="border:none; border-top:1px solid rgba(0,180,255,0.2); margin:24px 0 0 0;">
         </div>
         """, unsafe_allow_html=True)
@@ -225,10 +222,6 @@ def show_login():
         <div style="text-align:center; color:rgba(120,160,210,0.45);
                     font-size:0.72rem; margin-top:20px;">
             Problème de connexion ? Contactez l'administrateur.
-        </div>
-        <div style="text-align:center; color:rgba(0,180,255,0.25);
-                    font-size:0.68rem; margin-top:8px;">
-            DouaneXtract v1.0 — © 2025 Douanes Tunisiennes
         </div>
         """, unsafe_allow_html=True)
 
