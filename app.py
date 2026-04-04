@@ -24,16 +24,90 @@ auth.init_auth()
 
 st.markdown("""
 <style>
-    .main-title  { font-size:2rem; font-weight:700; color:#1a3a5c; }
-    .stat-box    { background:#f0f4ff; border-radius:10px; padding:16px; text-align:center; }
-    .stat-num    { font-size:2rem; font-weight:800; color:#1a3a5c; }
-    .stat-label  { font-size:0.85rem; color:#666; }
-    .result-card { background:#fff; border:1px solid #e0e0e0; border-radius:8px;
-                   padding:14px; margin-bottom:8px; }
-    .badge       { background:#1a3a5c; color:white; border-radius:4px;
-                   padding:2px 8px; font-size:0.82rem; font-weight:600; }
-    .badge-ndp   { background:#2d6a4f; color:white; border-radius:4px;
-                   padding:2px 8px; font-size:0.82rem; font-weight:600; }
+/* ═══ THEME GLOBAL DOUANEXTRACT ═══ */
+.stApp {
+    background: linear-gradient(135deg, #020b28 0%, #041454 60%, #0a1f6e 100%);
+    min-height: 100vh;
+}
+header[data-testid="stHeader"] {
+    background: rgba(2,11,40,0.95) !important;
+    border-bottom: 1px solid rgba(0,180,255,0.15) !important;
+}
+section[data-testid="stSidebar"] {
+    background: rgba(2,11,40,0.97) !important;
+    border-right: 1px solid rgba(0,180,255,0.2) !important;
+}
+section[data-testid="stSidebar"] * { color: rgba(180,215,255,0.85) !important; }
+section[data-testid="stSidebar"] hr { border-color: rgba(0,180,255,0.2) !important; }
+p, span, div, li { color: rgba(200,225,255,0.88) !important; }
+h1, h2, h3 { color: #ffffff !important; }
+label { color: rgba(180,210,255,0.85) !important; }
+input[type="text"], input[type="password"], textarea {
+    background: rgba(0,30,80,0.55) !important;
+    border: 1px solid rgba(0,180,255,0.3) !important;
+    color: #ffffff !important;
+    border-radius: 8px !important;
+}
+input:focus, textarea:focus {
+    border-color: #00c8ff !important;
+    box-shadow: 0 0 0 2px rgba(0,200,255,0.2) !important;
+}
+.stButton button[kind="primary"], .stFormSubmitButton button {
+    background: linear-gradient(90deg, #0050d8, #00a8ff) !important;
+    color: white !important; border: none !important;
+    border-radius: 8px !important; font-weight: 600 !important;
+}
+.stButton button[kind="primary"]:hover, .stFormSubmitButton button:hover {
+    background: linear-gradient(90deg, #0060f0, #00c0ff) !important;
+    box-shadow: 0 0 20px rgba(0,180,255,0.4) !important;
+}
+.stButton button {
+    background: rgba(0,60,160,0.35) !important;
+    border: 1px solid rgba(0,180,255,0.3) !important;
+    color: rgba(180,220,255,0.9) !important;
+    border-radius: 8px !important;
+}
+.stTabs [data-baseweb="tab-list"] {
+    background: rgba(0,20,70,0.6) !important;
+    border-radius: 10px; padding: 4px;
+}
+.stTabs [data-baseweb="tab"] { color: rgba(160,200,255,0.7) !important; }
+.stTabs [aria-selected="true"] {
+    color: #00c8ff !important;
+    background: rgba(0,80,200,0.3) !important;
+    border-radius: 8px !important;
+}
+.streamlit-expanderHeader {
+    background: rgba(0,40,120,0.4) !important;
+    border: 1px solid rgba(0,180,255,0.2) !important;
+    border-radius: 8px !important;
+}
+.streamlit-expanderContent {
+    background: rgba(0,15,55,0.6) !important;
+    border: 1px solid rgba(0,180,255,0.1) !important;
+}
+[data-testid="stMetricLabel"] { color: rgba(150,190,255,0.7) !important; }
+[data-testid="stMetricValue"] { color: #00c8ff !important; font-weight: 700 !important; }
+.stSuccess { background: rgba(0,80,50,0.35) !important; border-left-color: #00e090 !important; }
+.stError   { background: rgba(120,0,0,0.35) !important;  border-left-color: #ff5050  !important; }
+.stWarning { background: rgba(100,60,0,0.35) !important; border-left-color: #ffb800  !important; }
+.stInfo    { background: rgba(0,50,140,0.35) !important; border-left-color: #00c8ff  !important; }
+.stProgress > div > div { background: linear-gradient(90deg,#0050d8,#00c8ff) !important; }
+hr { border-color: rgba(0,180,255,0.15) !important; }
+.main-title  { font-size:2rem; font-weight:700; color:#ffffff !important; }
+.stat-box    { background:rgba(0,60,180,0.2) !important;
+               border:1px solid rgba(0,180,255,0.3) !important;
+               border-radius:10px; padding:16px; text-align:center; }
+.stat-num    { font-size:2rem; font-weight:800; color:#00c8ff !important; }
+.stat-label  { font-size:0.85rem; color:rgba(160,200,255,0.7) !important; }
+.result-card { background:rgba(255,255,255,0.04) !important;
+               border:1px solid rgba(0,180,255,0.2) !important;
+               border-radius:10px; padding:14px; margin-bottom:8px; }
+.badge     { background:linear-gradient(90deg,#0050d8,#00a8ff); color:white !important;
+             border-radius:4px; padding:2px 8px; font-size:0.82rem; font-weight:600; }
+.badge-ndp { background:rgba(0,180,255,0.15); border:1px solid rgba(0,180,255,0.4);
+             color:#00c8ff !important; border-radius:4px; padding:2px 8px;
+             font-size:0.82rem; font-weight:600; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -42,6 +116,15 @@ st.markdown("""
 #  ECRAN DE CONNEXION
 # ══════════════════════════════════════════════════════════════════════════════
 def show_login():
+    import base64, os
+
+    # Charger le logo en base64
+    logo_b64 = ""
+    logo_path = os.path.join(os.path.dirname(__file__), "logo.png")
+    if os.path.exists(logo_path):
+        with open(logo_path, "rb") as f:
+            logo_b64 = base64.b64encode(f.read()).decode()
+
     st.markdown("""
     <style>
     .stApp {
@@ -49,74 +132,116 @@ def show_login():
         min-height: 100vh;
     }
     header[data-testid="stHeader"] { background: transparent !important; }
-    label { color: rgba(180,210,255,0.9) !important; font-size:0.85rem !important; }
+    section[data-testid="stSidebar"] { display: none; }
+
+    /* Tout le texte */
+    label, p, span, div { color: rgba(200,225,255,0.9) !important; }
+
+    /* Inputs */
     input[type="text"], input[type="password"] {
         background: rgba(0,30,80,0.6) !important;
         border: 1px solid rgba(0,180,255,0.3) !important;
         color: #ffffff !important;
         border-radius: 8px !important;
+        padding: 10px 14px !important;
     }
+    input:focus {
+        border-color: #00c8ff !important;
+        box-shadow: 0 0 0 2px rgba(0,200,255,0.2) !important;
+    }
+    /* Placeholder */
+    input::placeholder { color: rgba(150,180,220,0.5) !important; }
+
+    /* Label champs */
+    .stTextInput label { color: rgba(180,210,255,0.8) !important; font-size:0.85rem !important; }
+
+    /* Bouton connexion */
     .stFormSubmitButton button {
         background: linear-gradient(90deg, #0050d8, #00a8ff) !important;
         color: white !important;
         border: none !important;
         border-radius: 8px !important;
-        font-weight: 600 !important;
+        font-weight: 700 !important;
         font-size: 1rem !important;
+        padding: 12px !important;
+        margin-top: 8px;
+        letter-spacing: 0.5px;
     }
     .stFormSubmitButton button:hover {
         background: linear-gradient(90deg, #0060f0, #00c0ff) !important;
-        box-shadow: 0 0 20px rgba(0,180,255,0.4) !important;
+        box-shadow: 0 0 24px rgba(0,180,255,0.5) !important;
+        transform: translateY(-1px);
     }
+
+    /* Alerts */
+    .stAlert { border-radius: 8px !important; }
     </style>
     """, unsafe_allow_html=True)
 
     st.markdown("<br><br>", unsafe_allow_html=True)
     col = st.columns([1, 2, 1])[1]
     with col:
-        st.markdown("""
+        # Card principale
+        logo_html = f'<img src="data:image/png;base64,{logo_b64}" style="width:140px; margin-bottom:16px;">' if logo_b64 else ""
+        st.markdown(f"""
         <div style="
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(0,180,255,0.3);
-            border-radius: 20px;
-            padding: 40px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 0 40px rgba(0,120,255,0.15);
+            background: rgba(4,20,84,0.7);
+            border: 1px solid rgba(0,180,255,0.35);
+            border-radius: 24px;
+            padding: 40px 36px 32px 36px;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 0 60px rgba(0,100,255,0.2), 0 0 120px rgba(0,40,160,0.15);
             text-align: center;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         ">
-            <div style="font-size:2.2rem; font-weight:800; margin-bottom:6px;">
+            {logo_html}
+            <div style="font-size:2rem; font-weight:800; margin-bottom:4px; letter-spacing:1px;">
                 <span style="color:#ffffff;">Douane</span><span style="color:#00c8ff;">Xtract</span>
             </div>
-            <div style="color:rgba(180,210,255,0.7); font-size:0.82rem; letter-spacing:0.5px;">
+            <div style="color:rgba(150,190,255,0.7); font-size:0.8rem; letter-spacing:0.8px; margin-bottom:4px;">
                 Base de données — Avis de Classement Tarifaire
             </div>
-            <hr style="border:none; border-top:1px solid rgba(0,180,255,0.2); margin:20px 0 0 0;">
+            <div style="color:rgba(0,180,255,0.5); font-size:0.72rem; letter-spacing:0.5px;">
+                Direction Générale des Douanes Tunisiennes
+            </div>
+            <hr style="border:none; border-top:1px solid rgba(0,180,255,0.2); margin:24px 0 0 0;">
         </div>
         """, unsafe_allow_html=True)
 
+        # Formulaire de connexion
         with st.form("login_form"):
-            email    = st.text_input("Email",        placeholder="votre@email.com")
-            password = st.text_input("Mot de passe", type="password", placeholder="••••••••")
-            submit   = st.form_submit_button("Se connecter", use_container_width=True)
+            st.markdown("""
+            <div style="color:rgba(180,210,255,0.6); font-size:0.78rem;
+                        text-align:center; margin-bottom:16px; letter-spacing:0.5px;">
+                Connectez-vous pour accéder à votre espace
+            </div>
+            """, unsafe_allow_html=True)
+
+            email    = st.text_input("📧  Adresse email",  placeholder="votre@email.com")
+            password = st.text_input("🔒  Mot de passe",   type="password", placeholder="••••••••")
+            submit   = st.form_submit_button("🔐  Se connecter", use_container_width=True)
 
         st.markdown("""
-        <div style="text-align:center; color:rgba(150,180,220,0.5);
-                    font-size:0.75rem; margin-top:16px;">
+        <div style="text-align:center; color:rgba(120,160,210,0.45);
+                    font-size:0.72rem; margin-top:20px;">
             Problème de connexion ? Contactez l'administrateur.
+        </div>
+        <div style="text-align:center; color:rgba(0,180,255,0.25);
+                    font-size:0.68rem; margin-top:8px;">
+            DouaneXtract v1.0 — © 2025 Douanes Tunisiennes
         </div>
         """, unsafe_allow_html=True)
 
         if submit:
             if not email or not password:
-                st.error("Veuillez remplir tous les champs.")
+                st.error("⚠️ Veuillez remplir tous les champs.")
             else:
                 user = auth.login(email, password)
                 if user:
                     st.session_state["user"] = user
                     st.rerun()
                 else:
-                    st.error("Email ou mot de passe incorrect.")
+                    st.error("❌ Email ou mot de passe incorrect.")
 
 # ══════════════════════════════════════════════════════════════════════════════
 #  VERIFIER SESSION
