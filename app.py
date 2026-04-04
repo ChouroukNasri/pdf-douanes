@@ -118,7 +118,6 @@ hr { border-color: rgba(0,180,255,0.15) !important; }
 def show_login():
     import base64, os
 
-    # Charger le logo
     logo_b64 = ""
     logo_path = os.path.join(os.path.dirname(__file__), "logo.png")
     if os.path.exists(logo_path):
@@ -127,222 +126,262 @@ def show_login():
 
     st.markdown("""
     <style>
-    /* ═══ PAGE LOGIN COMPLÈTE ═══ */
     .stApp {
-        background: radial-gradient(ellipse at 30% 20%, #0d2060 0%, #020b28 50%, #010818 100%);
+        background: radial-gradient(ellipse at 30% 20%, #0d2060 0%, #020b28 55%, #010818 100%);
         min-height: 100vh;
     }
-    header[data-testid="stHeader"]  { display: none !important; }
-    section[data-testid="stSidebar"]{ display: none !important; }
-    #MainMenu, footer                { display: none !important; }
-    .block-container {
-        padding-top: 0 !important;
-        max-width: 100% !important;
+    header[data-testid="stHeader"]   { display:none !important; }
+    section[data-testid="stSidebar"] { display:none !important; }
+    #MainMenu, footer                 { display:none !important; }
+    .block-container { padding-top:0 !important; max-width:100% !important; }
+
+    /* Points lumineux en fond */
+    .stApp::before {
+        content: '';
+        position: fixed; top:0; left:0; width:100%; height:100%;
+        pointer-events: none; z-index:0;
+        background-image:
+            radial-gradient(circle, rgba(0,150,255,0.12) 1px, transparent 1px),
+            radial-gradient(circle, rgba(0,80,200,0.08) 1px, transparent 1px);
+        background-size: 55px 55px, 110px 110px;
+        background-position: 0 0, 28px 28px;
     }
 
-    /* Icônes features */
+    /* Card unique qui contient tout */
+    .main-card {
+        background: rgba(4,16,60,0.80);
+        border: 1px solid rgba(0,140,255,0.35);
+        border-radius: 28px;
+        padding: 0;
+        overflow: hidden;
+        backdrop-filter: blur(20px);
+        box-shadow: 0 8px 60px rgba(0,80,255,0.25), inset 0 1px 0 rgba(255,255,255,0.06);
+        max-width: 500px;
+        margin: 0 auto;
+    }
+
+    /* Section logo en haut de la card */
+    .card-top {
+        background: radial-gradient(ellipse at 50% 30%, #0d2878 0%, #020f40 100%);
+        border-bottom: 1px solid rgba(0,140,255,0.25);
+        padding: 36px 32px 28px 32px;
+        text-align: center;
+    }
+
+    /* Titre */
+    .brand-title {
+        font-size: 2.4rem;
+        font-weight: 900;
+        letter-spacing: 1px;
+        line-height: 1;
+        margin-top: 14px;
+        margin-bottom: 5px;
+    }
+    .brand-sub {
+        color: rgba(150,190,255,0.7);
+        font-size: 0.78rem;
+        letter-spacing: 0.8px;
+        margin-bottom: 22px;
+    }
+
+    /* 4 features */
     .features-row {
         display: flex;
         justify-content: center;
-        gap: 32px;
-        margin: 20px 0 28px 0;
+        align-items: center;
+        gap: 0;
+        margin-top: 8px;
     }
     .feature-item {
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 8px;
-        color: rgba(180,210,255,0.8) !important;
-        font-size: 0.72rem;
+        gap: 6px;
+        padding: 0 16px;
+        color: rgba(160,200,255,0.85);
+        font-size: 0.65rem;
         font-weight: 700;
-        letter-spacing: 1.5px;
+        letter-spacing: 1.2px;
         text-transform: uppercase;
     }
     .feature-icon {
-        width: 48px; height: 48px;
-        background: rgba(0,80,200,0.25);
+        width: 40px; height: 40px;
+        background: rgba(0,80,200,0.3);
         border: 1px solid rgba(0,150,255,0.35);
-        border-radius: 12px;
+        border-radius: 10px;
         display: flex; align-items: center; justify-content: center;
-        font-size: 22px;
+        font-size: 18px;
     }
     .feature-sep {
-        width: 1px;
-        background: rgba(0,150,255,0.25);
-        margin: 8px 0;
-        align-self: stretch;
+        width: 1px; height: 48px;
+        background: rgba(0,150,255,0.2);
     }
 
-    /* Card auth */
-    .auth-card {
-        background: rgba(5,20,70,0.75);
-        border: 1px solid rgba(0,150,255,0.35);
-        border-radius: 20px;
-        padding: 28px 32px;
-        backdrop-filter: blur(20px);
-        box-shadow: 0 8px 40px rgba(0,80,255,0.2), inset 0 1px 0 rgba(255,255,255,0.05);
-        max-width: 560px;
-        margin: 0 auto;
+    /* Section formulaire en bas */
+    .card-bottom {
+        padding: 28px 32px 32px 32px;
     }
     .auth-header {
         display: flex;
         align-items: center;
-        gap: 16px;
+        gap: 14px;
         margin-bottom: 20px;
     }
     .auth-shield {
-        width: 52px; height: 52px;
+        width: 48px; height: 48px;
         background: rgba(0,80,200,0.3);
         border: 1px solid rgba(0,150,255,0.4);
-        border-radius: 14px;
+        border-radius: 13px;
         display: flex; align-items: center; justify-content: center;
-        font-size: 26px; flex-shrink: 0;
+        font-size: 24px; flex-shrink: 0;
     }
-    .auth-title {
-        font-size: 1.25rem !important;
-        font-weight: 800 !important;
-        color: #ffffff !important;
-        margin: 0 !important;
+    .auth-title-text {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: #ffffff;
+        margin-bottom: 2px;
     }
-    .auth-sub {
-        font-size: 0.78rem !important;
-        color: rgba(140,180,230,0.75) !important;
-        margin: 2px 0 0 0 !important;
+    .auth-sub-text {
+        font-size: 0.74rem;
+        color: rgba(130,175,230,0.7);
+        line-height: 1.4;
     }
 
-    /* Inputs login */
+    /* Inputs */
     .stTextInput input {
-        background: rgba(0,20,65,0.7) !important;
-        border: 1px solid rgba(0,140,255,0.3) !important;
+        background: rgba(0,18,60,0.75) !important;
+        border: 1px solid rgba(0,130,255,0.3) !important;
         color: #ffffff !important;
         border-radius: 10px !important;
         padding: 12px 16px !important;
-        font-size: 0.92rem !important;
+        font-size: 0.9rem !important;
     }
     .stTextInput input:focus {
         border-color: #0088ff !important;
-        box-shadow: 0 0 0 3px rgba(0,136,255,0.2) !important;
+        box-shadow: 0 0 0 3px rgba(0,136,255,0.18) !important;
     }
-    .stTextInput input::placeholder { color: rgba(140,170,220,0.5) !important; }
-    .stTextInput label { color: rgba(160,200,255,0.0) !important; height: 0 !important; }
+    .stTextInput input::placeholder { color: rgba(120,160,220,0.5) !important; }
+    .stTextInput label { display:none !important; }
 
-    /* Bouton Se connecter */
+    /* Checkbox */
+    .stCheckbox label span { color: rgba(150,190,255,0.75) !important; font-size:0.8rem !important; }
+
+    /* Bouton */
     .stFormSubmitButton button {
-        background: linear-gradient(90deg, #0055e0 0%, #0088ff 100%) !important;
+        background: linear-gradient(90deg, #0050d8 0%, #0099ff 100%) !important;
         color: white !important;
         border: none !important;
         border-radius: 10px !important;
         font-weight: 700 !important;
         font-size: 1rem !important;
-        padding: 14px !important;
+        padding: 13px !important;
         letter-spacing: 0.5px !important;
-        margin-top: 4px !important;
-        transition: all 0.2s !important;
+        margin-top: 6px !important;
     }
     .stFormSubmitButton button:hover {
-        background: linear-gradient(90deg, #0066ff 0%, #00aaff 100%) !important;
-        box-shadow: 0 4px 24px rgba(0,136,255,0.5) !important;
+        background: linear-gradient(90deg, #0066ff 0%, #00bbff 100%) !important;
+        box-shadow: 0 4px 28px rgba(0,140,255,0.5) !important;
         transform: translateY(-1px) !important;
     }
 
-    /* Checkbox */
-    .stCheckbox label { color: rgba(160,200,255,0.75) !important; font-size:0.82rem !important; }
-
-    /* Particules lumineuses (points décoratifs) */
-    .particles {
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        pointer-events: none; z-index: 0;
-        background-image:
-            radial-gradient(circle, rgba(0,150,255,0.15) 1px, transparent 1px),
-            radial-gradient(circle, rgba(0,100,255,0.1) 1px, transparent 1px);
-        background-size: 60px 60px, 120px 120px;
-        background-position: 0 0, 30px 30px;
+    .mdp-oublie {
+        text-align: right;
+        color: #0099ff;
+        font-size: 0.78rem;
+        cursor: pointer;
+        padding-top: 6px;
+    }
+    .login-footer {
+        text-align: center;
+        color: rgba(80,120,180,0.4);
+        font-size: 0.68rem;
+        letter-spacing: 0.4px;
+        margin-top: 18px;
     }
     </style>
-
-    <div class="particles"></div>
     """, unsafe_allow_html=True)
 
-    logo_html = f'<img src="data:image/png;base64,{logo_b64}" style="width:160px; margin-bottom:8px;">' if logo_b64 else ""
-
-    # ── Zone centrale ──
-    _, col, _ = st.columns([1, 2.2, 1])
+    st.markdown("<div style='height:28px'></div>", unsafe_allow_html=True)
+    _, col, _ = st.columns([1, 2, 1])
     with col:
-        st.markdown("<div style='height:32px'></div>", unsafe_allow_html=True)
+        logo_img = f'<img src="data:image/png;base64,{logo_b64}" style="width:180px; filter:drop-shadow(0 0 20px rgba(0,150,255,0.4));">' if logo_b64 else "📑"
 
-        # Logo + Titre
+        # ── CARD UNIQUE ──
         st.markdown(f"""
-        <div style="text-align:center; margin-bottom:4px;">
-            {logo_html}
-            <div style="font-size:2.8rem; font-weight:900; letter-spacing:1px; line-height:1.1; margin-bottom:6px;">
-                <span style="color:#ffffff;">Douane</span><span style="color:#00aaff;">Xtract</span>
-            </div>
-            <div style="color:rgba(160,200,255,0.75); font-size:0.88rem; letter-spacing:0.5px; margin-bottom:28px;">
-                Base de données — Avis de Classement Tarifaire
-            </div>
-        </div>
+        <div class="main-card">
 
-        <!-- Features -->
-        <div class="features-row">
-            <div class="feature-item">
-                <div class="feature-icon">📄</div>
-                <span>Extraire</span>
-            </div>
-            <div class="feature-sep"></div>
-            <div class="feature-item">
-                <div class="feature-icon">🗄️</div>
-                <span>Comprendre</span>
-            </div>
-            <div class="feature-sep"></div>
-            <div class="feature-item">
-                <div class="feature-icon">📈</div>
-                <span>Valoriser</span>
-            </div>
-            <div class="feature-sep"></div>
-            <div class="feature-item">
-                <div class="feature-icon">🛡️</div>
-                <span>Sécurisé</span>
-            </div>
-        </div>
+            <!-- HAUT : illustration + titre + features -->
+            <div class="card-top">
+                {logo_img}
+                <div class="brand-title">
+                    <span style="color:#ffffff;">Douane</span><span style="color:#00aaff;">Xtract</span>
+                </div>
+                <div class="brand-sub">Base de données — Avis de Classement Tarifaire</div>
 
-        <!-- Card Auth -->
-        <div class="auth-card">
-            <div class="auth-header">
-                <div class="auth-shield">🔐</div>
-                <div>
-                    <div class="auth-title">Authentification</div>
-                    <div class="auth-sub">Accédez à votre base de données en toute sécurité</div>
+                <div class="features-row">
+                    <div class="feature-item">
+                        <div class="feature-icon">📄</div>
+                        <span>Extraire</span>
+                    </div>
+                    <div class="feature-sep"></div>
+                    <div class="feature-item">
+                        <div class="feature-icon">🗄️</div>
+                        <span>Comprendre</span>
+                    </div>
+                    <div class="feature-sep"></div>
+                    <div class="feature-item">
+                        <div class="feature-icon">📈</div>
+                        <span>Valoriser</span>
+                    </div>
+                    <div class="feature-sep"></div>
+                    <div class="feature-item">
+                        <div class="feature-icon">🛡️</div>
+                        <span>Sécurisé</span>
+                    </div>
                 </div>
             </div>
-        """, unsafe_allow_html=True)
 
-        # Formulaire
-        with st.form("login_form"):
-            email    = st.text_input("email",    placeholder="✉  User@email.com",  label_visibility="collapsed")
-            password = st.text_input("password", placeholder="🔒  Mot de passe",    type="password", label_visibility="collapsed")
-            col_chk, col_mdp = st.columns([1, 1])
-            with col_chk:
-                st.checkbox("Se souvenir de moi", value=False)
-            with col_mdp:
-                st.markdown("""
-                <div style="text-align:right; padding-top:6px;">
-                    <span style="color:#0099ff; font-size:0.78rem; cursor:pointer;">
-                        Mot de passe oublié ?
-                    </span>
-                </div>""", unsafe_allow_html=True)
-            submit = st.form_submit_button("Se connecter  →", use_container_width=True)
+            <!-- BAS : formulaire -->
+            <div class="card-bottom">
+                <div class="auth-header">
+                    <div class="auth-shield">🔐</div>
+                    <div>
+                        <div class="auth-title-text">Authentification</div>
+                        <div class="auth-sub-text">Accédez à votre base de données<br>en toute sécurité</div>
+                    </div>
+                </div>
+            </div>
 
-        st.markdown("</div>", unsafe_allow_html=True)
-
-        # Footer
-        st.markdown("""
-        <div style="text-align:center; margin-top:20px;
-                    color:rgba(100,140,200,0.4); font-size:0.7rem; letter-spacing:0.5px;">
-            DouaneXtract v1.0 &nbsp;·&nbsp; Direction Générale des Douanes Tunisiennes
         </div>
         """, unsafe_allow_html=True)
 
-        # Logique login
+        # Formulaire Streamlit (dans la card visuellement)
+        st.markdown("""
+        <div style="
+            background: rgba(4,16,60,0.80);
+            border: 1px solid rgba(0,140,255,0.35);
+            border-top: none;
+            border-radius: 0 0 28px 28px;
+            padding: 0 32px 32px 32px;
+            max-width: 500px;
+            margin: -16px auto 0 auto;
+            backdrop-filter: blur(20px);
+        ">
+        </div>
+        """, unsafe_allow_html=True)
+
+        with st.form("login_form"):
+            email    = st.text_input("e", placeholder="✉   User@email.com",  label_visibility="collapsed")
+            password = st.text_input("p", placeholder="🔒   Mot de passe",    type="password", label_visibility="collapsed")
+            c1, c2 = st.columns([1.2, 1])
+            with c1:
+                st.checkbox("Se souvenir de moi")
+            with c2:
+                st.markdown('<div class="mdp-oublie">Mot de passe oublié ?</div>', unsafe_allow_html=True)
+            submit = st.form_submit_button("Se connecter  →", use_container_width=True)
+
+        st.markdown('<div class="login-footer">DouaneXtract v1.0 &nbsp;·&nbsp; Direction Générale des Douanes Tunisiennes</div>', unsafe_allow_html=True)
+
         if submit:
             if not email or not password:
                 st.error("⚠️ Veuillez remplir tous les champs.")
