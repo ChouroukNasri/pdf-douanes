@@ -42,14 +42,71 @@ st.markdown("""
 #  ECRAN DE CONNEXION
 # ══════════════════════════════════════════════════════════════════════════════
 def show_login():
+    st.markdown("""
+    <style>
+    .stApp {
+        background: linear-gradient(135deg, #020b28 0%, #041454 60%, #0a1f6e 100%);
+        min-height: 100vh;
+    }
+    header[data-testid="stHeader"] { background: transparent !important; }
+    label { color: rgba(180,210,255,0.9) !important; font-size:0.85rem !important; }
+    input[type="text"], input[type="password"] {
+        background: rgba(0,30,80,0.6) !important;
+        border: 1px solid rgba(0,180,255,0.3) !important;
+        color: #ffffff !important;
+        border-radius: 8px !important;
+    }
+    .stFormSubmitButton button {
+        background: linear-gradient(90deg, #0050d8, #00a8ff) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 8px !important;
+        font-weight: 600 !important;
+        font-size: 1rem !important;
+    }
+    .stFormSubmitButton button:hover {
+        background: linear-gradient(90deg, #0060f0, #00c0ff) !important;
+        box-shadow: 0 0 20px rgba(0,180,255,0.4) !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+    st.markdown("<br><br>", unsafe_allow_html=True)
     col = st.columns([1, 2, 1])[1]
     with col:
-        st.markdown("## 📑 Base PDF Douanes")
-        st.caption("Connectez-vous pour accéder à l'application")
+        st.markdown("""
+        <div style="
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(0,180,255,0.3);
+            border-radius: 20px;
+            padding: 40px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 40px rgba(0,120,255,0.15);
+            text-align: center;
+            margin-bottom: 24px;
+        ">
+            <div style="font-size:2.2rem; font-weight:800; margin-bottom:6px;">
+                <span style="color:#ffffff;">Douane</span><span style="color:#00c8ff;">Xtract</span>
+            </div>
+            <div style="color:rgba(180,210,255,0.7); font-size:0.82rem; letter-spacing:0.5px;">
+                Base de données — Avis de Classement Tarifaire
+            </div>
+            <hr style="border:none; border-top:1px solid rgba(0,180,255,0.2); margin:20px 0 0 0;">
+        </div>
+        """, unsafe_allow_html=True)
+
         with st.form("login_form"):
-            email    = st.text_input("📧 Email",        placeholder="votre@email.com")
-            password = st.text_input("🔒 Mot de passe", type="password")
-            submit   = st.form_submit_button("Se connecter", type="primary", use_container_width=True)
+            email    = st.text_input("Email",        placeholder="votre@email.com")
+            password = st.text_input("Mot de passe", type="password", placeholder="••••••••")
+            submit   = st.form_submit_button("Se connecter", use_container_width=True)
+
+        st.markdown("""
+        <div style="text-align:center; color:rgba(150,180,220,0.5);
+                    font-size:0.75rem; margin-top:16px;">
+            Problème de connexion ? Contactez l'administrateur.
+        </div>
+        """, unsafe_allow_html=True)
+
         if submit:
             if not email or not password:
                 st.error("Veuillez remplir tous les champs.")
@@ -60,8 +117,6 @@ def show_login():
                     st.rerun()
                 else:
                     st.error("Email ou mot de passe incorrect.")
-        st.caption("Problème de connexion ? Contactez l'administrateur.")
-
 
 # ══════════════════════════════════════════════════════════════════════════════
 #  VERIFIER SESSION
