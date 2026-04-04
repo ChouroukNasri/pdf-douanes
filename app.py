@@ -24,90 +24,16 @@ auth.init_auth()
 
 st.markdown("""
 <style>
-/* ═══ THEME GLOBAL DOUANEXTRACT ═══ */
-.stApp {
-    background: linear-gradient(135deg, #020b28 0%, #041454 60%, #0a1f6e 100%);
-    min-height: 100vh;
-}
-header[data-testid="stHeader"] {
-    background: rgba(2,11,40,0.95) !important;
-    border-bottom: 1px solid rgba(0,180,255,0.15) !important;
-}
-section[data-testid="stSidebar"] {
-    background: rgba(2,11,40,0.97) !important;
-    border-right: 1px solid rgba(0,180,255,0.2) !important;
-}
-section[data-testid="stSidebar"] * { color: rgba(180,215,255,0.85) !important; }
-section[data-testid="stSidebar"] hr { border-color: rgba(0,180,255,0.2) !important; }
-p, span, div, li { color: rgba(200,225,255,0.88) !important; }
-h1, h2, h3 { color: #ffffff !important; }
-label { color: rgba(180,210,255,0.85) !important; }
-input[type="text"], input[type="password"], textarea {
-    background: rgba(0,30,80,0.55) !important;
-    border: 1px solid rgba(0,180,255,0.3) !important;
-    color: #ffffff !important;
-    border-radius: 8px !important;
-}
-input:focus, textarea:focus {
-    border-color: #00c8ff !important;
-    box-shadow: 0 0 0 2px rgba(0,200,255,0.2) !important;
-}
-.stButton button[kind="primary"], .stFormSubmitButton button {
-    background: linear-gradient(90deg, #0050d8, #00a8ff) !important;
-    color: white !important; border: none !important;
-    border-radius: 8px !important; font-weight: 600 !important;
-}
-.stButton button[kind="primary"]:hover, .stFormSubmitButton button:hover {
-    background: linear-gradient(90deg, #0060f0, #00c0ff) !important;
-    box-shadow: 0 0 20px rgba(0,180,255,0.4) !important;
-}
-.stButton button {
-    background: rgba(0,60,160,0.35) !important;
-    border: 1px solid rgba(0,180,255,0.3) !important;
-    color: rgba(180,220,255,0.9) !important;
-    border-radius: 8px !important;
-}
-.stTabs [data-baseweb="tab-list"] {
-    background: rgba(0,20,70,0.6) !important;
-    border-radius: 10px; padding: 4px;
-}
-.stTabs [data-baseweb="tab"] { color: rgba(160,200,255,0.7) !important; }
-.stTabs [aria-selected="true"] {
-    color: #00c8ff !important;
-    background: rgba(0,80,200,0.3) !important;
-    border-radius: 8px !important;
-}
-.streamlit-expanderHeader {
-    background: rgba(0,40,120,0.4) !important;
-    border: 1px solid rgba(0,180,255,0.2) !important;
-    border-radius: 8px !important;
-}
-.streamlit-expanderContent {
-    background: rgba(0,15,55,0.6) !important;
-    border: 1px solid rgba(0,180,255,0.1) !important;
-}
-[data-testid="stMetricLabel"] { color: rgba(150,190,255,0.7) !important; }
-[data-testid="stMetricValue"] { color: #00c8ff !important; font-weight: 700 !important; }
-.stSuccess { background: rgba(0,80,50,0.35) !important; border-left-color: #00e090 !important; }
-.stError   { background: rgba(120,0,0,0.35) !important;  border-left-color: #ff5050  !important; }
-.stWarning { background: rgba(100,60,0,0.35) !important; border-left-color: #ffb800  !important; }
-.stInfo    { background: rgba(0,50,140,0.35) !important; border-left-color: #00c8ff  !important; }
-.stProgress > div > div { background: linear-gradient(90deg,#0050d8,#00c8ff) !important; }
-hr { border-color: rgba(0,180,255,0.15) !important; }
-.main-title  { font-size:2rem; font-weight:700; color:#ffffff !important; }
-.stat-box    { background:rgba(0,60,180,0.2) !important;
-               border:1px solid rgba(0,180,255,0.3) !important;
-               border-radius:10px; padding:16px; text-align:center; }
-.stat-num    { font-size:2rem; font-weight:800; color:#00c8ff !important; }
-.stat-label  { font-size:0.85rem; color:rgba(160,200,255,0.7) !important; }
-.result-card { background:rgba(255,255,255,0.04) !important;
-               border:1px solid rgba(0,180,255,0.2) !important;
-               border-radius:10px; padding:14px; margin-bottom:8px; }
-.badge     { background:linear-gradient(90deg,#0050d8,#00a8ff); color:white !important;
-             border-radius:4px; padding:2px 8px; font-size:0.82rem; font-weight:600; }
-.badge-ndp { background:rgba(0,180,255,0.15); border:1px solid rgba(0,180,255,0.4);
-             color:#00c8ff !important; border-radius:4px; padding:2px 8px;
-             font-size:0.82rem; font-weight:600; }
+    .main-title  { font-size:2rem; font-weight:700; color:#1a3a5c; }
+    .stat-box    { background:#f0f4ff; border-radius:10px; padding:16px; text-align:center; }
+    .stat-num    { font-size:2rem; font-weight:800; color:#1a3a5c; }
+    .stat-label  { font-size:0.85rem; color:#666; }
+    .result-card { background:#fff; border:1px solid #e0e0e0; border-radius:8px;
+                   padding:14px; margin-bottom:8px; }
+    .badge       { background:#1a3a5c; color:white; border-radius:4px;
+                   padding:2px 8px; font-size:0.82rem; font-weight:600; }
+    .badge-ndp   { background:#2d6a4f; color:white; border-radius:4px;
+                   padding:2px 8px; font-size:0.82rem; font-weight:600; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -116,282 +42,81 @@ hr { border-color: rgba(0,180,255,0.15) !important; }
 #  ECRAN DE CONNEXION
 # ══════════════════════════════════════════════════════════════════════════════
 def show_login():
-    import base64, os
-
-    logo_b64 = ""
-    logo_path = os.path.join(os.path.dirname(__file__), "logo.png")
-    if os.path.exists(logo_path):
-        with open(logo_path, "rb") as f:
-            logo_b64 = base64.b64encode(f.read()).decode()
-
     st.markdown("""
     <style>
     .stApp {
-        background: radial-gradient(ellipse at 30% 20%, #0d2060 0%, #020b28 55%, #010818 100%);
+        background: linear-gradient(135deg, #020b28 0%, #041454 60%, #0a1f6e 100%);
         min-height: 100vh;
     }
-    header[data-testid="stHeader"]   { display:none !important; }
-    section[data-testid="stSidebar"] { display:none !important; }
-    #MainMenu, footer                 { display:none !important; }
-    .block-container { padding-top:0 !important; max-width:100% !important; }
-
-    /* Points lumineux en fond */
-    .stApp::before {
-        content: '';
-        position: fixed; top:0; left:0; width:100%; height:100%;
-        pointer-events: none; z-index:0;
-        background-image:
-            radial-gradient(circle, rgba(0,150,255,0.12) 1px, transparent 1px),
-            radial-gradient(circle, rgba(0,80,200,0.08) 1px, transparent 1px);
-        background-size: 55px 55px, 110px 110px;
-        background-position: 0 0, 28px 28px;
-    }
-
-    /* Card unique qui contient tout */
-    .main-card {
-        background: rgba(4,16,60,0.80);
-        border: 1px solid rgba(0,140,255,0.35);
-        border-radius: 28px;
-        padding: 0;
-        overflow: hidden;
-        backdrop-filter: blur(20px);
-        box-shadow: 0 8px 60px rgba(0,80,255,0.25), inset 0 1px 0 rgba(255,255,255,0.06);
-        max-width: 500px;
-        margin: 0 auto;
-    }
-
-    /* Section logo en haut de la card */
-    .card-top {
-        background: radial-gradient(ellipse at 50% 30%, #0d2878 0%, #020f40 100%);
-        border-bottom: 1px solid rgba(0,140,255,0.25);
-        padding: 36px 32px 28px 32px;
-        text-align: center;
-    }
-
-    /* Titre */
-    .brand-title {
-        font-size: 2.4rem;
-        font-weight: 900;
-        letter-spacing: 1px;
-        line-height: 1;
-        margin-top: 14px;
-        margin-bottom: 5px;
-    }
-    .brand-sub {
-        color: rgba(150,190,255,0.7);
-        font-size: 0.78rem;
-        letter-spacing: 0.8px;
-        margin-bottom: 22px;
-    }
-
-    /* 4 features */
-    .features-row {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 0;
-        margin-top: 8px;
-    }
-    .feature-item {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 6px;
-        padding: 0 16px;
-        color: rgba(160,200,255,0.85);
-        font-size: 0.65rem;
-        font-weight: 700;
-        letter-spacing: 1.2px;
-        text-transform: uppercase;
-    }
-    .feature-icon {
-        width: 40px; height: 40px;
-        background: rgba(0,80,200,0.3);
-        border: 1px solid rgba(0,150,255,0.35);
-        border-radius: 10px;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 18px;
-    }
-    .feature-sep {
-        width: 1px; height: 48px;
-        background: rgba(0,150,255,0.2);
-    }
-
-    /* Section formulaire en bas */
-    .card-bottom {
-        padding: 28px 32px 32px 32px;
-    }
-    .auth-header {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        margin-bottom: 20px;
-    }
-    .auth-shield {
-        width: 48px; height: 48px;
-        background: rgba(0,80,200,0.3);
-        border: 1px solid rgba(0,150,255,0.4);
-        border-radius: 13px;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 24px; flex-shrink: 0;
-    }
-    .auth-title-text {
-        font-size: 1.15rem;
-        font-weight: 800;
-        color: #ffffff;
-        margin-bottom: 2px;
-    }
-    .auth-sub-text {
-        font-size: 0.74rem;
-        color: rgba(130,175,230,0.7);
-        line-height: 1.4;
-    }
-
-    /* Inputs */
-    .stTextInput input {
-        background: rgba(0,18,60,0.75) !important;
-        border: 1px solid rgba(0,130,255,0.3) !important;
+    header[data-testid="stHeader"] { background: transparent !important; }
+    label { color: rgba(180,210,255,0.9) !important; font-size:0.85rem !important; }
+    input[type="text"], input[type="password"] {
+        background: rgba(0,30,80,0.6) !important;
+        border: 1px solid rgba(0,180,255,0.3) !important;
         color: #ffffff !important;
-        border-radius: 10px !important;
-        padding: 12px 16px !important;
-        font-size: 0.9rem !important;
+        border-radius: 8px !important;
     }
-    .stTextInput input:focus {
-        border-color: #0088ff !important;
-        box-shadow: 0 0 0 3px rgba(0,136,255,0.18) !important;
-    }
-    .stTextInput input::placeholder { color: rgba(120,160,220,0.5) !important; }
-    .stTextInput label { display:none !important; }
-
-    /* Checkbox */
-    .stCheckbox label span { color: rgba(150,190,255,0.75) !important; font-size:0.8rem !important; }
-
-    /* Bouton */
     .stFormSubmitButton button {
-        background: linear-gradient(90deg, #0050d8 0%, #0099ff 100%) !important;
+        background: linear-gradient(90deg, #0050d8, #00a8ff) !important;
         color: white !important;
         border: none !important;
-        border-radius: 10px !important;
-        font-weight: 700 !important;
+        border-radius: 8px !important;
+        font-weight: 600 !important;
         font-size: 1rem !important;
-        padding: 13px !important;
-        letter-spacing: 0.5px !important;
-        margin-top: 6px !important;
     }
     .stFormSubmitButton button:hover {
-        background: linear-gradient(90deg, #0066ff 0%, #00bbff 100%) !important;
-        box-shadow: 0 4px 28px rgba(0,140,255,0.5) !important;
-        transform: translateY(-1px) !important;
-    }
-
-    .mdp-oublie {
-        text-align: right;
-        color: #0099ff;
-        font-size: 0.78rem;
-        cursor: pointer;
-        padding-top: 6px;
-    }
-    .login-footer {
-        text-align: center;
-        color: rgba(80,120,180,0.4);
-        font-size: 0.68rem;
-        letter-spacing: 0.4px;
-        margin-top: 18px;
+        background: linear-gradient(90deg, #0060f0, #00c0ff) !important;
+        box-shadow: 0 0 20px rgba(0,180,255,0.4) !important;
     }
     </style>
     """, unsafe_allow_html=True)
 
-    st.markdown("<div style='height:28px'></div>", unsafe_allow_html=True)
-    _, col, _ = st.columns([1, 2, 1])
+    st.markdown("<br><br>", unsafe_allow_html=True)
+    col = st.columns([1, 2, 1])[1]
     with col:
-        logo_img = f'<img src="data:image/png;base64,{logo_b64}" style="width:180px; filter:drop-shadow(0 0 20px rgba(0,150,255,0.4));">' if logo_b64 else "📑"
-
-        # ── CARD UNIQUE ──
-        st.markdown(f"""
-        <div class="main-card">
-
-            <!-- HAUT : illustration + titre + features -->
-            <div class="card-top">
-                {logo_img}
-                <div class="brand-title">
-                    <span style="color:#ffffff;">Douane</span><span style="color:#00aaff;">Xtract</span>
-                </div>
-                <div class="brand-sub">Base de données — Avis de Classement Tarifaire</div>
-
-                <div class="features-row">
-                    <div class="feature-item">
-                        <div class="feature-icon">📄</div>
-                        <span>Extraire</span>
-                    </div>
-                    <div class="feature-sep"></div>
-                    <div class="feature-item">
-                        <div class="feature-icon">🗄️</div>
-                        <span>Comprendre</span>
-                    </div>
-                    <div class="feature-sep"></div>
-                    <div class="feature-item">
-                        <div class="feature-icon">📈</div>
-                        <span>Valoriser</span>
-                    </div>
-                    <div class="feature-sep"></div>
-                    <div class="feature-item">
-                        <div class="feature-icon">🛡️</div>
-                        <span>Sécurisé</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- BAS : formulaire -->
-            <div class="card-bottom">
-                <div class="auth-header">
-                    <div class="auth-shield">🔐</div>
-                    <div>
-                        <div class="auth-title-text">Authentification</div>
-                        <div class="auth-sub-text">Accédez à votre base de données<br>en toute sécurité</div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-        """, unsafe_allow_html=True)
-
-        # Formulaire Streamlit (dans la card visuellement)
         st.markdown("""
         <div style="
-            background: rgba(4,16,60,0.80);
-            border: 1px solid rgba(0,140,255,0.35);
-            border-top: none;
-            border-radius: 0 0 28px 28px;
-            padding: 0 32px 32px 32px;
-            max-width: 500px;
-            margin: -16px auto 0 auto;
-            backdrop-filter: blur(20px);
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(0,180,255,0.3);
+            border-radius: 20px;
+            padding: 40px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 40px rgba(0,120,255,0.15);
+            text-align: center;
+            margin-bottom: 24px;
         ">
+            <div style="font-size:2.2rem; font-weight:800; margin-bottom:6px;">
+                <span style="color:#ffffff;">Douane</span><span style="color:#00c8ff;">Xtract</span>
+            </div>
+            <div style="color:rgba(180,210,255,0.7); font-size:0.82rem; letter-spacing:0.5px;">
+                Base de données — Avis de Classement Tarifaire
+            </div>
+            <hr style="border:none; border-top:1px solid rgba(0,180,255,0.2); margin:20px 0 0 0;">
         </div>
         """, unsafe_allow_html=True)
 
         with st.form("login_form"):
-            email    = st.text_input("e", placeholder="✉   User@email.com",  label_visibility="collapsed")
-            password = st.text_input("p", placeholder="🔒   Mot de passe",    type="password", label_visibility="collapsed")
-            c1, c2 = st.columns([1.2, 1])
-            with c1:
-                st.checkbox("Se souvenir de moi")
-            with c2:
-                st.markdown('<div class="mdp-oublie">Mot de passe oublié ?</div>', unsafe_allow_html=True)
-            submit = st.form_submit_button("Se connecter  →", use_container_width=True)
+            email    = st.text_input("Email",        placeholder="votre@email.com")
+            password = st.text_input("Mot de passe", type="password", placeholder="••••••••")
+            submit   = st.form_submit_button("Se connecter", use_container_width=True)
 
-        st.markdown('<div class="login-footer">DouaneXtract v1.0 &nbsp;·&nbsp; Direction Générale des Douanes Tunisiennes</div>', unsafe_allow_html=True)
+        st.markdown("""
+        <div style="text-align:center; color:rgba(150,180,220,0.5);
+                    font-size:0.75rem; margin-top:16px;">
+            Problème de connexion ? Contactez l'administrateur.
+        </div>
+        """, unsafe_allow_html=True)
 
         if submit:
             if not email or not password:
-                st.error("⚠️ Veuillez remplir tous les champs.")
+                st.error("Veuillez remplir tous les champs.")
             else:
                 user = auth.login(email, password)
                 if user:
                     st.session_state["user"] = user
                     st.rerun()
                 else:
-                    st.error("❌ Email ou mot de passe incorrect.")
+                    st.error("Email ou mot de passe incorrect.")
 
 # ══════════════════════════════════════════════════════════════════════════════
 #  VERIFIER SESSION
