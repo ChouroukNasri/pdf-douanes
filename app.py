@@ -254,9 +254,12 @@ module = st.session_state["module"]
 
 
 
-# Charger le logo depuis un fichier PNG et le convertir en Base64
-with open("douane.png", "rb") as f:
+# Charger le logo WEBP
+with open("douane.webp", "rb") as f:
     LOGO_B64 = base64.b64encode(f.read()).decode()
+
+# IMPORTANT : image/webp au lieu de image/png
+logo_html = f'<img src="data:image/webp;base64,{LOGO_B64}" style="width:80px;display:block;margin:0 auto 8px auto;">'
 # ══════════════════════════════════════════════════════════════════════════════
 #  SIDEBAR
 # ══════════════════════════════════════════════════════════════════════════════
