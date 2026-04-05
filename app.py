@@ -258,7 +258,7 @@ with st.sidebar:
     logo_html = f'<img src="data:image/png;base64,{LOGO_B64}" style="width:80px;display:block;margin:0 auto 8px auto;">' if LOGO_B64 else ""
     st.markdown(f"""
     {logo_html}
-<div style="text-align:center;font-size:1.8rem;font-weight:800;margin-bottom:4px;">
+<div style="text-align:center;font-size:2.8rem;font-weight:800;margin-bottom:6px;">
     <span style="color:#fff;">Douane</span><span style="color:#00aaff;">Xtract</span>
 </div>
     <div style="text-align:center;font-size:0.65rem;color:rgba(130,170,220,0.6);margin-bottom:12px;letter-spacing:0.5px;">
