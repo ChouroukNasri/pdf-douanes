@@ -1,0 +1,16 @@
+[33m152f2d3[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m Retour à la version login DouaneXtract
+[33m5f2997f[m fix login HTML ne deborde plus sur dashboard
+[33meac2dc5[m dashboard 3 modules : Tarifaires + Secretariat + OMD
+[33md91fedb[m Retour à la version login DouaneXtract
+[33m820621a[m[33m ([m[1;32mbackup[m[33m)[m login page card unique avec illustration
+[33mccc9fd9[m page login theme DouaneXtract
+[33m3737a97[m login page card unique avec illustration
+[33ma6e0966[m login page card unique avec illustration
+[33m8793243[m page login style DouaneXtract complet
+[33m54ef3c4[m page login style DouaneXtract complet
+[33me3868d0[m test
+[33m1d7291a[m theme DouaneXtract complet + logo login
+[33m065d0de[m page login theme DouaneXtract
+[33m8003640[m ajout champ Usage
+[33m1280132[m fix Dockerfile libgl1
+[33mb691284[m premier commit

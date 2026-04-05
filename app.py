@@ -265,11 +265,7 @@ with st.sidebar:
         Base de données Douanes
     </div>
     """, unsafe_allow_html=True)
-    st.markdown("---")
-    st.markdown(f"👤 **{user['nom']}**")
-    st.caption(user["email"])
-    if is_admin: st.caption("🔑 Administrateur")
-    st.markdown("---")
+
 
     # Navigation principale
     if st.button("🏠  Tableau de bord",  use_container_width=True):
