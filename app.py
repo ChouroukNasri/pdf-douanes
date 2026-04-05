@@ -120,6 +120,14 @@ hr { border-color:rgba(0,180,255,0.15) !important; }
 #  PAGE LOGIN
 # ══════════════════════════════════════════════════════════════════════════════
 def show_login():
+    import base64 as _b64, os as _os
+
+    _logo = ""
+    _lp = _os.path.join(_os.path.dirname(__file__), "logo.png")
+    if _os.path.exists(_lp):
+        with open(_lp,"rb") as _f:
+            _logo = _b64.b64encode(_f.read()).decode()
+
     st.markdown("""
     <style>
     header[data-testid="stHeader"]   { display:none !important; }
@@ -128,86 +136,99 @@ def show_login():
     .block-container { padding-top:0 !important; max-width:100% !important; }
     .stTextInput label { display:none !important; }
     .stCheckbox label span { color:rgba(150,190,255,0.75) !important; font-size:0.8rem !important; }
-    .stFormSubmitButton button {
+    .login-submit button {
         background:linear-gradient(90deg,#0050d8,#0099ff) !important;
         color:white !important; border:none !important; border-radius:10px !important;
         font-weight:700 !important; font-size:1rem !important; padding:13px !important;
     }
-    .stFormSubmitButton button:hover {
+    .login-submit button:hover {
         background:linear-gradient(90deg,#0066ff,#00bbff) !important;
         box-shadow:0 4px 28px rgba(0,140,255,0.5) !important;
     }
     </style>""", unsafe_allow_html=True)
 
-    logo_img = f'<img src="data:image/png;base64,{LOGO_B64}" style="width:170px; filter:drop-shadow(0 0 20px rgba(0,150,255,0.4));">' if LOGO_B64 else ""
+    _img_tag = f'<img src="data:image/png;base64,{_logo}" style="width:160px;filter:drop-shadow(0 0 18px rgba(0,150,255,0.4));">' if _logo else ""
 
-    st.markdown("<div style='height:24px'></div>", unsafe_allow_html=True)
-    _, col, _ = st.columns([1,2,1])
-    with col:
+    st.markdown("<br>", unsafe_allow_html=True)
+    _, _col, _ = st.columns([1, 2, 1])
+    with _col:
+        # Card complète — haut (illustration + titre + features)
         st.markdown(f"""
-        <div style="background:rgba(4,16,60,0.80);border:1px solid rgba(0,140,255,0.35);
-            border-radius:28px;overflow:hidden;backdrop-filter:blur(20px);
-            box-shadow:0 8px 60px rgba(0,80,255,0.25);max-width:480px;margin:0 auto;">
-            <div style="background:radial-gradient(ellipse at 50% 30%,#0d2878 0%,#020f40 100%);
-                border-bottom:1px solid rgba(0,140,255,0.25);padding:32px 32px 24px;text-align:center;">
-                {logo_img}
-                <div style="font-size:2.4rem;font-weight:900;letter-spacing:1px;margin-top:12px;">
-                    <span style="color:#fff;">Douane</span><span style="color:#00aaff;">Xtract</span>
-                </div>
-                <div style="color:rgba(150,190,255,0.7);font-size:0.78rem;letter-spacing:0.8px;margin-bottom:20px;">
-                    Base de données — Avis de Classement Tarifaire
-                </div>
-                <div style="display:flex;justify-content:center;align-items:center;gap:0;">
-                    <div style="display:flex;flex-direction:column;align-items:center;gap:5px;padding:0 14px;">
-                        <div style="width:38px;height:38px;background:rgba(0,80,200,0.3);border:1px solid rgba(0,150,255,0.35);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;">📄</div>
-                        <span style="color:rgba(160,200,255,0.8);font-size:0.62rem;font-weight:700;letter-spacing:1px;">EXTRAIRE</span>
-                    </div>
-                    <div style="width:1px;height:44px;background:rgba(0,150,255,0.2);"></div>
-                    <div style="display:flex;flex-direction:column;align-items:center;gap:5px;padding:0 14px;">
-                        <div style="width:38px;height:38px;background:rgba(0,80,200,0.3);border:1px solid rgba(0,150,255,0.35);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;">🗄️</div>
-                        <span style="color:rgba(160,200,255,0.8);font-size:0.62rem;font-weight:700;letter-spacing:1px;">COMPRENDRE</span>
-                    </div>
-                    <div style="width:1px;height:44px;background:rgba(0,150,255,0.2);"></div>
-                    <div style="display:flex;flex-direction:column;align-items:center;gap:5px;padding:0 14px;">
-                        <div style="width:38px;height:38px;background:rgba(0,80,200,0.3);border:1px solid rgba(0,150,255,0.35);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;">📈</div>
-                        <span style="color:rgba(160,200,255,0.8);font-size:0.62rem;font-weight:700;letter-spacing:1px;">VALORISER</span>
-                    </div>
-                    <div style="width:1px;height:44px;background:rgba(0,150,255,0.2);"></div>
-                    <div style="display:flex;flex-direction:column;align-items:center;gap:5px;padding:0 14px;">
-                        <div style="width:38px;height:38px;background:rgba(0,80,200,0.3);border:1px solid rgba(0,150,255,0.35);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;">🛡️</div>
-                        <span style="color:rgba(160,200,255,0.8);font-size:0.62rem;font-weight:700;letter-spacing:1px;">SÉCURISÉ</span>
-                    </div>
-                </div>
+        <div style="background:rgba(4,16,60,0.82);border:1px solid rgba(0,140,255,0.35);
+            border-radius:24px;overflow:hidden;backdrop-filter:blur(20px);
+            box-shadow:0 8px 60px rgba(0,80,255,0.22);max-width:460px;margin:0 auto;">
+
+          <!-- TOP : logo + titre + features -->
+          <div style="background:radial-gradient(ellipse at 50% 30%,#0d2878,#020f40);
+              border-bottom:1px solid rgba(0,140,255,0.2);padding:28px 28px 20px;text-align:center;">
+            {_img_tag}
+            <div style="font-size:2.2rem;font-weight:900;letter-spacing:1px;margin-top:10px;margin-bottom:4px;">
+              <span style="color:#fff;">Douane</span><span style="color:#00aaff;">Xtract</span>
             </div>
-            <div style="padding:24px 32px 8px 32px;">
-                <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;">
-                    <div style="width:44px;height:44px;background:rgba(0,80,200,0.3);border:1px solid rgba(0,150,255,0.4);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">🔐</div>
-                    <div>
-                        <div style="font-size:1.1rem;font-weight:800;color:#fff;">Authentification</div>
-                        <div style="font-size:0.74rem;color:rgba(130,175,230,0.7);">Accédez à votre base de données en toute sécurité</div>
-                    </div>
-                </div>
+            <div style="color:rgba(150,190,255,0.65);font-size:0.76rem;letter-spacing:0.7px;margin-bottom:18px;">
+              Base de données — Avis de Classement Tarifaire
             </div>
+            <!-- 4 features -->
+            <div style="display:flex;justify-content:center;align-items:center;">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:0 12px;">
+                <div style="width:36px;height:36px;background:rgba(0,80,200,0.3);border:1px solid rgba(0,150,255,0.3);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;">📄</div>
+                <span style="color:rgba(160,200,255,0.8);font-size:0.6rem;font-weight:700;letter-spacing:1px;">EXTRAIRE</span>
+              </div>
+              <div style="width:1px;height:40px;background:rgba(0,150,255,0.18);"></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:0 12px;">
+                <div style="width:36px;height:36px;background:rgba(0,80,200,0.3);border:1px solid rgba(0,150,255,0.3);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;">🗄️</div>
+                <span style="color:rgba(160,200,255,0.8);font-size:0.6rem;font-weight:700;letter-spacing:1px;">COMPRENDRE</span>
+              </div>
+              <div style="width:1px;height:40px;background:rgba(0,150,255,0.18);"></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:0 12px;">
+                <div style="width:36px;height:36px;background:rgba(0,80,200,0.3);border:1px solid rgba(0,150,255,0.3);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;">📈</div>
+                <span style="color:rgba(160,200,255,0.8);font-size:0.6rem;font-weight:700;letter-spacing:1px;">VALORISER</span>
+              </div>
+              <div style="width:1px;height:40px;background:rgba(0,150,255,0.18);"></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:0 12px;">
+                <div style="width:36px;height:36px;background:rgba(0,80,200,0.3);border:1px solid rgba(0,150,255,0.3);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;">🛡️</div>
+                <span style="color:rgba(160,200,255,0.8);font-size:0.6rem;font-weight:700;letter-spacing:1px;">SÉCURISÉ</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- BOTTOM : auth header -->
+          <div style="padding:20px 28px 4px 28px;">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+              <div style="width:42px;height:42px;background:rgba(0,80,200,0.3);border:1px solid rgba(0,150,255,0.4);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🔐</div>
+              <div>
+                <div style="font-size:1.05rem;font-weight:800;color:#fff;">Authentification</div>
+                <div style="font-size:0.72rem;color:rgba(130,175,230,0.65);">Accédez à votre base de données en toute sécurité</div>
+              </div>
+            </div>
+          </div>
         </div>
         """, unsafe_allow_html=True)
 
+        # Formulaire — rendu sous la card visuellement aligné
+        st.markdown("""
+        <div style="background:rgba(4,16,60,0.82);border:1px solid rgba(0,140,255,0.35);
+            border-top:none;border-radius:0 0 24px 24px;padding:0 28px 24px 28px;
+            max-width:460px;margin:-6px auto 0 auto;backdrop-filter:blur(20px);">
+        </div>""", unsafe_allow_html=True)
+
         with st.form("login_form"):
-            email    = st.text_input("e", placeholder="✉   User@email.com",  label_visibility="collapsed")
-            password = st.text_input("p", placeholder="🔒   Mot de passe",    type="password", label_visibility="collapsed")
-            c1, c2 = st.columns([1.2,1])
-            with c1: st.checkbox("Se souvenir de moi")
-            with c2: st.markdown('<div style="text-align:right;padding-top:6px;color:#0099ff;font-size:0.78rem;">Mot de passe oublié ?</div>', unsafe_allow_html=True)
-            submit = st.form_submit_button("Se connecter  →", use_container_width=True)
+            _email = st.text_input("em", placeholder="✉   User@email.com",  label_visibility="collapsed")
+            _pwd   = st.text_input("pw", placeholder="🔒   Mot de passe",    type="password", label_visibility="collapsed")
+            _c1, _c2 = st.columns([1.2, 1])
+            with _c1: st.checkbox("Se souvenir de moi")
+            with _c2: st.markdown('<div style="text-align:right;padding-top:6px;color:#0099ff;font-size:0.77rem;cursor:pointer;">Mot de passe oublié ?</div>', unsafe_allow_html=True)
+            _submit = st.form_submit_button("Se connecter  →", use_container_width=True)
 
-        st.markdown('<div style="text-align:center;color:rgba(80,120,180,0.4);font-size:0.68rem;margin-top:14px;">DouaneXtract v1.0 · Direction Générale des Douanes Tunisiennes</div>', unsafe_allow_html=True)
+        st.markdown('<div style="text-align:center;color:rgba(80,120,180,0.35);font-size:0.67rem;margin-top:12px;max-width:460px;margin-left:auto;margin-right:auto;">DouaneXtract v1.0 &nbsp;·&nbsp; Direction Générale des Douanes Tunisiennes</div>', unsafe_allow_html=True)
 
-        if submit:
-            if not email or not password:
+        if _submit:
+            if not _email or not _pwd:
                 st.error("⚠️ Veuillez remplir tous les champs.")
             else:
-                user = auth.login(email, password)
-                if user:
-                    st.session_state["user"] = user
+                _user = auth.login(_email, _pwd)
+                if _user:
+                    st.session_state["user"] = _user
                     st.rerun()
                 else:
                     st.error("❌ Email ou mot de passe incorrect.")
