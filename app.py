@@ -259,7 +259,8 @@ with open("douane.webp", "rb") as f:
     LOGO_B64 = base64.b64encode(f.read()).decode()
 
 # IMPORTANT : image/webp au lieu de image/png
-logo_html = f'<img src="data:image/webp;base64,{LOGO_B64}" style="width:80px;display:block;margin:0 auto 8px auto;">'
+logo_html = f'<img src="data:image/webp;base64,{LOGO_B64}" style="width:120px;display:block;margin:0 auto 10px auto;border-radius:10px;">'
+
 # ══════════════════════════════════════════════════════════════════════════════
 #  SIDEBAR
 # ══════════════════════════════════════════════════════════════════════════════
