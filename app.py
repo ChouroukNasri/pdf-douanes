@@ -265,7 +265,7 @@ with st.sidebar:
         Base de données Douanes
     </div>
     """, unsafe_allow_html=True)
-     # st.markdown("---")
+    st.markdown("---")
     # Les infos utilisateur ont été supprimées ici
     # st.markdown(f"👤 **{user['nom']}**")
     # st.caption(user["email"])
@@ -285,7 +285,7 @@ with st.sidebar:
         if st.button("👥  Utilisateurs",  use_container_width=True):
             st.session_state["module"] = "users"; st.rerun()
 
-    # st.markdown("---")
+    st.markdown("---")
     # st.markdown(f"**{stats['total']}** documents total")
     # st.markdown("---")
     if st.button("🚪  Se déconnecter", use_container_width=True):
