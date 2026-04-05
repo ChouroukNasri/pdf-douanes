@@ -258,19 +258,19 @@ with st.sidebar:
     logo_html = f'<img src="data:image/png;base64,{LOGO_B64}" style="width:80px;display:block;margin:0 auto 8px auto;">' if LOGO_B64 else ""
     st.markdown(f"""
     {logo_html}
-    <div style="text-align:center;font-size:1.1rem;font-weight:800;margin-bottom:2px;">
-        <span style="color:#fff;">Douane</span><span style="color:#00aaff;">Xtract</span>
-    </div>
+<div style="text-align:center;font-size:1.8rem;font-weight:800;margin-bottom:4px;">
+    <span style="color:#fff;">Douane</span><span style="color:#00aaff;">Xtract</span>
+</div>
     <div style="text-align:center;font-size:0.65rem;color:rgba(130,170,220,0.6);margin-bottom:12px;letter-spacing:0.5px;">
         Base de données Douanes
     </div>
     """, unsafe_allow_html=True)
-    st.markdown("---")
+     # st.markdown("---")
     # Les infos utilisateur ont été supprimées ici
     # st.markdown(f"👤 **{user['nom']}**")
     # st.caption(user["email"])
     # if is_admin: st.caption("🔑 Administrateur")
-    st.markdown("---")
+    #  st.markdown("---")
 
     # Navigation principale
     if st.button("🏠  Tableau de bord",  use_container_width=True):
@@ -285,9 +285,9 @@ with st.sidebar:
         if st.button("👥  Utilisateurs",  use_container_width=True):
             st.session_state["module"] = "users"; st.rerun()
 
-    st.markdown("---")
-    st.markdown(f"**{stats['total']}** documents total")
-    st.markdown("---")
+    # st.markdown("---")
+    # st.markdown(f"**{stats['total']}** documents total")
+    # st.markdown("---")
     if st.button("🚪  Se déconnecter", use_container_width=True):
         del st.session_state["user"]
         st.session_state["module"] = "dashboard"
