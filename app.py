@@ -507,214 +507,346 @@ elif module == "tarifaires":
 # ══════════════════════════════════════════════════════════════════════════════
 elif module == "secretariat":
 
-    page = st.radio("", ["🔍 Recherche","📤 Ajouter","✏️ Modifier"],
+    # CSS THEME BLANC
+    st.markdown("""
+    <style>
+    section[data-testid="stMain"] .block-container { background:#ffffff !important; border-radius:16px; }
+    section[data-testid="stMain"] h1,
+    section[data-testid="stMain"] h2,
+    section[data-testid="stMain"] h3 { color:#0a1628 !important; }
+    section[data-testid="stMain"] p,
+    section[data-testid="stMain"] label,
+    section[data-testid="stMain"] span { color:#374151 !important; }
+    section[data-testid="stMain"] input[type="text"] {
+        background:#f5f7fa !important; border:1.5px solid #d0d8e8 !important;
+        color:#1a2340 !important;
+    }
+    section[data-testid="stMain"] input[type="text"]:focus {
+        border-color:#1a56db !important; box-shadow:0 0 0 3px rgba(26,86,219,0.12) !important;
+    }
+    section[data-testid="stMain"] textarea {
+        background:#f5f7fa !important; color:#1a2340 !important;
+        border:1.5px solid #d0d8e8 !important;
+    }
+    section[data-testid="stMain"] .stButton button[kind="primary"] {
+        background:#1a56db !important; color:white !important;
+        border-radius:8px !important; font-weight:600 !important; border:none !important;
+    }
+    section[data-testid="stMain"] .stButton button[kind="primary"]:hover {
+        background:#1e40af !important;
+    }
+    section[data-testid="stMain"] .stButton button {
+        background:#f3f4f6 !important; border:1px solid #d1d5db !important;
+        color:#374151 !important; border-radius:8px !important;
+    }
+    section[data-testid="stMain"] .stFormSubmitButton button {
+        background:#1a56db !important; color:white !important;
+        border-radius:8px !important; font-weight:600 !important;
+    }
+    section[data-testid="stMain"] .streamlit-expanderHeader {
+        background:#f5f7fa !important; border:1px solid #e5e7eb !important; color:#374151 !important;
+    }
+    section[data-testid="stMain"] .streamlit-expanderContent {
+        background:#fafbfc !important;
+    }
+    section[data-testid="stMain"] [data-testid="stMetricLabel"] { color:#6b7280 !important; }
+    section[data-testid="stMain"] [data-testid="stMetricValue"] { color:#1a56db !important; font-weight:700 !important; }
+    section[data-testid="stMain"] .stSuccess { background:#f0fdf4 !important; border-left-color:#16a34a !important; }
+    section[data-testid="stMain"] .stError   { background:#fef2f2 !important; border-left-color:#dc2626 !important; }
+    section[data-testid="stMain"] .stInfo    { background:#eff6ff !important; border-left-color:#2563eb !important; }
+    section[data-testid="stMain"] .stWarning { background:#fffbeb !important; border-left-color:#d97706 !important; }
+    section[data-testid="stMain"] .stProgress > div > div { background:#1a56db !important; }
+    section[data-testid="stMain"] .stTabs [data-baseweb="tab-list"] { background:#f3f4f6 !important; }
+    section[data-testid="stMain"] .stTabs [data-baseweb="tab"] { color:#6b7280 !important; }
+    section[data-testid="stMain"] .stTabs [aria-selected="true"] { color:#1a56db !important; background:#ffffff !important; }
+    </style>
+    """, unsafe_allow_html=True)
+
+    page = st.radio("", ["🔍 Recherche", "📤 Ajouter fichier xlsx", "✏️ Modifier"],
                     horizontal=True, label_visibility="collapsed")
 
     # ── RECHERCHE ─────────────────────────────────────────────────────────────
     if page == "🔍 Recherche":
-        st.markdown("## Recherche par Numéro de Lettre")
-        st.caption("Entrez le numéro de lettre pour afficher les informations correspondantes.")
-        st.markdown("---")
+        st.markdown("""
+        <h2 style='color:#0a1628;font-size:1.65rem;font-weight:800;margin-bottom:4px;'>
+            Recherche par Numéro de Lettre
+        </h2>
+        <p style='color:#6b7280;font-size:0.9rem;margin-bottom:20px;'>
+            Entrez le numéro de lettre pour afficher les informations correspondantes.
+        </p>
+        """, unsafe_allow_html=True)
 
-        # Barre de recherche principale
+        # Compteur total
+        total = len(db.get_all_secretariat())
+        if total > 0:
+            st.markdown(f"""
+            <div style='display:inline-flex;align-items:center;gap:8px;
+                background:#eff6ff;border:1px solid #bfdbfe;
+                border-radius:8px;padding:6px 14px;margin-bottom:16px;'>
+                <span style='color:#1d4ed8;font-size:0.82rem;'>
+                    ℹ️ Base de données : <b>{total:,}</b> entrées disponibles
+                </span>
+            </div>
+            """, unsafe_allow_html=True)
+
+        # Zone de recherche
+        st.markdown("""
+        <div style='background:#f8fafc;border:1.5px solid #e2e8f0;
+            border-radius:12px;padding:20px 24px;margin-bottom:24px;'>
+            <div style='color:#374151;font-size:0.82rem;font-weight:600;margin-bottom:8px;'>
+                Numéro de lettre
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
         col_inp, col_btn = st.columns([4, 1])
         with col_inp:
-            st.markdown("<div style='color:rgba(160,200,255,0.7);font-size:0.78rem;margin-bottom:4px;'>Numéro de lettre</div>", unsafe_allow_html=True)
             num_lettre = st.text_input("nl", placeholder="ex: L10642A, L106, L10...",
-                                       label_visibility="collapsed",
-                                       key="sec_search")
+                                       label_visibility="collapsed", key="sec_search")
         with col_btn:
-            st.markdown("<div style='height:24px'></div>", unsafe_allow_html=True)
             rechercher = st.button("🔍  Rechercher", type="primary", use_container_width=True)
 
-        # Bouton nouvelle recherche
-        if st.session_state.get("sec_last_query") and st.button("↺  Nouvelle recherche", use_container_width=False):
-            st.session_state["sec_last_query"] = ""
-            st.rerun()
-
-        # Déclencher la recherche
-        if rechercher or num_lettre:
-            st.session_state["sec_last_query"] = num_lettre
-
-        query_val = st.session_state.get("sec_last_query", "")
-
-        if query_val and len(query_val.strip()) >= 2:
-            # Recherche partielle sur numero_avis (= numéro de lettre)
-            all_docs = db.get_all_secretariat()
-            results  = [r for r in all_docs if query_val.strip().upper() in (r.get("numero_avis") or "").upper()]
+        # Lancer recherche
+        if (rechercher or num_lettre) and len(num_lettre.strip()) >= 2:
+            q       = num_lettre.strip().upper()
+            results = db.search_secretariat_by_lettre(q)
+            nb      = len(results)
 
             st.markdown("### Résultat")
 
-            if not results:
+            if nb == 0:
                 st.markdown(f"""
-                <div style='background:rgba(180,0,0,0.15);border:1px solid rgba(255,80,80,0.35);
-                    border-radius:10px;padding:14px 20px;display:flex;align-items:center;gap:12px;'>
-                    <span style='font-size:1.2rem;'>❌</span>
-                    <span style='color:rgba(255,160,160,0.9);font-size:0.9rem;'>
-                        Aucun résultat pour le numéro de lettre : <b>{query_val.strip()}</b>
+                <div style='background:#fef2f2;border:1px solid #fecaca;border-radius:10px;
+                    padding:14px 20px;display:flex;align-items:center;gap:10px;'>
+                    <span>❌</span>
+                    <span style='color:#dc2626;font-size:0.9rem;'>
+                        Aucun résultat pour le numéro de lettre : <b>{q}</b>
                     </span>
                 </div>""", unsafe_allow_html=True)
             else:
-                nb = len(results)
                 st.markdown(f"""
-                <div style='background:rgba(0,160,80,0.15);border:1px solid rgba(0,200,100,0.4);
-                    border-radius:10px;padding:14px 20px;display:flex;align-items:center;gap:12px;margin-bottom:20px;'>
-                    <span style='font-size:1.2rem;'>✅</span>
-                    <span style='color:rgba(150,240,180,0.9);font-size:0.9rem;'>
-                        <b>{nb}</b> résultat(s) trouvé(s) pour le numéro de lettre : <b>{query_val.strip()}</b>
+                <div style='background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;
+                    padding:14px 20px;display:flex;align-items:center;gap:10px;margin-bottom:20px;'>
+                    <span>✅</span>
+                    <span style='color:#15803d;font-size:0.9rem;'>
+                        <b>{nb}</b> résultat(s) trouvé(s) pour le numéro de lettre : <b>{q}</b>
                     </span>
                 </div>""", unsafe_allow_html=True)
 
                 for doc in results:
-                    num_val  = doc.get("numero_avis")  or "—"
-                    date_val = doc.get("date_avis")    or "—"
-                    ref_val  = doc.get("reference")    or "—"
-                    obj_val  = doc.get("objet")        or "—"
-                    dest_val = doc.get("destinataire") or "—"
-                    file_val = doc.get("filename")     or ""
+                    num_val  = doc.get("numero_lettre") or "—"
+                    date_val = doc.get("date_avis")     or "—"
+                    hs_val   = doc.get("hs_code")       or "—"
+                    desc_fr  = doc.get("desc_fr")       or "—"
+                    desc_en  = doc.get("desc_en")       or "—"
 
-                    # Surligner la partie recherchée dans le numéro
+                    # Surligner la partie recherchée
                     num_display = num_val
-                    q = query_val.strip().upper()
-                    if q in num_val.upper():
-                        idx = num_val.upper().find(q)
+                    idx = num_val.upper().find(q)
+                    if idx >= 0:
                         num_display = (
                             num_val[:idx] +
-                            f'<span style="background:rgba(0,180,255,0.3);border-radius:3px;padding:0 2px;">{num_val[idx:idx+len(q)]}</span>' +
+                            '<span style="background:#dbeafe;border-radius:3px;padding:0 2px;'
+                            'font-weight:800;color:#1d4ed8;">' +
+                            num_val[idx:idx+len(q)] + '</span>' +
                             num_val[idx+len(q):]
                         )
 
+                    desc_en_html = ""
+                    if desc_en and desc_en not in ("—","nan","None"):
+                        desc_en_html = (
+                            '<div style="padding:0 22px 16px;">'
+                            '<details><summary style="color:#6b7280;font-size:0.78rem;cursor:pointer;">'
+                            'Voir description en anglais</summary>'
+                            '<div style="background:#f8fafc;border-radius:6px;padding:10px 14px;'
+                            'margin-top:6px;color:#4b5563;font-size:0.82rem;line-height:1.6;">' +
+                            str(desc_en) + '</div></details></div>'
+                        )
+
                     st.markdown(f"""
-                    <div style='background:rgba(4,20,70,0.65);border:1px solid rgba(0,150,255,0.25);
-                        border-radius:14px;overflow:hidden;margin-bottom:16px;'>
+                    <div style='background:#ffffff;border:1.5px solid #e2e8f0;
+                        border-radius:14px;overflow:hidden;margin-bottom:20px;
+                        box-shadow:0 2px 10px rgba(0,0,0,0.06);'>
 
-                        <!-- En-tête 3 colonnes -->
                         <div style='display:grid;grid-template-columns:1fr 1px 1fr 1px 1fr;
-                            border-bottom:1px solid rgba(0,140,255,0.2);'>
-
-                            <div style='padding:16px 20px;'>
-                                <div style='color:rgba(140,180,230,0.55);font-size:0.65rem;
-                                    letter-spacing:0.8px;margin-bottom:6px;'>NUMÉRO DE LETTRE</div>
-                                <div style='color:#00aaff;font-weight:800;font-size:1.15rem;'>{num_display}</div>
+                            background:#f8fafc;border-bottom:1.5px solid #e2e8f0;'>
+                            <div style='padding:16px 22px;'>
+                                <div style='color:#9ca3af;font-size:0.62rem;letter-spacing:1px;
+                                    text-transform:uppercase;margin-bottom:6px;'>NUMÉRO DE LETTRE</div>
+                                <div style='color:#1a56db;font-weight:800;font-size:1.2rem;'>{num_display}</div>
                             </div>
-
-                            <div style='background:rgba(0,140,255,0.15);'></div>
-
-                            <div style='padding:16px 20px;'>
-                                <div style='color:rgba(140,180,230,0.55);font-size:0.65rem;
-                                    letter-spacing:0.8px;margin-bottom:6px;'>📅 DATE</div>
-                                <div style='color:#ffffff;font-weight:700;font-size:1.05rem;'>📅 {date_val}</div>
+                            <div style='background:#e2e8f0;'></div>
+                            <div style='padding:16px 22px;'>
+                                <div style='color:#9ca3af;font-size:0.62rem;letter-spacing:1px;
+                                    text-transform:uppercase;margin-bottom:6px;'>📅 DATE</div>
+                                <div style='color:#111827;font-weight:700;font-size:1.05rem;'>📅 {date_val}</div>
                             </div>
-
-                            <div style='background:rgba(0,140,255,0.15);'></div>
-
-                            <div style='padding:16px 20px;'>
-                                <div style='color:rgba(140,180,230,0.55);font-size:0.65rem;
-                                    letter-spacing:0.8px;margin-bottom:6px;'>🏷 RÉFÉRENCE</div>
-                                <div style='color:#ffffff;font-weight:700;font-size:1.05rem;'>🏷 {ref_val}</div>
+                            <div style='background:#e2e8f0;'></div>
+                            <div style='padding:16px 22px;'>
+                                <div style='color:#9ca3af;font-size:0.62rem;letter-spacing:1px;
+                                    text-transform:uppercase;margin-bottom:6px;'>🏷 HS CODE</div>
+                                <div style='color:#111827;font-weight:700;font-size:1.05rem;'>🏷 {hs_val}</div>
                             </div>
                         </div>
 
-                        <!-- Corps : Objet -->
-                        <div style='padding:16px 20px;'>
-                            <div style='color:rgba(140,180,230,0.5);font-size:0.68rem;
-                                letter-spacing:0.8px;margin-bottom:8px;'>OBJET</div>
-                            <div style='background:rgba(0,180,255,0.06);border:1px solid rgba(0,160,255,0.15);
-                                border-radius:8px;padding:14px 16px;
-                                color:rgba(210,230,255,0.9);font-size:0.88rem;line-height:1.6;'>
-                                {obj_val}
+                        <div style='padding:18px 22px;'>
+                            <div style='color:#9ca3af;font-size:0.62rem;letter-spacing:1px;
+                                text-transform:uppercase;margin-bottom:8px;'>DESCRIPTION EN FRANÇAIS</div>
+                            <div style='background:#fefce8;border:1px solid #fde68a;
+                                border-radius:8px;padding:14px 18px;
+                                color:#374151;font-size:0.875rem;line-height:1.7;'>
+                                {desc_fr}
                             </div>
                         </div>
 
-                        <!-- Pied : destinataire + fichier -->
-                        <div style='display:flex;justify-content:space-between;align-items:center;
-                            padding:10px 20px 14px;border-top:1px solid rgba(0,140,255,0.12);'>
-                            <span style='color:rgba(150,190,255,0.6);font-size:0.78rem;'>
-                                👤 {dest_val}
-                            </span>
-                            <span style='color:rgba(120,160,210,0.45);font-size:0.72rem;'>📄 {file_val}</span>
-                        </div>
+                        {desc_en_html}
+
                     </div>
                     """, unsafe_allow_html=True)
 
-                    with st.expander("📄 Voir texte OCR complet"):
-                        st.text(doc.get("full_text","")[:3000])
-
-                # Boutons export + nouvelle recherche
-                st.markdown("")
-                bc1, bc2, bc3 = st.columns([2,1,1])
+                # Boutons bas
+                _, bc2, bc3 = st.columns([2, 1, 1])
                 with bc2:
-                    df_exp = pd.DataFrame(results)[[
-                        "numero_avis","date_avis","reference","objet","destinataire","filename","upload_date"
-                    ]].rename(columns={
-                        "numero_avis":"N° Lettre","date_avis":"Date","reference":"Référence",
-                        "objet":"Objet","destinataire":"Destinataire",
-                        "filename":"Fichier","upload_date":"Ajouté le"
-                    })
-                    csv = df_exp.to_csv(index=False,encoding="utf-8-sig").encode("utf-8-sig")
-                    st.download_button("⬇️  Exporter le résultat", data=csv,
-                        file_name=f"secretariat_{query_val.strip()}.csv",
-                        mime="text/csv", use_container_width=True)
+                    import pandas as _pd
+                    df_exp = _pd.DataFrame(results)[['numero_lettre','date_avis','hs_code','desc_fr','desc_en']]
+                    df_exp.columns = ['N° Lettre','Date','HS Code','Description FR','Description EN']
+                    csv_data = df_exp.to_csv(index=False, encoding="utf-8-sig").encode("utf-8-sig")
+                    st.download_button("⬇️  Exporter le résultat", data=csv_data,
+                        file_name=f"secretariat_{q}.csv", mime="text/csv", use_container_width=True)
                 with bc3:
-                    if st.button("↺  Nouvelle recherche", use_container_width=True, key="new_search"):
-                        st.session_state["sec_last_query"] = ""
+                    if st.button("↺  Nouvelle recherche", use_container_width=True, key="sec_new"):
                         st.rerun()
 
-        elif query_val and len(query_val.strip()) < 2:
+        elif num_lettre and len(num_lettre.strip()) < 2:
             st.info("✏️ Entrez au moins 2 caractères pour lancer la recherche.")
 
-    # ── AJOUTER ──────────────────────────────────────────────────────────────
-    elif page == "📤 Ajouter":
-        st.markdown("## 📤 Ajouter des documents Secrétariat")
+        elif total == 0:
+            st.warning("⚠️ Aucune donnée en base. Ajoutez un fichier .xlsx via 'Ajouter fichier xlsx'.")
+
+    # ── AJOUTER XLSX ──────────────────────────────────────────────────────────
+    elif page == "📤 Ajouter fichier xlsx":
+        st.markdown("""
+        <h2 style='color:#0a1628;font-size:1.5rem;font-weight:800;margin-bottom:8px;'>
+            📤 Ajouter un fichier Excel
+        </h2>
+        """, unsafe_allow_html=True)
         st.markdown("---")
-        files = st.file_uploader("Glissez vos PDFs", type=["pdf"], accept_multiple_files=True)
-        if files:
-            st.markdown(f"**{len(files)} fichier(s) sélectionné(s)**")
-            if st.button("🚀 Lancer l'extraction OCR", type="primary"):
-                progress = st.progress(0); status = st.empty()
-                for i,f in enumerate(files):
-                    status.info(f"⏳ {f.name} ({i+1}/{len(files)})")
-                    dest = os.path.join(PDF_DIR, f.name)
-                    with open(dest,"wb") as fp: fp.write(f.getbuffer())
-                    data = ocr.process_pdf(dest, f.name)
-                    db.insert_secretariat(data)
-                    progress.progress((i+1)/len(files))
-                status.success(f"✅ {len(files)} document(s) ajouté(s) !")
-                st.rerun()
+
+        st.info("""
+        **Format attendu du fichier Excel :**
+        - Colonne **LETTER NUMBER** — numéro de lettre (ex: L10642A)
+        - Colonne **DATE** — date de l'avis (ex: 2023.06.23)
+        - Colonne **HS CODE** — code SH (ex: 3924.90)
+        - Colonne **DESCRIPTION EN FRANCAIS** — description en français
+        - Colonne **DESCRIPTION IN ENGLISH** — description en anglais (optionnel)
+        """)
+
+        uploaded = st.file_uploader("Glisser votre fichier Excel (.xlsx)", type=["xlsx","xls"])
+
+        if uploaded:
+            import pandas as _pd
+            try:
+                df = _pd.read_excel(uploaded)
+                # Nettoyer ligne d'avertissement si présente
+                df = df[
+                    df['LETTER NUMBER'].notna() &
+                    ~df['LETTER NUMBER'].astype(str).str.contains('This information', na=False)
+                ].reset_index(drop=True)
+
+                # Vérifier colonnes requises
+                required = ['LETTER NUMBER','DATE','HS CODE','DESCRIPTION EN FRANCAIS']
+                missing  = [c for c in required if c not in df.columns]
+                if missing:
+                    st.error(f"❌ Colonnes manquantes : {missing}")
+                else:
+                    st.success(f"✅ Fichier valide — **{len(df):,}** lignes détectées")
+                    st.markdown(f"**Aperçu (5 premières lignes) :**")
+                    st.dataframe(df.head(5)[['LETTER NUMBER','DATE','HS CODE','DESCRIPTION EN FRANCAIS']], 
+                                 use_container_width=True, hide_index=True)
+
+                    # Options import
+                    col_opt1, col_opt2 = st.columns(2)
+                    skip_existing = col_opt1.checkbox("Ignorer les numéros déjà en base", value=True)
+
+                    if st.button("🚀 Importer dans la base", type="primary"):
+                        existing_nums = {r["numero_lettre"] for r in db.get_all_secretariat()}
+                        progress = st.progress(0); status = st.empty()
+                        ok_count = skipped = 0
+
+                        for i, row in df.iterrows():
+                            num = str(row.get('LETTER NUMBER','')).strip()
+                            if skip_existing and num in existing_nums:
+                                skipped += 1
+                            else:
+                                data = {
+                                    "filename":      uploaded.name,
+                                    "numero_lettre": num,
+                                    "date_avis":     str(row.get('DATE','')) if _pd.notna(row.get('DATE')) else "",
+                                    "hs_code":       str(row.get('HS CODE','')) if _pd.notna(row.get('HS CODE')) else "",
+                                    "desc_fr":       str(row.get('DESCRIPTION EN FRANCAIS','')) if _pd.notna(row.get('DESCRIPTION EN FRANCAIS')) else "",
+                                    "desc_en":       str(row.get('DESCRIPTION IN ENGLISH','')) if _pd.notna(row.get('DESCRIPTION IN ENGLISH')) else "",
+                                }
+                                db.insert_secretariat(data)
+                                existing_nums.add(num)
+                                ok_count += 1
+                            progress.progress(min((i+1)/len(df), 1.0))
+                            if (i+1) % 100 == 0:
+                                status.info(f"⏳ {i+1}/{len(df)} lignes traitées...")
+
+                        progress.progress(1.0)
+                        status.success(f"✅ Import terminé — **{ok_count}** ajoutés · **{skipped}** ignorés")
+                        st.rerun()
+
+            except Exception as e:
+                st.error(f"❌ Erreur lors de la lecture : {e}")
 
     # ── MODIFIER ──────────────────────────────────────────────────────────────
     elif page == "✏️ Modifier":
-        st.markdown("## ✏️ Modifier / Supprimer")
+        st.markdown("""
+        <h2 style='color:#0a1628;font-size:1.5rem;font-weight:800;margin-bottom:8px;'>
+            ✏️ Modifier / Supprimer
+        </h2>
+        """, unsafe_allow_html=True)
         st.markdown("---")
+
         docs = db.get_all_secretariat()
         if not docs:
             st.info("Aucun document disponible.")
         else:
-            opts = {f"[{d['id']}] {d['filename']}": d['id'] for d in docs}
-            sel  = st.selectbox("Choisir un document", list(opts.keys()))
-            doc  = db.get_secretariat_by_id(opts[sel])
-            tab_e, tab_o, tab_d = st.tabs(["✏️ Modifier","📄 OCR","🗑️ Supprimer"])
-            with tab_e:
-                with st.form("edit_sec"):
-                    c1,c2,c3 = st.columns(3)
-                    na = c1.text_input("N° Lettre / Avis", value=doc.get("numero_avis") or "")
-                    da = c2.text_input("Date",             value=doc.get("date_avis")   or "")
-                    re = c3.text_input("Référence",        value=doc.get("reference")   or "")
-                    ob = st.text_area("Objet",             value=doc.get("objet")       or "", height=100)
-                    de = st.text_input("Destinataire",     value=doc.get("destinataire") or "")
-                    if st.form_submit_button("💾 Enregistrer", type="primary"):
-                        db.update_secretariat(opts[sel],{
-                            "numero_avis":na,"objet":ob,
-                            "date_avis":da,"destinataire":de,"reference":re})
-                        st.success("✅ Mis à jour !"); st.rerun()
-            with tab_o:
-                st.text_area("Texte OCR complet", value=doc.get("full_text") or "", height=400)
-            with tab_d:
-                st.warning(f"⚠️ Supprimer **{doc['filename']}** ?")
-                if st.checkbox("Je confirme la suppression"):
-                    if st.button("🗑️ Supprimer définitivement", type="primary"):
-                        db.delete_secretariat(opts[sel])
-                        st.success("Document supprimé."); st.rerun()
+            # Recherche rapide pour trouver le doc à modifier
+            q_mod = st.text_input("Rechercher un numéro de lettre à modifier",
+                                   placeholder="ex: L10642A")
+            if q_mod:
+                docs = [d for d in docs if q_mod.upper() in (d.get("numero_lettre") or "").upper()]
+
+            if not docs:
+                st.warning("Aucun résultat.")
+            else:
+                opts = {f"[{d['id']}] {d.get('numero_lettre','')} — {d.get('date_avis','')}": d['id'] for d in docs}
+                sel  = st.selectbox("Choisir une entrée", list(opts.keys()))
+                doc  = db.get_secretariat_by_id(opts[sel])
+
+                tab_e, tab_d = st.tabs(["✏️ Modifier","🗑️ Supprimer"])
+                with tab_e:
+                    with st.form("edit_sec"):
+                        c1,c2,c3 = st.columns(3)
+                        nl = c1.text_input("N° Lettre", value=doc.get("numero_lettre") or "")
+                        da = c2.text_input("Date",      value=doc.get("date_avis")     or "")
+                        hs = c3.text_input("HS Code",   value=doc.get("hs_code")       or "")
+                        df_fr = st.text_area("Description FR", value=doc.get("desc_fr") or "", height=100)
+                        df_en = st.text_area("Description EN", value=doc.get("desc_en") or "", height=80)
+                        if st.form_submit_button("💾 Enregistrer", type="primary"):
+                            db.update_secretariat(opts[sel],{
+                                "numero_lettre":nl,"date_avis":da,"hs_code":hs,
+                                "desc_fr":df_fr,"desc_en":df_en})
+                            st.success("✅ Mis à jour !"); st.rerun()
+                with tab_d:
+                    st.warning(f"⚠️ Supprimer l'entrée **{doc.get('numero_lettre')}** ?")
+                    if st.checkbox("Je confirme la suppression"):
+                        if st.button("🗑️ Supprimer", type="primary"):
+                            db.delete_secretariat(opts[sel])
+                            st.success("Supprimé."); st.rerun()
+
 
 # ══════════════════════════════════════════════════════════════════════════════
 #  MODULE 3 — DECISIONS OMD

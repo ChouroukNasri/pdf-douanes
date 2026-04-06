@@ -37,14 +37,12 @@ def init_db():
         CREATE TABLE IF NOT EXISTS secretariat (
             id           INTEGER PRIMARY KEY AUTOINCREMENT,
             filename     TEXT NOT NULL,
-            filepath     TEXT,
-            full_text    TEXT,
             upload_date  TEXT,
-            numero_avis  TEXT,
-            objet        TEXT,
+            numero_lettre TEXT,
             date_avis    TEXT,
-            destinataire TEXT,
-            reference    TEXT
+            hs_code      TEXT,
+            desc_fr      TEXT,
+            desc_en      TEXT
         )
     """)
 
@@ -74,7 +72,7 @@ def init_db():
     # FTS pour secretariat
     c.execute("""
         CREATE VIRTUAL TABLE IF NOT EXISTS secretariat_fts USING fts5(
-            full_text, filename, numero_avis, objet, destinataire, reference,
+            numero_lettre, date_avis, hs_code, desc_fr, desc_en, filename,
             content=secretariat, content_rowid=id
         )
     """)
@@ -104,12 +102,12 @@ def init_db():
 
     # Triggers secretariat
     c.execute("""CREATE TRIGGER IF NOT EXISTS sec_ai AFTER INSERT ON secretariat BEGIN
-        INSERT INTO secretariat_fts(rowid,full_text,filename,numero_avis,objet,destinataire,reference)
-        VALUES(new.id,new.full_text,new.filename,new.numero_avis,new.objet,new.destinataire,new.reference);
+        INSERT INTO secretariat_fts(rowid,numero_lettre,date_avis,hs_code,desc_fr,desc_en,filename)
+        VALUES(new.id,new.numero_lettre,new.date_avis,new.hs_code,new.desc_fr,new.desc_en,new.filename);
     END""")
     c.execute("""CREATE TRIGGER IF NOT EXISTS sec_ad AFTER DELETE ON secretariat BEGIN
-        INSERT INTO secretariat_fts(secretariat_fts,rowid,full_text,filename,numero_avis,objet,destinataire,reference)
-        VALUES('delete',old.id,old.full_text,old.filename,old.numero_avis,old.objet,old.destinataire,old.reference);
+        INSERT INTO secretariat_fts(secretariat_fts,rowid,numero_lettre,date_avis,hs_code,desc_fr,desc_en,filename)
+        VALUES('delete',old.id,old.numero_lettre,old.date_avis,old.hs_code,old.desc_fr,old.desc_en,old.filename);
     END""")
 
     # Triggers OMD
@@ -184,15 +182,17 @@ def delete_document(doc_id):
 # ══════════════════════════════════════════════════════════════════════════════
 def insert_secretariat(data):
     conn = get_connection(); c = conn.cursor()
-    c.execute("""INSERT INTO secretariat(filename,filepath,full_text,upload_date,
-        numero_avis,objet,date_avis,destinataire,reference)
-        VALUES(:filename,:filepath,:full_text,:upload_date,
-        :numero_avis,:objet,:date_avis,:destinataire,:reference)""", {
-        "filename":data.get("filename",""), "filepath":data.get("filepath",""),
-        "full_text":data.get("full_text",""), "upload_date":datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "numero_avis":data.get("numero_avis",""), "objet":data.get("objet",""),
-        "date_avis":data.get("date_avis",""), "destinataire":data.get("destinataire",""),
-        "reference":data.get("reference",""),
+    c.execute("""INSERT INTO secretariat(filename,upload_date,
+        numero_lettre,date_avis,hs_code,desc_fr,desc_en)
+        VALUES(:filename,:upload_date,
+        :numero_lettre,:date_avis,:hs_code,:desc_fr,:desc_en)""", {
+        "filename":      data.get("filename",""),
+        "upload_date":   datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "numero_lettre": data.get("numero_lettre",""),
+        "date_avis":     data.get("date_avis",""),
+        "hs_code":       data.get("hs_code",""),
+        "desc_fr":       data.get("desc_fr",""),
+        "desc_en":       data.get("desc_en",""),
     })
     doc_id = c.lastrowid; conn.commit(); conn.close(); return doc_id
 
@@ -202,7 +202,13 @@ def search_secretariat(query):
         c.execute("SELECT d.* FROM secretariat d JOIN secretariat_fts f ON d.id=f.rowid WHERE secretariat_fts MATCH ? ORDER BY rank",(query,))
     except:
         like = "%"+query+"%"
-        c.execute("SELECT * FROM secretariat WHERE full_text LIKE ? OR numero_avis LIKE ? OR objet LIKE ? OR destinataire LIKE ? OR reference LIKE ?",(like,like,like,like,like))
+        c.execute("SELECT * FROM secretariat WHERE numero_lettre LIKE ? OR hs_code LIKE ? OR desc_fr LIKE ? OR desc_en LIKE ?",(like,like,like,like))
+    results = [dict(r) for r in c.fetchall()]; conn.close(); return results
+
+def search_secretariat_by_lettre(query):
+    conn = get_connection(); c = conn.cursor()
+    like = "%"+query.upper()+"%"
+    c.execute("SELECT * FROM secretariat WHERE UPPER(numero_lettre) LIKE ? ORDER BY date_avis DESC",(like,))
     results = [dict(r) for r in c.fetchall()]; conn.close(); return results
 
 def get_all_secretariat():
@@ -217,9 +223,9 @@ def get_secretariat_by_id(doc_id):
 
 def update_secretariat(doc_id, data):
     conn = get_connection(); c = conn.cursor()
-    c.execute("""UPDATE secretariat SET numero_avis=:numero_avis,objet=:objet,
-        date_avis=:date_avis,destinataire=:destinataire,reference=:reference WHERE id=:id""",
-        {**data,"id":doc_id})
+    c.execute("""UPDATE secretariat SET numero_lettre=:numero_lettre,
+        date_avis=:date_avis,hs_code=:hs_code,desc_fr=:desc_fr,desc_en=:desc_en
+        WHERE id=:id""", {**data,"id":doc_id})
     conn.commit(); conn.close()
 
 def delete_secretariat(doc_id):
