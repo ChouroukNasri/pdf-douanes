@@ -251,12 +251,18 @@ def show_login():
           <div style="background:radial-gradient(ellipse at 50% 30%,#0d2878,#020f40);
               border-bottom:1px solid rgba(0,140,255,0.2);padding:28px 28px 20px;text-align:center;">
             {_img_tag}
-            <div style="font-size:2.2rem;font-weight:900;letter-spacing:1px;margin-top:10px;margin-bottom:4px;">
-              <span style="color:#ffffff !important;">Douane</span><span style="color:#00aaff !important;">Xtract</span>
-            </div>
-            <div style="color:rgba(150,190,255,0.65) !important;font-size:0.76rem;letter-spacing:0.7px;margin-bottom:18px;">
-              Base de données — Avis de Classement Tarifaire
-            </div>
+<div style="text-align:center; line-height:1.2;">
+    
+    <div style="font-size:1.8rem; font-weight:900; letter-spacing:0.5px; margin-bottom:4px;">
+        <span style="color:#ffffff;">Douane</span>
+        <span style="color:#60a5fa;">Xtract</span>
+    </div>
+
+    <div style="font-size:0.75rem; color:rgba(148,163,184,0.85); letter-spacing:0.6px;">
+        Base de données — Avis de Classement Tarifaire
+    </div>
+
+</div>
             <div style="display:flex;justify-content:center;align-items:center;">
               <div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:0 12px;">
                 <div style="width:36px;height:36px;background:rgba(0,80,200,0.3);border:1px solid rgba(0,150,255,0.3);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;">📄</div>
