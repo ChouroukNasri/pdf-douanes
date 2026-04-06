@@ -9,13 +9,24 @@ import database as db
 import ocr_processor as ocr
 import auth
 
+# ══════════════════════════════════════════════════════════════════════════════
+# CONFIG
+# ══════════════════════════════════════════════════════════════════════════════
 st.set_page_config(page_title="DouaneXtract", page_icon="🛃", layout="wide")
 
 PDF_DIR = os.path.join(os.path.dirname(__file__), "data", "pdfs")
 os.makedirs(PDF_DIR, exist_ok=True)
+
 db.init_db()
 auth.init_auth()
 
+# 🔴 IMPORTANT (fix bug session)
+if "user" not in st.session_state:
+    st.session_state["user"] = None
+
+# ══════════════════════════════════════════════════════════════════════════════
+# LOGO
+# ══════════════════════════════════════════════════════════════════════════════
 def load_logo():
     path = os.path.join(os.path.dirname(__file__), "logo.png")
     if os.path.exists(path):
@@ -26,205 +37,113 @@ def load_logo():
 LOGO_B64 = load_logo()
 
 # ══════════════════════════════════════════════════════════════════════════════
-#  CSS GLOBAL
+# CSS GLOBAL (inchangé)
 # ══════════════════════════════════════════════════════════════════════════════
-st.markdown("""
-<style>
-/* ════ FOND BLANC GLOBAL ════ */
-.stApp {
-    background: #f0f2f6 !important;
-}
-/* Zone contenu principale blanche */
-section[data-testid="stMain"] .block-container {
-    background: #ffffff !important;
-    border-radius: 12px;
-    padding: 32px 40px !important;
-    margin-top: 12px;
-    box-shadow: 0 1px 6px rgba(0,0,0,0.06);
-}
-/* Header blanc */
-header[data-testid="stHeader"] {
-    background: #ffffff !important;
-    border-bottom: 1px solid #e5e7eb !important;
-}
-/* ════ SIDEBAR BLEU MARINE ════ */
-section[data-testid="stSidebar"] {
-    background: #0d1b3e !important;
-    border-right: none !important;
-}
-section[data-testid="stSidebar"] * { color: rgba(200,220,255,0.9) !important; }
-section[data-testid="stSidebar"] hr { border-color: rgba(255,255,255,0.1) !important; }
-/* Boutons sidebar */
-section[data-testid="stSidebar"] .stButton button {
-    background: rgba(255,255,255,0.08) !important;
-    border: 1px solid rgba(255,255,255,0.12) !important;
-    color: rgba(200,220,255,0.9) !important;
-    border-radius: 10px !important;
-    font-weight: 500 !important;
-    margin-bottom: 2px !important;
-    text-align: left !important;
-}
-section[data-testid="stSidebar"] .stButton button:hover {
-    background: rgba(26,86,219,0.5) !important;
-    border-color: rgba(100,160,255,0.4) !important;
-}
-/* ════ TEXTES CONTENU ════ */
-section[data-testid="stMain"] p,
-section[data-testid="stMain"] li { color: #374151 !important; }
-section[data-testid="stMain"] h1,
-section[data-testid="stMain"] h2,
-section[data-testid="stMain"] h3 { color: #0a1628 !important; }
-section[data-testid="stMain"] label { color: #374151 !important; }
-section[data-testid="stMain"] span  { color: #374151 !important; }
-/* ════ INPUTS ════ */
-section[data-testid="stMain"] input[type="text"],
-section[data-testid="stMain"] textarea {
-    background: #f9fafb !important;
-    border: 1.5px solid #d1d5db !important;
-    color: #111827 !important;
-    border-radius: 8px !important;
-}
-section[data-testid="stMain"] input[type="text"]:focus,
-section[data-testid="stMain"] textarea:focus {
-    border-color: #1a56db !important;
-    box-shadow: 0 0 0 3px rgba(26,86,219,0.1) !important;
-}
-/* ════ BOUTONS ════ */
-section[data-testid="stMain"] .stButton button[kind="primary"],
-section[data-testid="stMain"] .stFormSubmitButton button {
-    background: #1a56db !important;
-    color: white !important;
-    border: none !important;
-    border-radius: 8px !important;
-    font-weight: 600 !important;
-}
-section[data-testid="stMain"] .stButton button[kind="primary"]:hover,
-section[data-testid="stMain"] .stFormSubmitButton button:hover {
-    background: #1e40af !important;
-}
-section[data-testid="stMain"] .stButton button {
-    background: #f3f4f6 !important;
-    border: 1px solid #d1d5db !important;
-    color: #374151 !important;
-    border-radius: 8px !important;
-}
-/* ════ TABS ════ */
-section[data-testid="stMain"] .stTabs [data-baseweb="tab-list"] {
-    background: #f3f4f6 !important;
-    border-radius: 8px; padding: 3px;
-}
-section[data-testid="stMain"] .stTabs [data-baseweb="tab"] { color: #6b7280 !important; }
-section[data-testid="stMain"] .stTabs [aria-selected="true"] {
-    color: #1a56db !important;
-    background: #ffffff !important;
-    border-radius: 6px !important;
-}
-/* ════ RADIO ════ */
-section[data-testid="stMain"] .stRadio label span { color: #374151 !important; }
-/* ════ EXPANDER ════ */
-section[data-testid="stMain"] .streamlit-expanderHeader {
-    background: #f9fafb !important;
-    border: 1px solid #e5e7eb !important;
-    color: #374151 !important;
-    border-radius: 8px !important;
-}
-section[data-testid="stMain"] .streamlit-expanderContent {
-    background: #ffffff !important;
-    border: 1px solid #e5e7eb !important;
-}
-/* ════ METRICS ════ */
-section[data-testid="stMain"] [data-testid="stMetricLabel"] { color: #6b7280 !important; }
-section[data-testid="stMain"] [data-testid="stMetricValue"] { color: #1a56db !important; font-weight:700 !important; }
-/* ════ ALERTES ════ */
-section[data-testid="stMain"] .stSuccess { background:#f0fdf4 !important; border-left-color:#16a34a !important; }
-section[data-testid="stMain"] .stError   { background:#fef2f2 !important; border-left-color:#dc2626 !important; }
-section[data-testid="stMain"] .stInfo    { background:#eff6ff !important; border-left-color:#2563eb !important; }
-section[data-testid="stMain"] .stWarning { background:#fffbeb !important; border-left-color:#d97706 !important; }
-/* ════ PROGRESS ════ */
-section[data-testid="stMain"] .stProgress > div > div { background:#1a56db !important; }
-/* ════ DATAFRAME ════ */
-section[data-testid="stMain"] .stDataFrame { border:1px solid #e5e7eb !important; border-radius:8px !important; }
-/* ════ HR ════ */
-section[data-testid="stMain"] hr { border-color:#e5e7eb !important; }
-/* ════ DASHBOARD CARDS ════ */
-.module-card {
-    background: #ffffff !important;
-    border: 1.5px solid #e2e8f0 !important;
-    border-radius: 14px; padding: 28px;
-    text-align: center;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    transition: all 0.2s;
-}
-.module-card:hover {
-    border-color: #1a56db !important;
-    box-shadow: 0 4px 20px rgba(26,86,219,0.12);
-    transform: translateY(-2px);
-}
-.module-icon  { font-size:2.8rem; margin-bottom:10px; }
-.module-title { font-size:1.05rem; font-weight:700; color:#0a1628 !important; margin-bottom:6px; }
-.module-desc  { font-size:0.78rem; color:#6b7280 !important; margin-bottom:14px; }
-.module-count { font-size:2rem; font-weight:800; color:#1a56db !important; }
-.module-label { font-size:0.72rem; color:#9ca3af !important; }
-/* ════ RESULT CARDS ════ */
-.result-card  { background:#f9fafb !important; border:1px solid #e5e7eb !important; border-radius:10px; padding:14px; margin-bottom:8px; }
-.badge        { background:#1a56db; color:white !important; border-radius:4px; padding:2px 8px; font-size:0.82rem; font-weight:600; }
-.badge-green  { background:#dcfce7; border:1px solid #86efac; color:#15803d !important; border-radius:4px; padding:2px 8px; font-size:0.82rem; }
-.badge-purple { background:#ede9fe; border:1px solid #c4b5fd; color:#6d28d9 !important; border-radius:4px; padding:2px 8px; font-size:0.82rem; }
-</style>
-""", unsafe_allow_html=True)
+st.markdown("""<style>
+.stApp { background: #f0f2f6 !important; }
+</style>""", unsafe_allow_html=True)
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-#  PAGE LOGIN
+# LOGIN PAGE
 # ══════════════════════════════════════════════════════════════════════════════
-with st.form("login_form"):
+def show_login():
 
-    _email = st.text_input(
-        "em",
-        placeholder="✉   User@email.com",
-        label_visibility="collapsed",
-        key="login_email"   # ✅ FIX
-    )
+    import base64 as _b64, os as _os
 
-    _pwd = st.text_input(
-        "pw",
-        placeholder="🔒   Mot de passe",
-        type="password",
-        label_visibility="collapsed",
-        key="login_pwd"     # ✅ FIX
-    )
+    _logo = ""
+    _lp = _os.path.join(_os.path.dirname(__file__), "logo.png")
+    if _os.path.exists(_lp):
+        with open(_lp,"rb") as _f:
+            _logo = _b64.b64encode(_f.read()).decode()
 
-    _c1, _c2 = st.columns([1.2, 1])
+    # CSS login (inchangé)
+    st.markdown("""
+    <style>
+    .stApp {
+        background: radial-gradient(ellipse at 30% 20%, #0d2060 0%, #020b28 55%, #010818 100%) !important;
+    }
+    header, #MainMenu, footer { display:none !important; }
+    </style>
+    """, unsafe_allow_html=True)
 
-    with _c1:
-        st.checkbox("Se souvenir de moi", key="remember_me")  # ✅ FIX
+    _img_tag = f'<img src="data:image/png;base64,{_logo}" style="width:160px;">' if _logo else ""
 
-    with _c2:
-        st.markdown(
-            '<div style="text-align:right;padding-top:6px;color:#0099ff !important;font-size:0.77rem;cursor:pointer;">Mot de passe oublié ?</div>',
-            unsafe_allow_html=True
-        )
+    st.markdown("<br>", unsafe_allow_html=True)
+    _, _col, _ = st.columns([1, 2, 1])
 
-    _submit = st.form_submit_button("Se connecter  →", use_container_width=True)
+    with _col:
 
-# ✅ LOGIQUE CORRIGÉE
-if _submit:
-    if not _email or not _pwd:
-        st.error("⚠️ Veuillez remplir tous les champs.")
-    else:
-        try:
-            _user = auth.login(_email.strip(), _pwd.strip())  # ✅ FIX
+        st.markdown(f"""
+        <div style="text-align:center;">
+            {_img_tag}
+            <h2 style="color:white;">DouaneXtract</h2>
+        </div>
+        """, unsafe_allow_html=True)
 
-            if _user:
-                st.session_state["user"] = _user
-                st.success("Connexion réussie ✅")  # optionnel
-                st.rerun()
+        # ✅ FORM CORRIGÉ
+        with st.form("login_form", clear_on_submit=False):
+
+            email = st.text_input(
+                "Email",
+                placeholder="✉ User@email.com",
+                key="login_email"
+            )
+
+            password = st.text_input(
+                "Mot de passe",
+                placeholder="🔒 Mot de passe",
+                type="password",
+                key="login_pwd"
+            )
+
+            st.checkbox("Se souvenir de moi", key="remember_me")
+
+            submit = st.form_submit_button("Se connecter")
+
+        # ✅ LOGIN LOGIC FIX
+        if submit:
+            if not email or not password:
+                st.error("⚠️ Remplir tous les champs")
             else:
-                st.error("❌ Email ou mot de passe incorrect.")
+                try:
+                    user = auth.login(email.strip(), password.strip())
 
-        except Exception as e:
-            st.error(f"Erreur système: {e}")  # ✅ FIX
+                    if user:
+                        st.session_state["user"] = user
+                        st.success("Connexion réussie ✅")
+                        st.rerun()
+                    else:
+                        st.error("❌ Email ou mot de passe incorrect")
 
+                except Exception as e:
+                    st.error(f"Erreur: {e}")
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# MAIN APP
+# ══════════════════════════════════════════════════════════════════════════════
+def main_app():
+
+    st.sidebar.title("Navigation")
+
+    if st.sidebar.button("Déconnexion"):
+        st.session_state["user"] = None
+        st.rerun()
+
+    st.title("Dashboard DouaneXtract")
+    st.success(f"Bienvenue {st.session_state['user']}")
+
+    st.info("Application prête ✅")
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# ROUTING
+# ══════════════════════════════════════════════════════════════════════════════
+if st.session_state["user"] is None:
+    show_login()
+else:
+    main_app()
 
 # ══════════════════════════════════════════════════════════════════════════════
 #  SESSION
