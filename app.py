@@ -30,69 +30,146 @@ LOGO_B64 = load_logo()
 # ══════════════════════════════════════════════════════════════════════════════
 st.markdown("""
 <style>
+/* ════ FOND BLANC GLOBAL ════ */
 .stApp {
-    background: radial-gradient(ellipse at 30% 20%, #0d2060 0%, #020b28 55%, #010818 100%);
-    min-height: 100vh;
+    background: #f0f2f6 !important;
 }
+/* Zone contenu principale blanche */
+section[data-testid="stMain"] .block-container {
+    background: #ffffff !important;
+    border-radius: 12px;
+    padding: 32px 40px !important;
+    margin-top: 12px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+}
+/* Header blanc */
 header[data-testid="stHeader"] {
-    background: rgba(2,11,40,0.95) !important;
-    border-bottom: 1px solid rgba(0,180,255,0.15) !important;
+    background: #ffffff !important;
+    border-bottom: 1px solid #e5e7eb !important;
 }
+/* ════ SIDEBAR BLEU MARINE ════ */
 section[data-testid="stSidebar"] {
-    background: rgba(2,11,40,0.97) !important;
-    border-right: 1px solid rgba(0,180,255,0.2) !important;
+    background: #0d1b3e !important;
+    border-right: none !important;
 }
-section[data-testid="stSidebar"] * { color: rgba(180,215,255,0.85) !important; }
-section[data-testid="stSidebar"] hr { border-color: rgba(0,180,255,0.2) !important; }
-p, li { color: rgba(200,225,255,0.88) !important; }
-h1,h2,h3 { color: #ffffff !important; }
-label { color: rgba(180,210,255,0.85) !important; }
-input[type="text"],input[type="password"],textarea {
-    background: rgba(0,30,80,0.55) !important;
-    border: 1px solid rgba(0,180,255,0.3) !important;
-    color: #ffffff !important; border-radius: 8px !important;
+section[data-testid="stSidebar"] * { color: rgba(200,220,255,0.9) !important; }
+section[data-testid="stSidebar"] hr { border-color: rgba(255,255,255,0.1) !important; }
+/* Boutons sidebar */
+section[data-testid="stSidebar"] .stButton button {
+    background: rgba(255,255,255,0.08) !important;
+    border: 1px solid rgba(255,255,255,0.12) !important;
+    color: rgba(200,220,255,0.9) !important;
+    border-radius: 10px !important;
+    font-weight: 500 !important;
+    margin-bottom: 2px !important;
+    text-align: left !important;
 }
-input:focus,textarea:focus {
-    border-color: #00c8ff !important;
-    box-shadow: 0 0 0 2px rgba(0,200,255,0.2) !important;
+section[data-testid="stSidebar"] .stButton button:hover {
+    background: rgba(26,86,219,0.5) !important;
+    border-color: rgba(100,160,255,0.4) !important;
 }
-.stButton button[kind="primary"],.stFormSubmitButton button {
-    background: linear-gradient(90deg,#0050d8,#00a8ff) !important;
-    color:white !important; border:none !important;
-    border-radius:8px !important; font-weight:600 !important;
+/* ════ TEXTES CONTENU ════ */
+section[data-testid="stMain"] p,
+section[data-testid="stMain"] li { color: #374151 !important; }
+section[data-testid="stMain"] h1,
+section[data-testid="stMain"] h2,
+section[data-testid="stMain"] h3 { color: #0a1628 !important; }
+section[data-testid="stMain"] label { color: #374151 !important; }
+section[data-testid="stMain"] span  { color: #374151 !important; }
+/* ════ INPUTS ════ */
+section[data-testid="stMain"] input[type="text"],
+section[data-testid="stMain"] textarea {
+    background: #f9fafb !important;
+    border: 1.5px solid #d1d5db !important;
+    color: #111827 !important;
+    border-radius: 8px !important;
 }
-.stButton button[kind="primary"]:hover,.stFormSubmitButton button:hover {
-    background: linear-gradient(90deg,#0060f0,#00c0ff) !important;
-    box-shadow: 0 0 20px rgba(0,180,255,0.4) !important;
+section[data-testid="stMain"] input[type="text"]:focus,
+section[data-testid="stMain"] textarea:focus {
+    border-color: #1a56db !important;
+    box-shadow: 0 0 0 3px rgba(26,86,219,0.1) !important;
 }
-.stButton button {
-    background: rgba(0,60,160,0.35) !important;
-    border: 1px solid rgba(0,180,255,0.3) !important;
-    color: rgba(180,220,255,0.9) !important; border-radius:8px !important;
+/* ════ BOUTONS ════ */
+section[data-testid="stMain"] .stButton button[kind="primary"],
+section[data-testid="stMain"] .stFormSubmitButton button {
+    background: #1a56db !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
 }
-.stTabs [data-baseweb="tab-list"] { background:rgba(0,20,70,0.6) !important; border-radius:10px; padding:4px; }
-.stTabs [data-baseweb="tab"] { color:rgba(160,200,255,0.7) !important; }
-.stTabs [aria-selected="true"] { color:#00c8ff !important; background:rgba(0,80,200,0.3) !important; border-radius:8px !important; }
-.streamlit-expanderHeader { background:rgba(0,40,120,0.4) !important; border:1px solid rgba(0,180,255,0.2) !important; border-radius:8px !important; }
-.streamlit-expanderContent { background:rgba(0,15,55,0.6) !important; }
-[data-testid="stMetricLabel"] { color:rgba(150,190,255,0.7) !important; }
-[data-testid="stMetricValue"] { color:#00c8ff !important; font-weight:700 !important; }
-.stSuccess { background:rgba(0,80,50,0.35) !important; border-left-color:#00e090 !important; }
-.stError   { background:rgba(120,0,0,0.35) !important;  border-left-color:#ff5050 !important; }
-.stWarning { background:rgba(100,60,0,0.35) !important; border-left-color:#ffb800 !important; }
-.stInfo    { background:rgba(0,50,140,0.35) !important; border-left-color:#00c8ff !important; }
-.stProgress > div > div { background:linear-gradient(90deg,#0050d8,#00c8ff) !important; }
-hr { border-color:rgba(0,180,255,0.15) !important; }
-.module-card { background:rgba(4,20,80,0.6); border:1px solid rgba(0,150,255,0.3); border-radius:16px; padding:28px; text-align:center; }
-.module-icon  { font-size:3rem; margin-bottom:12px; }
-.module-title { font-size:1.1rem; font-weight:700; color:#ffffff !important; margin-bottom:6px; }
-.module-desc  { font-size:0.78rem; color:rgba(150,190,255,0.7) !important; margin-bottom:16px; }
-.module-count { font-size:2rem; font-weight:800; color:#00c8ff !important; }
-.module-label { font-size:0.72rem; color:rgba(130,170,220,0.6) !important; }
-.result-card  { background:rgba(255,255,255,0.04) !important; border:1px solid rgba(0,180,255,0.2) !important; border-radius:10px; padding:14px; margin-bottom:8px; }
-.badge        { background:linear-gradient(90deg,#0050d8,#00a8ff); color:white !important; border-radius:4px; padding:2px 8px; font-size:0.82rem; font-weight:600; }
-.badge-green  { background:rgba(0,180,100,0.2); border:1px solid rgba(0,200,100,0.4); color:#00e090 !important; border-radius:4px; padding:2px 8px; font-size:0.82rem; font-weight:600; }
-.badge-purple { background:rgba(120,80,220,0.2); border:1px solid rgba(150,100,255,0.4); color:#b090ff !important; border-radius:4px; padding:2px 8px; font-size:0.82rem; font-weight:600; }
+section[data-testid="stMain"] .stButton button[kind="primary"]:hover,
+section[data-testid="stMain"] .stFormSubmitButton button:hover {
+    background: #1e40af !important;
+}
+section[data-testid="stMain"] .stButton button {
+    background: #f3f4f6 !important;
+    border: 1px solid #d1d5db !important;
+    color: #374151 !important;
+    border-radius: 8px !important;
+}
+/* ════ TABS ════ */
+section[data-testid="stMain"] .stTabs [data-baseweb="tab-list"] {
+    background: #f3f4f6 !important;
+    border-radius: 8px; padding: 3px;
+}
+section[data-testid="stMain"] .stTabs [data-baseweb="tab"] { color: #6b7280 !important; }
+section[data-testid="stMain"] .stTabs [aria-selected="true"] {
+    color: #1a56db !important;
+    background: #ffffff !important;
+    border-radius: 6px !important;
+}
+/* ════ RADIO ════ */
+section[data-testid="stMain"] .stRadio label span { color: #374151 !important; }
+/* ════ EXPANDER ════ */
+section[data-testid="stMain"] .streamlit-expanderHeader {
+    background: #f9fafb !important;
+    border: 1px solid #e5e7eb !important;
+    color: #374151 !important;
+    border-radius: 8px !important;
+}
+section[data-testid="stMain"] .streamlit-expanderContent {
+    background: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+}
+/* ════ METRICS ════ */
+section[data-testid="stMain"] [data-testid="stMetricLabel"] { color: #6b7280 !important; }
+section[data-testid="stMain"] [data-testid="stMetricValue"] { color: #1a56db !important; font-weight:700 !important; }
+/* ════ ALERTES ════ */
+section[data-testid="stMain"] .stSuccess { background:#f0fdf4 !important; border-left-color:#16a34a !important; }
+section[data-testid="stMain"] .stError   { background:#fef2f2 !important; border-left-color:#dc2626 !important; }
+section[data-testid="stMain"] .stInfo    { background:#eff6ff !important; border-left-color:#2563eb !important; }
+section[data-testid="stMain"] .stWarning { background:#fffbeb !important; border-left-color:#d97706 !important; }
+/* ════ PROGRESS ════ */
+section[data-testid="stMain"] .stProgress > div > div { background:#1a56db !important; }
+/* ════ DATAFRAME ════ */
+section[data-testid="stMain"] .stDataFrame { border:1px solid #e5e7eb !important; border-radius:8px !important; }
+/* ════ HR ════ */
+section[data-testid="stMain"] hr { border-color:#e5e7eb !important; }
+/* ════ DASHBOARD CARDS ════ */
+.module-card {
+    background: #ffffff !important;
+    border: 1.5px solid #e2e8f0 !important;
+    border-radius: 14px; padding: 28px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    transition: all 0.2s;
+}
+.module-card:hover {
+    border-color: #1a56db !important;
+    box-shadow: 0 4px 20px rgba(26,86,219,0.12);
+    transform: translateY(-2px);
+}
+.module-icon  { font-size:2.8rem; margin-bottom:10px; }
+.module-title { font-size:1.05rem; font-weight:700; color:#0a1628 !important; margin-bottom:6px; }
+.module-desc  { font-size:0.78rem; color:#6b7280 !important; margin-bottom:14px; }
+.module-count { font-size:2rem; font-weight:800; color:#1a56db !important; }
+.module-label { font-size:0.72rem; color:#9ca3af !important; }
+/* ════ RESULT CARDS ════ */
+.result-card  { background:#f9fafb !important; border:1px solid #e5e7eb !important; border-radius:10px; padding:14px; margin-bottom:8px; }
+.badge        { background:#1a56db; color:white !important; border-radius:4px; padding:2px 8px; font-size:0.82rem; font-weight:600; }
+.badge-green  { background:#dcfce7; border:1px solid #86efac; color:#15803d !important; border-radius:4px; padding:2px 8px; font-size:0.82rem; }
+.badge-purple { background:#ede9fe; border:1px solid #c4b5fd; color:#6d28d9 !important; border-radius:4px; padding:2px 8px; font-size:0.82rem; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -216,32 +293,37 @@ module = st.session_state["module"]
 #  SIDEBAR
 # ══════════════════════════════════════════════════════════════════════════════
 with st.sidebar:
-    logo_html = f'<img src="data:image/png;base64,{LOGO_B64}" style="width:80px;display:block;margin:0 auto 8px auto;">' if LOGO_B64 else ""
+    logo_html = f'<img src="data:image/png;base64,{LOGO_B64}" style="width:90px;display:block;margin:0 auto 12px auto;filter:drop-shadow(0 0 10px rgba(100,160,255,0.3));">' if LOGO_B64 else ""
     st.markdown(f"""
-    {logo_html}
-    <div style="text-align:center;font-size:1.8rem;font-weight:800;margin-bottom:4px;">
-        <span style="color:#fff;">Douane</span><span style="color:#00aaff;">Xtract</span>
-    </div>
-    <div style="text-align:center;font-size:0.65rem;color:rgba(130,170,220,0.6);margin-bottom:12px;letter-spacing:0.5px;">
-        Base de données Douanes
+    <div style="padding:24px 16px 8px 16px;text-align:center;">
+        {logo_html}
+        <div style="font-size:1.6rem;font-weight:900;letter-spacing:0.5px;margin-bottom:2px;">
+            <span style="color:#ffffff;">Douane</span><span style="color:#60a5fa;">Xtract</span>
+        </div>
+        <div style="font-size:0.68rem;color:rgba(148,163,184,0.8);letter-spacing:0.5px;">
+            Base de données Douanes
+        </div>
     </div>
     """, unsafe_allow_html=True)
-    st.markdown("---")
 
-    if st.button("🏠  Tableau de bord",  use_container_width=True):
-        st.session_state["module"] = "dashboard"; st.rerun()
-    if st.button("📋  Avis Tarifaires",  use_container_width=True):
-        st.session_state["module"] = "tarifaires"; st.rerun()
-    if st.button("📁  Secrétariat",      use_container_width=True):
-        st.session_state["module"] = "secretariat"; st.rerun()
-    if st.button("🌐  Décisions OMD",    use_container_width=True):
-        st.session_state["module"] = "omd"; st.rerun()
+    st.markdown("<hr style='border-color:rgba(255,255,255,0.08);margin:12px 0;'>", unsafe_allow_html=True)
+
+    # Bouton actif en surbrillance
+    mod = st.session_state.get("module","dashboard")
+    def nav_btn(label, key, icon=""):
+        active = "background:rgba(37,99,235,0.6) !important;border-color:rgba(96,165,250,0.5) !important;color:white !important;" if mod==key else ""
+        if st.button(label, use_container_width=True, key=f"nav_{key}"):
+            st.session_state["module"] = key; st.rerun()
+
+    nav_btn("🏠  Tableau de bord",  "dashboard")
+    nav_btn("📋  Avis Tarifaires",  "tarifaires")
+    nav_btn("📁  Secrétariat",      "secretariat")
+    nav_btn("🌐  Décisions OMD",    "omd")
     if is_admin:
-        if st.button("👥  Utilisateurs",  use_container_width=True):
-            st.session_state["module"] = "users"; st.rerun()
+        nav_btn("👥  Utilisateurs", "users")
 
-    st.markdown("---")
-    if st.button("🚪  Se déconnecter", use_container_width=True):
+    st.markdown("<hr style='border-color:rgba(255,255,255,0.08);margin:16px 0 12px 0;'>", unsafe_allow_html=True)
+    if st.button("🚪  Se déconnecter", use_container_width=True, key="nav_logout"):
         del st.session_state["user"]
         st.session_state["module"] = "dashboard"
         st.rerun()
@@ -507,60 +589,6 @@ elif module == "tarifaires":
 # ══════════════════════════════════════════════════════════════════════════════
 elif module == "secretariat":
 
-    # CSS THEME BLANC
-    st.markdown("""
-    <style>
-    section[data-testid="stMain"] .block-container { background:#ffffff !important; border-radius:16px; }
-    section[data-testid="stMain"] h1,
-    section[data-testid="stMain"] h2,
-    section[data-testid="stMain"] h3 { color:#0a1628 !important; }
-    section[data-testid="stMain"] p,
-    section[data-testid="stMain"] label,
-    section[data-testid="stMain"] span { color:#374151 !important; }
-    section[data-testid="stMain"] input[type="text"] {
-        background:#f5f7fa !important; border:1.5px solid #d0d8e8 !important;
-        color:#1a2340 !important;
-    }
-    section[data-testid="stMain"] input[type="text"]:focus {
-        border-color:#1a56db !important; box-shadow:0 0 0 3px rgba(26,86,219,0.12) !important;
-    }
-    section[data-testid="stMain"] textarea {
-        background:#f5f7fa !important; color:#1a2340 !important;
-        border:1.5px solid #d0d8e8 !important;
-    }
-    section[data-testid="stMain"] .stButton button[kind="primary"] {
-        background:#1a56db !important; color:white !important;
-        border-radius:8px !important; font-weight:600 !important; border:none !important;
-    }
-    section[data-testid="stMain"] .stButton button[kind="primary"]:hover {
-        background:#1e40af !important;
-    }
-    section[data-testid="stMain"] .stButton button {
-        background:#f3f4f6 !important; border:1px solid #d1d5db !important;
-        color:#374151 !important; border-radius:8px !important;
-    }
-    section[data-testid="stMain"] .stFormSubmitButton button {
-        background:#1a56db !important; color:white !important;
-        border-radius:8px !important; font-weight:600 !important;
-    }
-    section[data-testid="stMain"] .streamlit-expanderHeader {
-        background:#f5f7fa !important; border:1px solid #e5e7eb !important; color:#374151 !important;
-    }
-    section[data-testid="stMain"] .streamlit-expanderContent {
-        background:#fafbfc !important;
-    }
-    section[data-testid="stMain"] [data-testid="stMetricLabel"] { color:#6b7280 !important; }
-    section[data-testid="stMain"] [data-testid="stMetricValue"] { color:#1a56db !important; font-weight:700 !important; }
-    section[data-testid="stMain"] .stSuccess { background:#f0fdf4 !important; border-left-color:#16a34a !important; }
-    section[data-testid="stMain"] .stError   { background:#fef2f2 !important; border-left-color:#dc2626 !important; }
-    section[data-testid="stMain"] .stInfo    { background:#eff6ff !important; border-left-color:#2563eb !important; }
-    section[data-testid="stMain"] .stWarning { background:#fffbeb !important; border-left-color:#d97706 !important; }
-    section[data-testid="stMain"] .stProgress > div > div { background:#1a56db !important; }
-    section[data-testid="stMain"] .stTabs [data-baseweb="tab-list"] { background:#f3f4f6 !important; }
-    section[data-testid="stMain"] .stTabs [data-baseweb="tab"] { color:#6b7280 !important; }
-    section[data-testid="stMain"] .stTabs [aria-selected="true"] { color:#1a56db !important; background:#ffffff !important; }
-    </style>
-    """, unsafe_allow_html=True)
 
     page = st.radio("", ["🔍 Recherche", "📤 Ajouter fichier xlsx", "✏️ Modifier"],
                     horizontal=True, label_visibility="collapsed")
@@ -653,15 +681,6 @@ elif module == "secretariat":
                         )
 
                     desc_en_html = ""
-                    if desc_en and desc_en not in ("—","nan","None"):
-                        desc_en_html = (
-                            '<div style="padding:0 22px 16px;">'
-                            '<details><summary style="color:#6b7280;font-size:0.78rem;cursor:pointer;">'
-                            'Voir description en anglais</summary>'
-                            '<div style="background:#f8fafc;border-radius:6px;padding:10px 14px;'
-                            'margin-top:6px;color:#4b5563;font-size:0.82rem;line-height:1.6;">' +
-                            str(desc_en) + '</div></details></div>'
-                        )
 
                     st.markdown(f"""
                     <div style='background:#ffffff;border:1.5px solid #e2e8f0;
@@ -698,8 +717,6 @@ elif module == "secretariat":
                                 {desc_fr}
                             </div>
                         </div>
-
-                        {desc_en_html}
 
                     </div>
                     """, unsafe_allow_html=True)
