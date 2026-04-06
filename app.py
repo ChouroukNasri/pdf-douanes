@@ -177,130 +177,53 @@ section[data-testid="stMain"] hr { border-color:#e5e7eb !important; }
 # ══════════════════════════════════════════════════════════════════════════════
 #  PAGE LOGIN
 # ══════════════════════════════════════════════════════════════════════════════
-def show_login():
-    import base64 as _b64, os as _os
-    _logo = ""
-    _lp = _os.path.join(_os.path.dirname(__file__), "logo.png")
-    if _os.path.exists(_lp):
-        with open(_lp,"rb") as _f:
-            _logo = _b64.b64encode(_f.read()).decode()
+with st.form("login_form"):
 
-    # CSS complet isolé pour la page login — écrase tout
-    st.markdown("""
-    <style>
-    /* Reset complet pour la page login */
-    .stApp {
-        background: radial-gradient(ellipse at 30% 20%, #0d2060 0%, #020b28 55%, #010818 100%) !important;
-        min-height: 100vh;
-    }
-    header[data-testid="stHeader"]   { display:none !important; }
-    section[data-testid="stSidebar"] { display:none !important; }
-    #MainMenu, footer                 { display:none !important; }
-    .block-container {
-        padding-top: 0 !important;
-        max-width: 100% !important;
-        background: transparent !important;
-        box-shadow: none !important;
-    }
-    /* Textes login */
-    p, span, div, label { color: rgba(200,225,255,0.88) !important; }
-    h1,h2,h3 { color: #ffffff !important; }
-    /* Inputs login */
-    .stTextInput input {
-        background: rgba(0,18,60,0.75) !important;
-        border: 1px solid rgba(0,130,255,0.3) !important;
-        color: #ffffff !important;
-        border-radius: 10px !important;
-        padding: 12px 16px !important;
-    }
-    .stTextInput input:focus {
-        border-color: #0088ff !important;
-        box-shadow: 0 0 0 3px rgba(0,136,255,0.18) !important;
-    }
-    .stTextInput input::placeholder { color: rgba(120,160,220,0.5) !important; }
-    .stTextInput label { display:none !important; }
-    /* Checkbox */
-    .stCheckbox label span { color: rgba(150,190,255,0.75) !important; font-size:0.8rem !important; }
-    /* Bouton login */
-    .stFormSubmitButton button {
-        background: linear-gradient(90deg, #0050d8 0%, #0099ff 100%) !important;
-        color: white !important;
-        border: none !important;
-        border-radius: 10px !important;
-        font-weight: 700 !important;
-        font-size: 1rem !important;
-        padding: 13px !important;
-    }
-    .stFormSubmitButton button:hover {
-        background: linear-gradient(90deg, #0066ff 0%, #00bbff 100%) !important;
-        box-shadow: 0 4px 28px rgba(0,140,255,0.5) !important;
-    }
-    </style>
-st.markdown("<br>", unsafe_allow_html=True)
+    _email = st.text_input(
+        "em",
+        placeholder="✉   User@email.com",
+        label_visibility="collapsed",
+        key="login_email"   # ✅ FIX
+    )
 
-_, _col, _ = st.columns([1, 2, 1])
+    _pwd = st.text_input(
+        "pw",
+        placeholder="🔒   Mot de passe",
+        type="password",
+        label_visibility="collapsed",
+        key="login_pwd"     # ✅ FIX
+    )
 
-with _col:
+    _c1, _c2 = st.columns([1.2, 1])
 
-    st.markdown(f"""
-    <div style="
-        background:rgba(4,16,60,0.85);
-        border:1px solid rgba(0,140,255,0.35);
-        border-radius:24px;
-        backdrop-filter:blur(20px);
-        box-shadow:0 8px 60px rgba(0,80,255,0.22);
-        max-width:420px;
-        margin:auto;
-        padding-bottom:15px;
-    ">
+    with _c1:
+        st.checkbox("Se souvenir de moi", key="remember_me")  # ✅ FIX
 
-        <div style="
-            background:radial-gradient(circle at top,#0d2878,#020f40);
-            padding:25px;
-            text-align:center;
-            border-radius:24px 24px 0 0;
-        ">
-            {_img_tag}
+    with _c2:
+        st.markdown(
+            '<div style="text-align:right;padding-top:6px;color:#0099ff !important;font-size:0.77rem;cursor:pointer;">Mot de passe oublié ?</div>',
+            unsafe_allow_html=True
+        )
 
-            <div style="font-size:1.7rem;font-weight:900;margin-top:10px;">
-                <span style="color:white;">Douane</span>
-                <span style="color:#60a5fa;">Xtract</span>
-            </div>
+    _submit = st.form_submit_button("Se connecter  →", use_container_width=True)
 
-            <div style="font-size:0.75rem;color:#94a3b8;margin-top:4px;">
-                Base de données — Classement Tarifaire
-            </div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+# ✅ LOGIQUE CORRIGÉE
+if _submit:
+    if not _email or not _pwd:
+        st.error("⚠️ Veuillez remplir tous les champs.")
+    else:
+        try:
+            _user = auth.login(_email.strip(), _pwd.strip())  # ✅ FIX
 
-    # 🔐 FORMULAIRE (Streamlit propre)
-    with st.form("login_form"):
-
-        email = st.text_input("", placeholder="✉ Email")
-        password = st.text_input("", placeholder="🔒 Mot de passe", type="password")
-
-        col1, col2 = st.columns([1,1])
-        with col1:
-            st.checkbox("Se souvenir de moi")
-        with col2:
-            st.markdown(
-                '<div style="text-align:right;font-size:0.75rem;color:#60a5fa;">Mot de passe oublié ?</div>',
-                unsafe_allow_html=True
-            )
-
-        submit = st.form_submit_button("Se connecter")
-
-    if submit:
-        if not email or not password:
-            st.error("⚠️ Remplir tous les champs")
-        else:
-            user = auth.login(email, password)
-            if user:
-                st.session_state["user"] = user
+            if _user:
+                st.session_state["user"] = _user
+                st.success("Connexion réussie ✅")  # optionnel
                 st.rerun()
             else:
-                st.error("❌ Email ou mot de passe incorrect")
+                st.error("❌ Email ou mot de passe incorrect.")
+
+        except Exception as e:
+            st.error(f"Erreur système: {e}")  # ✅ FIX
 
 
 # ══════════════════════════════════════════════════════════════════════════════
