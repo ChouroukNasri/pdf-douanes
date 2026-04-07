@@ -189,3 +189,85 @@ def process_pdf(pdf_path, filename=None):
         "full_text": text,
         **fields,
     }
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  PARSER SPECIAL : DECISIONS OMD
+# ══════════════════════════════════════════════════════════════════════════════
+def parse_omd_pdf(pdf_path, filename=None):
+    """
+    Parse un PDF de decisions OMD (Comite du Systeme Harmonise).
+    Retourne une liste de dicts prets pour db.insert_omd().
+    Format attendu : N°, Description, Classement, Motif, Session.
+    """
+    import re
+    if filename is None:
+        filename = Path(pdf_path).name
+
+    text = extract_text_from_pdf(pdf_path)
+    # Supprimer separateurs de pages
+    text = re.sub(r'--- Page \d+ ---\n', '', text)
+
+    decisions = []
+
+    # 1. Extraire la session
+    s = re.search(r'(\d+.?[ee]me?\s+[Ss]ession[^)\n]*)', text)
+    session = re.sub(r'\s+', ' ', s.group(1)).strip() if s else ""
+
+    # 2. Couper apres Liste A / Liste B
+    for marker in ["Liste A", "Liste B", "List A", "List B"]:
+        if marker in text:
+            text = text[:text.index(marker)]
+
+    # 3. Splitter par entrees numerotees
+    entries = re.split(r'\n(?=\d{1,2}\.\s)', text)
+
+    for entry in entries:
+        entry = entry.strip()
+        if not entry:
+            continue
+
+        num_match = re.match(r'^(\d{1,2})\.\s+(.+)', entry, re.DOTALL)
+        if not num_match:
+            continue
+
+        num  = num_match.group(1)
+        rest = num_match.group(2)
+
+        # Chercher code HS (ex: 17.04, 1901.90, 8471.90)
+        hs_pattern = r'\b(\d{2,4}\.\d{2,3})\b'
+        hs_matches = list(re.finditer(hs_pattern, rest))
+        if not hs_matches:
+            continue
+
+        hs_match   = hs_matches[0]
+        classement = hs_match.group(1)
+        hs_pos     = hs_match.start()
+
+        # Description = tout avant le code HS, nettoyee
+        desc = re.sub(r'\s+', ' ', rest[:hs_pos]).strip()
+        # Ajouter le texte apres le code HS qui fait partie de la description
+        # (le motif est souvent interleave avec la description dans les PDFs)
+        after_hs = rest[hs_match.end():].strip()
+
+        # Heuristique : si apres le HS il y a du texte court avant une majuscule,
+        # c'est probablement le motif
+        motif_match = re.search(r'\b(RGI\s*\d+[a-z]?|Note\s+\d|Chapitre\s+\d+)', after_hs, re.IGNORECASE)
+        motif = after_hs.strip()
+
+        # Nettoyer motif
+        motif = re.sub(r'\s+', ' ', motif)[:600]
+        desc  = desc[:800]
+
+        if desc and classement and len(desc) > 5:
+            decisions.append({
+                "filename":    filename,
+                "numero":      num,
+                "description": desc,
+                "classement":  classement,
+                "motif":       motif,
+                "session":     session,
+            })
+
+    print(f"[OMD] {len(decisions)} decisions extraites de {filename}")
+    return decisions

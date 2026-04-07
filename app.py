@@ -1126,17 +1126,48 @@ elif module == "omd":
                 except Exception as e:
                     st.error(f"Erreur : {e}")
 
-        # ── PDF (OCR)
+        # ── PDF (Extraction automatique)
         with tab_pdf:
-            st.info("⚠️ L'extraction depuis PDF nécessite une vérification manuelle après import.")
+            st.markdown(
+                '<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;'
+                'padding:14px 18px;margin-bottom:16px;">"'
+                '<b style="color:#1d4ed8;">📄 Extraction automatique</b><br>'
+                '<span style="color:#374151;font-size:0.85rem;">Le PDF est analysé automatiquement.'
+                ' Décisions extraites et enregistrées directement.</span></div>',
+                unsafe_allow_html=True)
             uploaded_pdf = st.file_uploader("Glisser le PDF OMD", type=["pdf"], key="omd_pdf")
             if uploaded_pdf:
                 dest = os.path.join(PDF_DIR, uploaded_pdf.name)
                 with open(dest,"wb") as fp: fp.write(uploaded_pdf.getbuffer())
-                if st.button("🔍 Extraire le texte", type="primary"):
-                    text = ocr.extract_text_from_pdf(dest)
-                    st.text_area("Texte extrait (à utiliser pour la saisie manuelle)", value=text[:3000], height=300)
-                    st.info("Utilisez le texte extrait pour remplir les décisions via 'Saisie manuelle'.")
+                if st.button("🚀 Extraire et enregistrer automatiquement", type="primary", key="omd_extract"):
+                    with st.spinner("Extraction en cours..."):
+                        decisions = ocr.parse_omd_pdf(dest, uploaded_pdf.name)
+                    if not decisions:
+                        st.error("❌ Aucune décision trouvée. Vérifiez le format du PDF.")
+                    else:
+                        st.success(f"✅ **{len(decisions)}** décision(s) détectée(s) !")
+                        st.markdown("**Aperçu des premières décisions extraites :**")
+                        for d in decisions[:5]:
+                            card = (
+                                '<div style="background:#f8fafc;border:1px solid #e2e8f0;'
+                                'border-radius:8px;padding:10px 14px;margin-bottom:8px;">'
+                                '<span style="color:#d97706;font-weight:700;">N°' + d["numero"] + ' — ' + d["classement"] + '</span><br>'
+                                '<span style="color:#374151;font-size:0.82rem;">' + d["description"][:100] + '...</span></div>'
+                            )
+                            st.markdown(card, unsafe_allow_html=True)
+                        if len(decisions) > 5:
+                            st.caption(f"... et {len(decisions)-5} autres décisions")
+                        st.markdown("---")
+                        col_ok, col_ann = st.columns(2)
+                        with col_ok:
+                            if st.button("💾 Confirmer et enregistrer en base", type="primary", key="omd_save"):
+                                for d in decisions:
+                                    db.insert_omd(d)
+                                st.success(f"✅ {len(decisions)} décisions enregistrées !")
+                                st.rerun()
+                        with col_ann:
+                            if st.button("❌ Annuler", key="omd_cancel"):
+                                st.rerun()
 
         # ── Saisie manuelle
         with tab_manuel:
