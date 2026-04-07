@@ -178,140 +178,81 @@ section[data-testid="stMain"] hr { border-color:#e5e7eb !important; }
 #  PAGE LOGIN
 # ══════════════════════════════════════════════════════════════════════════════
 def show_login():
-    import base64 as _b64, os as _os
-    _logo = ""
-    _lp = _os.path.join(_os.path.dirname(__file__), "logo.png")
-    if _os.path.exists(_lp):
-        with open(_lp,"rb") as _f:
-            _logo = _b64.b64encode(_f.read()).decode()
-
-    # CSS complet isolé pour la page login — écrase tout
     st.markdown("""
     <style>
-    /* Reset complet pour la page login */
     .stApp {
-        background: radial-gradient(ellipse at 30% 20%, #0d2060 0%, #020b28 55%, #010818 100%) !important;
+        background: linear-gradient(135deg, #020b28 0%, #041454 60%, #0a1f6e 100%);
         min-height: 100vh;
     }
-    header[data-testid="stHeader"]   { display:none !important; }
-    section[data-testid="stSidebar"] { display:none !important; }
-    #MainMenu, footer                 { display:none !important; }
-    .block-container {
-        padding-top: 0 !important;
-        max-width: 100% !important;
-        background: transparent !important;
-        box-shadow: none !important;
-    }
-    /* Textes login */
-    p, span, div, label { color: rgba(200,225,255,0.88) !important; }
-    h1,h2,h3 { color: #ffffff !important; }
-    /* Inputs login */
-    .stTextInput input {
-        background: rgba(0,18,60,0.75) !important;
-        border: 1px solid rgba(0,130,255,0.3) !important;
+    header[data-testid="stHeader"] { background: transparent !important; }
+    label { color: rgba(180,210,255,0.9) !important; font-size:0.85rem !important; }
+    input[type="text"], input[type="password"] {
+        background: rgba(0,30,80,0.6) !important;
+        border: 1px solid rgba(0,180,255,0.3) !important;
         color: #ffffff !important;
-        border-radius: 10px !important;
-        padding: 12px 16px !important;
+        border-radius: 8px !important;
     }
-    .stTextInput input:focus {
-        border-color: #0088ff !important;
-        box-shadow: 0 0 0 3px rgba(0,136,255,0.18) !important;
-    }
-    .stTextInput input::placeholder { color: rgba(120,160,220,0.5) !important; }
-    .stTextInput label { display:none !important; }
-    /* Checkbox */
-    .stCheckbox label span { color: rgba(150,190,255,0.75) !important; font-size:0.8rem !important; }
-    /* Bouton login */
     .stFormSubmitButton button {
-        background: linear-gradient(90deg, #0050d8 0%, #0099ff 100%) !important;
+        background: linear-gradient(90deg, #0050d8, #00a8ff) !important;
         color: white !important;
         border: none !important;
-        border-radius: 10px !important;
-        font-weight: 700 !important;
+        border-radius: 8px !important;
+        font-weight: 600 !important;
         font-size: 1rem !important;
-        padding: 13px !important;
     }
     .stFormSubmitButton button:hover {
-        background: linear-gradient(90deg, #0066ff 0%, #00bbff 100%) !important;
-        box-shadow: 0 4px 28px rgba(0,140,255,0.5) !important;
+        background: linear-gradient(90deg, #0060f0, #00c0ff) !important;
+        box-shadow: 0 0 20px rgba(0,180,255,0.4) !important;
     }
     </style>
     """, unsafe_allow_html=True)
 
-    _img_tag = f'<img src="data:image/png;base64,{_logo}" style="width:160px;filter:drop-shadow(0 0 18px rgba(0,150,255,0.4));">' if _logo else ""
+    st.markdown("<br><br>", unsafe_allow_html=True)
+    col = st.columns([1, 2, 1])[1]
 
-    st.markdown("<br>", unsafe_allow_html=True)
-    _, _col, _ = st.columns([1, 2, 1])
-    with _col:
-        st.markdown(f"""
-        <div style="background:rgba(4,16,60,0.82);border:1px solid rgba(0,140,255,0.35);
-            border-radius:24px;overflow:hidden;backdrop-filter:blur(20px);
-            box-shadow:0 8px 60px rgba(0,80,255,0.22);max-width:460px;margin:0 auto;">
-
-          <div style="background:radial-gradient(ellipse at 50% 30%,#0d2878,#020f40);
-              border-bottom:1px solid rgba(0,140,255,0.2);padding:28px 28px 20px;text-align:center;">
-            {_img_tag}
-            <div style="font-size:2.2rem;font-weight:900;letter-spacing:1px;margin-top:10px;margin-bottom:4px;">
-              <span style="color:#ffffff !important;">Douane</span><span style="color:#00aaff !important;">Xtract</span>
+    with col:
+        st.markdown("""
+        <div style="
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(0,180,255,0.3);
+            border-radius: 20px;
+            padding: 40px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 40px rgba(0,120,255,0.15);
+            text-align: center;
+            margin-bottom: 24px;
+        ">
+            <div style="font-size:2.2rem; font-weight:800; margin-bottom:6px;">
+                <span style="color:#ffffff;">Douane</span><span style="color:#00c8ff;">Xtract</span>
             </div>
-            <div style="color:rgba(150,190,255,0.65) !important;font-size:0.76rem;letter-spacing:0.7px;margin-bottom:18px;">
-              Base de données — Avis de Classement Tarifaire
+            <div style="color:rgba(180,210,255,0.7); font-size:0.82rem; letter-spacing:0.5px;">
+                Base de données — Avis de Classement Tarifaire
             </div>
-            <div style="display:flex;justify-content:center;align-items:center;">
-              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:0 12px;">
-                <div style="width:36px;height:36px;background:rgba(0,80,200,0.3);border:1px solid rgba(0,150,255,0.3);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;">📄</div>
-                <span style="color:rgba(160,200,255,0.8) !important;font-size:0.6rem;font-weight:700;letter-spacing:1px;">EXTRAIRE</span>
-              </div>
-              <div style="width:1px;height:40px;background:rgba(0,150,255,0.18);"></div>
-              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:0 12px;">
-                <div style="width:36px;height:36px;background:rgba(0,80,200,0.3);border:1px solid rgba(0,150,255,0.3);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;">🗄️</div>
-                <span style="color:rgba(160,200,255,0.8) !important;font-size:0.6rem;font-weight:700;letter-spacing:1px;">COMPRENDRE</span>
-              </div>
-              <div style="width:1px;height:40px;background:rgba(0,150,255,0.18);"></div>
-              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:0 12px;">
-                <div style="width:36px;height:36px;background:rgba(0,80,200,0.3);border:1px solid rgba(0,150,255,0.3);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;">📈</div>
-                <span style="color:rgba(160,200,255,0.8) !important;font-size:0.6rem;font-weight:700;letter-spacing:1px;">VALORISER</span>
-              </div>
-              <div style="width:1px;height:40px;background:rgba(0,150,255,0.18);"></div>
-              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:0 12px;">
-                <div style="width:36px;height:36px;background:rgba(0,80,200,0.3);border:1px solid rgba(0,150,255,0.3);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;">🛡️</div>
-                <span style="color:rgba(160,200,255,0.8) !important;font-size:0.6rem;font-weight:700;letter-spacing:1px;">SÉCURISÉ</span>
-              </div>
-            </div>
-          </div>
-
-          <div style="padding:20px 28px 4px 28px;">
-            <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
-              <div style="width:42px;height:42px;background:rgba(0,80,200,0.3);border:1px solid rgba(0,150,255,0.4);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🔐</div>
-              <div>
-                <div style="font-size:1.05rem;font-weight:800;color:#ffffff !important;">Authentification</div>
-                <div style="font-size:0.72rem;color:rgba(130,175,230,0.65) !important;">Accédez à votre base de données en toute sécurité</div>
-              </div>
-            </div>
-          </div>
+            <hr style="border:none; border-top:1px solid rgba(0,180,255,0.2); margin:20px 0 0 0;">
         </div>
         """, unsafe_allow_html=True)
 
         with st.form("login_form"):
-            _email = st.text_input("em", placeholder="✉   User@email.com",  label_visibility="collapsed")
-            _pwd   = st.text_input("pw", placeholder="🔒   Mot de passe",    type="password", label_visibility="collapsed")
-            _c1, _c2 = st.columns([1.2, 1])
-            with _c1: st.checkbox("Se souvenir de moi")
-            with _c2: st.markdown('<div style="text-align:right;padding-top:6px;color:#0099ff !important;font-size:0.77rem;cursor:pointer;">Mot de passe oublié ?</div>', unsafe_allow_html=True)
-            _submit = st.form_submit_button("Se connecter  →", use_container_width=True)
+            email = st.text_input("Email", placeholder="votre@email.com")
+            password = st.text_input("Mot de passe", type="password", placeholder="••••••••")
+            submit = st.form_submit_button("Se connecter", use_container_width=True)
 
-        st.markdown('<div style="text-align:center;color:rgba(80,120,180,0.45) !important;font-size:0.67rem;margin-top:12px;">DouaneXtract v1.0 &nbsp;·&nbsp; Direction Générale des Douanes Tunisiennes</div>', unsafe_allow_html=True)
+        st.markdown("""
+        <div style="text-align:center; color:rgba(150,180,220,0.5);
+                    font-size:0.75rem; margin-top:16px;">
+            Problème de connexion ? Contactez l'administrateur.
+        </div>
+        """, unsafe_allow_html=True)
 
-        if _submit:
-            if not _email or not _pwd:
-                st.error("⚠️ Veuillez remplir tous les champs.")
+        if submit:
+            if not email or not password:
+                st.error("Veuillez remplir tous les champs.")
             else:
-                _user = auth.login(_email, _pwd)
-                if _user:
-                    st.session_state["user"] = _user
+                if authenticate_user(email, password):
+                    st.session_state["authenticated"] = True
                     st.rerun()
                 else:
-                    st.error("❌ Email ou mot de passe incorrect.")
+                    st.error("Email ou mot de passe incorrect.")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
