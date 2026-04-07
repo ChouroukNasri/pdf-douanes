@@ -178,137 +178,89 @@ section[data-testid="stMain"] hr { border-color:#e5e7eb !important; }
 #  PAGE LOGIN
 # ══════════════════════════════════════════════════════════════════════════════
 def show_login():
-    st.markdown("""
-    <style>
-    .stApp {
-        background: linear-gradient(135deg, #020b28 0%, #041454 60%, #0a1f6e 100%);
-        min-height: 100vh;
-    }
-    header[data-testid="stHeader"] { background: transparent !important; }
-    label { color: rgba(180,210,255,0.9) !important; font-size:0.85rem !important; }
-    input[type="text"], input[type="password"] {
-        background: rgba(0,30,80,0.6) !important;
-        border: 1px solid rgba(0,180,255,0.3) !important;
-        color: #ffffff !important;
-        border-radius: 8px !important;
-    }
-    .stFormSubmitButton button {
-        background: linear-gradient(90deg, #0050d8, #00a8ff) !important;
-        color: white !important;
-        border: none !important;
-        border-radius: 8px !important;
-        font-weight: 600 !important;
-        font-size: 1rem !important;
-    }
-    .stFormSubmitButton button:hover {
-        background: linear-gradient(90deg, #0060f0, #00c0ff) !important;
-        box-shadow: 0 0 20px rgba(0,180,255,0.4) !important;
-    }
-    </style>
-    """, unsafe_allow_html=True)
+    import base64 as _b64, os as _os
 
-    st.markdown("<br><br>", unsafe_allow_html=True)
-    col = st.columns([1, 2, 1])[1]
+    _logo = ""
+    try:
+        _lp = _os.path.join(_os.path.dirname(__file__), "logo.png")
+    except NameError:
+        _lp = "logo.png"  # fallback si __file__ non dispo (Streamlit Cloud)
 
-    with col:
-        st.markdown("""
-        <div style="
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(0,180,255,0.3);
-            border-radius: 20px;
-            padding: 40px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 0 40px rgba(0,120,255,0.15);
-            text-align: center;
-            margin-bottom: 24px;
-        ">
-            <div style="font-size:2.2rem; font-weight:800; margin-bottom:6px;">
-                <span style="color:#ffffff;">Douane</span><span style="color:#00c8ff;">Xtract</span>
-            </div>
-            <div style="color:rgba(180,210,255,0.7); font-size:0.82rem; letter-spacing:0.5px;">
-                Base de données — Avis de Classement Tarifaire
-            </div>
-            <hr style="border:none; border-top:1px solid rgba(0,180,255,0.2); margin:20px 0 0 0;">
-        </div>
-        """, unsafe_allow_html=True)
+    if _os.path.exists(_lp):
+        with open(_lp, "rb") as _f:
+            _logo = _b64.b64encode(_f.read()).decode()
+
+    # CSS
+    st.markdown("""<style> ... </style>""", unsafe_allow_html=True)
+
+    _img_tag = f'<img src="data:image/png;base64,{_logo}" style="width:160px;filter:drop-shadow(0 0 18px rgba(0,150,255,0.4));">' if _logo else ""
+
+    st.markdown("<br>", unsafe_allow_html=True)
+    _, _col, _ = st.columns([1, 2, 1])
+
+    with _col:
+        st.markdown(f""" ... {_img_tag} ... """, unsafe_allow_html=True)
 
         with st.form("login_form"):
-            email = st.text_input("Email", placeholder="votre@email.com")
-            password = st.text_input("Mot de passe", type="password", placeholder="••••••••")
-            submit = st.form_submit_button("Se connecter", use_container_width=True)
+            _email = st.text_input("em", placeholder="✉   User@email.com", label_visibility="collapsed")
+            _pwd   = st.text_input("pw", placeholder="🔒   Mot de passe", type="password", label_visibility="collapsed")
 
-        st.markdown("""
-        <div style="text-align:center; color:rgba(150,180,220,0.5);
-                    font-size:0.75rem; margin-top:16px;">
-            Problème de connexion ? Contactez l'administrateur.
-        </div>
-        """, unsafe_allow_html=True)
+            _c1, _c2 = st.columns([1.2, 1])
+            with _c1:
+                st.checkbox("Se souvenir de moi")
+            with _c2:
+                st.markdown(
+                    '<div style="text-align:right;padding-top:6px;color:#0099ff !important;font-size:0.77rem;">Mot de passe oublié ?</div>',
+                    unsafe_allow_html=True
+                )
 
-        if submit:
-            if not email or not password:
-                st.error("Veuillez remplir tous les champs.")
+            _submit = st.form_submit_button("Se connecter  →", use_container_width=True)
+
+        st.markdown(
+            '<div style="text-align:center;color:rgba(80,120,180,0.45);font-size:0.67rem;margin-top:12px;">DouaneXtract v1.0 · Direction Générale des Douanes Tunisiennes</div>',
+            unsafe_allow_html=True
+        )
+
+        if _submit:
+            if not _email or not _pwd:
+                st.error("⚠️ Veuillez remplir tous les champs.")
             else:
-                if authenticate_user(email, password):
-                    st.session_state["authenticated"] = True
+                # 🔴 PROTECTION si auth non défini
+                try:
+                    _user = auth.login(_email, _pwd)
+                except Exception as e:
+                    st.error(f"Erreur auth: {e}")
+                    return
+
+                if _user:
+                    st.session_state["user"] = _user
                     st.rerun()
                 else:
-                    st.error("Email ou mot de passe incorrect.")
+                    st.error("❌ Email ou mot de passe incorrect.")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
 #  SESSION
 # ══════════════════════════════════════════════════════════════════════════════
 if "user" not in st.session_state:
-    show_login(); st.stop()
+    show_login()
+    st.stop()
 
-user     = st.session_state["user"]
-is_admin = user["role"] == "admin"
-stats    = db.get_stats()
+user = st.session_state["user"]
+
+# 🔴 éviter crash si role absent
+is_admin = user.get("role") == "admin"
+
+# 🔴 protéger db
+try:
+    stats = db.get_stats()
+except:
+    stats = {}
 
 if "module" not in st.session_state:
     st.session_state["module"] = "dashboard"
+
 module = st.session_state["module"]
-
-
-# ══════════════════════════════════════════════════════════════════════════════
-#  SIDEBAR
-# ══════════════════════════════════════════════════════════════════════════════
-with st.sidebar:
-    logo_html = f'<img src="data:image/png;base64,{LOGO_B64}" style="width:90px;display:block;margin:0 auto 12px auto;filter:drop-shadow(0 0 10px rgba(100,160,255,0.3));">' if LOGO_B64 else ""
-    st.markdown(f"""
-    <div style="padding:24px 16px 8px 16px;text-align:center;">
-        {logo_html}
-        <div style="font-size:1.6rem;font-weight:900;letter-spacing:0.5px;margin-bottom:2px;">
-            <span style="color:#ffffff;">Douane</span><span style="color:#60a5fa;">Xtract</span>
-        </div>
-        <div style="font-size:0.68rem;color:rgba(148,163,184,0.8);letter-spacing:0.5px;">
-            Base de données Douanes
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown("<hr style='border-color:rgba(255,255,255,0.08);margin:12px 0;'>", unsafe_allow_html=True)
-
-    # Bouton actif en surbrillance
-    mod = st.session_state.get("module","dashboard")
-    def nav_btn(label, key, icon=""):
-        active = "background:rgba(37,99,235,0.6) !important;border-color:rgba(96,165,250,0.5) !important;color:white !important;" if mod==key else ""
-        if st.button(label, use_container_width=True, key=f"nav_{key}"):
-            st.session_state["module"] = key; st.rerun()
-
-    nav_btn("🏠  Tableau de bord",  "dashboard")
-    nav_btn("📋  Avis Tarifaires",  "tarifaires")
-    nav_btn("📁  Secrétariat",      "secretariat")
-    nav_btn("🌐  Décisions OMD",    "omd")
-    if is_admin:
-        nav_btn("👥  Utilisateurs", "users")
-
-    st.markdown("<hr style='border-color:rgba(255,255,255,0.08);margin:16px 0 12px 0;'>", unsafe_allow_html=True)
-    if st.button("🚪  Se déconnecter", use_container_width=True, key="nav_logout"):
-        del st.session_state["user"]
-        st.session_state["module"] = "dashboard"
-        st.rerun()
-
 
 # ══════════════════════════════════════════════════════════════════════════════
 #  DASHBOARD
