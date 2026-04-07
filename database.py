@@ -49,16 +49,14 @@ def init_db():
     # ── MODULE 3 : Decisions OMD ──────────────────────────────────────────────
     c.execute("""
         CREATE TABLE IF NOT EXISTS omd (
-            id           INTEGER PRIMARY KEY AUTOINCREMENT,
-            filename     TEXT NOT NULL,
-            filepath     TEXT,
-            full_text    TEXT,
-            upload_date  TEXT,
-            numero_dec   TEXT,
-            titre        TEXT,
-            date_dec     TEXT,
-            chapitre     TEXT,
-            code_sh      TEXT
+            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            filename    TEXT NOT NULL,
+            upload_date TEXT,
+            numero      TEXT,
+            description TEXT,
+            classement  TEXT,
+            motif       TEXT,
+            session     TEXT
         )
     """)
 
@@ -79,7 +77,7 @@ def init_db():
     # FTS pour OMD
     c.execute("""
         CREATE VIRTUAL TABLE IF NOT EXISTS omd_fts USING fts5(
-            full_text, filename, numero_dec, titre, chapitre, code_sh,
+            numero, description, classement, motif, session, filename,
             content=omd, content_rowid=id
         )
     """)
@@ -112,12 +110,12 @@ def init_db():
 
     # Triggers OMD
     c.execute("""CREATE TRIGGER IF NOT EXISTS omd_ai AFTER INSERT ON omd BEGIN
-        INSERT INTO omd_fts(rowid,full_text,filename,numero_dec,titre,chapitre,code_sh)
-        VALUES(new.id,new.full_text,new.filename,new.numero_dec,new.titre,new.chapitre,new.code_sh);
+        INSERT INTO omd_fts(rowid,numero,description,classement,motif,session,filename)
+        VALUES(new.id,new.numero,new.description,new.classement,new.motif,new.session,new.filename);
     END""")
     c.execute("""CREATE TRIGGER IF NOT EXISTS omd_ad AFTER DELETE ON omd BEGIN
-        INSERT INTO omd_fts(omd_fts,rowid,full_text,filename,numero_dec,titre,chapitre,code_sh)
-        VALUES('delete',old.id,old.full_text,old.filename,old.numero_dec,old.titre,old.chapitre,old.code_sh);
+        INSERT INTO omd_fts(omd_fts,rowid,numero,description,classement,motif,session,filename)
+        VALUES('delete',old.id,old.numero,old.description,old.classement,old.motif,old.session,old.filename);
     END""")
 
     conn.commit()
@@ -239,15 +237,15 @@ def delete_secretariat(doc_id):
 # ══════════════════════════════════════════════════════════════════════════════
 def insert_omd(data):
     conn = get_connection(); c = conn.cursor()
-    c.execute("""INSERT INTO omd(filename,filepath,full_text,upload_date,
-        numero_dec,titre,date_dec,chapitre,code_sh)
-        VALUES(:filename,:filepath,:full_text,:upload_date,
-        :numero_dec,:titre,:date_dec,:chapitre,:code_sh)""", {
-        "filename":data.get("filename",""), "filepath":data.get("filepath",""),
-        "full_text":data.get("full_text",""), "upload_date":datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "numero_dec":data.get("numero_dec",""), "titre":data.get("titre",""),
-        "date_dec":data.get("date_dec",""), "chapitre":data.get("chapitre",""),
-        "code_sh":data.get("code_sh",""),
+    c.execute("""INSERT INTO omd(filename,upload_date,numero,description,classement,motif,session)
+        VALUES(:filename,:upload_date,:numero,:description,:classement,:motif,:session)""", {
+        "filename":    data.get("filename",""),
+        "upload_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "numero":      data.get("numero",""),
+        "description": data.get("description",""),
+        "classement":  data.get("classement",""),
+        "motif":       data.get("motif",""),
+        "session":     data.get("session",""),
     })
     doc_id = c.lastrowid; conn.commit(); conn.close(); return doc_id
 
@@ -257,7 +255,13 @@ def search_omd(query):
         c.execute("SELECT d.* FROM omd d JOIN omd_fts f ON d.id=f.rowid WHERE omd_fts MATCH ? ORDER BY rank",(query,))
     except:
         like = "%"+query+"%"
-        c.execute("SELECT * FROM omd WHERE full_text LIKE ? OR numero_dec LIKE ? OR titre LIKE ? OR chapitre LIKE ? OR code_sh LIKE ?",(like,like,like,like,like))
+        c.execute("SELECT * FROM omd WHERE description LIKE ? OR classement LIKE ? OR motif LIKE ? OR session LIKE ? OR numero LIKE ?",(like,like,like,like,like))
+    results = [dict(r) for r in c.fetchall()]; conn.close(); return results
+
+def search_omd_by_classement(query):
+    conn = get_connection(); c = conn.cursor()
+    like = "%"+query.upper()+"%"
+    c.execute("SELECT * FROM omd WHERE UPPER(classement) LIKE ? ORDER BY classement",(like,))
     results = [dict(r) for r in c.fetchall()]; conn.close(); return results
 
 def get_all_omd():
@@ -272,8 +276,8 @@ def get_omd_by_id(doc_id):
 
 def update_omd(doc_id, data):
     conn = get_connection(); c = conn.cursor()
-    c.execute("""UPDATE omd SET numero_dec=:numero_dec,titre=:titre,
-        date_dec=:date_dec,chapitre=:chapitre,code_sh=:code_sh WHERE id=:id""",
+    c.execute("""UPDATE omd SET numero=:numero,description=:description,
+        classement=:classement,motif=:motif,session=:session WHERE id=:id""",
         {**data,"id":doc_id})
     conn.commit(); conn.close()
 
