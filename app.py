@@ -706,7 +706,6 @@ elif module == "secretariat":
                     date_val = doc.get("date_avis")     or "—"
                     hs_val   = doc.get("hs_code")       or "—"
                     desc_fr  = doc.get("desc_fr")       or "—"
-                    desc_en  = doc.get("desc_en")       or "—"
 
                     # Surligner la partie recherchée
                     num_display = num_val
@@ -720,46 +719,52 @@ elif module == "secretariat":
                             num_val[idx+len(q):]
                         )
 
-                    desc_en_html = ""
+                    card_html = (
+                        '<div style="background:#ffffff;border:1.5px solid #e2e8f0;'
+                        'border-radius:14px;overflow:hidden;margin-bottom:20px;'
+                        'box-shadow:0 2px 10px rgba(0,0,0,0.06);">'
 
-                    st.markdown(f"""
-                    <div style='background:#ffffff;border:1.5px solid #e2e8f0;
-                        border-radius:14px;overflow:hidden;margin-bottom:20px;
-                        box-shadow:0 2px 10px rgba(0,0,0,0.06);'>
+                        '<div style="display:grid;grid-template-columns:1fr 1px 1fr 1px 1fr;'
+                        'background:#f8fafc;border-bottom:1.5px solid #e2e8f0;">'
 
-                        <div style='display:grid;grid-template-columns:1fr 1px 1fr 1px 1fr;
-                            background:#f8fafc;border-bottom:1.5px solid #e2e8f0;'>
-                            <div style='padding:16px 22px;'>
-                                <div style='color:#9ca3af;font-size:0.62rem;letter-spacing:1px;
-                                    text-transform:uppercase;margin-bottom:6px;'>NUMÉRO DE LETTRE</div>
-                                <div style='color:#1a56db;font-weight:800;font-size:1.2rem;'>{num_display}</div>
-                            </div>
-                            <div style='background:#e2e8f0;'></div>
-                            <div style='padding:16px 22px;'>
-                                <div style='color:#9ca3af;font-size:0.62rem;letter-spacing:1px;
-                                    text-transform:uppercase;margin-bottom:6px;'>📅 DATE</div>
-                                <div style='color:#111827;font-weight:700;font-size:1.05rem;'>📅 {date_val}</div>
-                            </div>
-                            <div style='background:#e2e8f0;'></div>
-                            <div style='padding:16px 22px;'>
-                                <div style='color:#9ca3af;font-size:0.62rem;letter-spacing:1px;
-                                    text-transform:uppercase;margin-bottom:6px;'>🏷 HS CODE</div>
-                                <div style='color:#111827;font-weight:700;font-size:1.05rem;'>🏷 {hs_val}</div>
-                            </div>
-                        </div>
+                        '<div style="padding:16px 22px;">'
+                        '<div style="color:#9ca3af;font-size:0.62rem;letter-spacing:1px;'
+                        'text-transform:uppercase;margin-bottom:6px;">NUMÉRO DE LETTRE</div>'
+                        '<div style="color:#1a56db;font-weight:800;font-size:1.2rem;">' + num_display + '</div>'
+                        '</div>'
 
-                        <div style='padding:18px 22px;'>
-                            <div style='color:#9ca3af;font-size:0.62rem;letter-spacing:1px;
-                                text-transform:uppercase;margin-bottom:8px;'>DESCRIPTION EN FRANÇAIS</div>
-                            <div style='background:#fefce8;border:1px solid #fde68a;
-                                border-radius:8px;padding:14px 18px;
-                                color:#374151;font-size:0.875rem;line-height:1.7;'>
-                                {desc_fr}
-                            </div>
-                        </div>
+                        '<div style="background:#e2e8f0;"></div>'
 
-                    </div>
-                    """, unsafe_allow_html=True)
+                        '<div style="padding:16px 22px;">'
+                        '<div style="color:#9ca3af;font-size:0.62rem;letter-spacing:1px;'
+                        'text-transform:uppercase;margin-bottom:6px;">📅 DATE</div>'
+                        '<div style="color:#111827;font-weight:700;font-size:1.05rem;">📅 ' + date_val + '</div>'
+                        '</div>'
+
+                        '<div style="background:#e2e8f0;"></div>'
+
+                        '<div style="padding:16px 22px;">'
+                        '<div style="color:#9ca3af;font-size:0.62rem;letter-spacing:1px;'
+                        'text-transform:uppercase;margin-bottom:6px;">🏷 HS CODE</div>'
+                        '<div style="color:#111827;font-weight:700;font-size:1.05rem;">🏷 ' + hs_val + '</div>'
+                        '</div>'
+
+                        '</div>'
+
+                        '<div style="padding:18px 22px;">'
+                        '<div style="color:#9ca3af;font-size:0.62rem;letter-spacing:1px;'
+                        'text-transform:uppercase;margin-bottom:8px;">DESCRIPTION EN FRANÇAIS</div>'
+                        '<div style="background:#fefce8;border:1px solid #fde68a;'
+                        'border-radius:8px;padding:14px 18px;'
+                        'color:#374151;font-size:0.875rem;line-height:1.7;">'
+                        + desc_fr +
+                        '</div>'
+                        '</div>'
+
+                        '</div>'
+                    )
+                    st.markdown(card_html, unsafe_allow_html=True)
+
 
                 # Boutons bas
                 _, bc2, bc3 = st.columns([2, 1, 1])
