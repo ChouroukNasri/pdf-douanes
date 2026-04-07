@@ -179,59 +179,134 @@ section[data-testid="stMain"] hr { border-color:#e5e7eb !important; }
 # ══════════════════════════════════════════════════════════════════════════════
 def show_login():
     import base64 as _b64, os as _os
-
     _logo = ""
-    try:
-        _lp = _os.path.join(_os.path.dirname(__file__), "logo.png")
-    except NameError:
-        _lp = "logo.png"  # fallback si __file__ non dispo (Streamlit Cloud)
-
+    _lp = _os.path.join(_os.path.dirname(__file__), "logo.png")
     if _os.path.exists(_lp):
-        with open(_lp, "rb") as _f:
+        with open(_lp,"rb") as _f:
             _logo = _b64.b64encode(_f.read()).decode()
 
-    # CSS
-    st.markdown("""<style> ... </style>""", unsafe_allow_html=True)
+    # CSS complet isolé pour la page login — écrase tout
+    st.markdown("""
+    <style>
+    /* Reset complet pour la page login */
+    .stApp {
+        background: radial-gradient(ellipse at 30% 20%, #0d2060 0%, #020b28 55%, #010818 100%) !important;
+        min-height: 100vh;
+    }
+    header[data-testid="stHeader"]   { display:none !important; }
+    section[data-testid="stSidebar"] { display:none !important; }
+    #MainMenu, footer                 { display:none !important; }
+    .block-container {
+        padding-top: 0 !important;
+        max-width: 100% !important;
+        background: transparent !important;
+        box-shadow: none !important;
+    }
+    /* Textes login */
+    p, span, div, label { color: rgba(200,225,255,0.88) !important; }
+    h1,h2,h3 { color: #ffffff !important; }
+    /* Inputs login */
+    .stTextInput input {
+        background: rgba(0,18,60,0.75) !important;
+        border: 1px solid rgba(0,130,255,0.3) !important;
+        color: #ffffff !important;
+        border-radius: 10px !important;
+        padding: 12px 16px !important;
+    }
+    .stTextInput input:focus {
+        border-color: #0088ff !important;
+        box-shadow: 0 0 0 3px rgba(0,136,255,0.18) !important;
+    }
+    .stTextInput input::placeholder { color: rgba(120,160,220,0.5) !important; }
+    .stTextInput label { display:none !important; }
+    /* Checkbox */
+    .stCheckbox label span { color: rgba(150,190,255,0.75) !important; font-size:0.8rem !important; }
+    /* Bouton login */
+    .stFormSubmitButton button {
+        background: linear-gradient(90deg, #0050d8 0%, #0099ff 100%) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 10px !important;
+        font-weight: 700 !important;
+        font-size: 1rem !important;
+        padding: 13px !important;
+    }
+    .stFormSubmitButton button:hover {
+        background: linear-gradient(90deg, #0066ff 0%, #00bbff 100%) !important;
+        box-shadow: 0 4px 28px rgba(0,140,255,0.5) !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
     _img_tag = f'<img src="data:image/png;base64,{_logo}" style="width:160px;filter:drop-shadow(0 0 18px rgba(0,150,255,0.4));">' if _logo else ""
 
     st.markdown("<br>", unsafe_allow_html=True)
     _, _col, _ = st.columns([1, 2, 1])
-
     with _col:
-        st.markdown(f""" ... {_img_tag} ... """, unsafe_allow_html=True)
+        st.markdown(f"""
+        <div style="background:rgba(4,16,60,0.82);border:1px solid rgba(0,140,255,0.35);
+            border-radius:24px;overflow:hidden;backdrop-filter:blur(20px);
+            box-shadow:0 8px 60px rgba(0,80,255,0.22);max-width:460px;margin:0 auto;">
+
+          <div style="background:radial-gradient(ellipse at 50% 30%,#0d2878,#020f40);
+              border-bottom:1px solid rgba(0,140,255,0.2);padding:28px 28px 20px;text-align:center;">
+            {_img_tag}
+            <div style="font-size:2.2rem;font-weight:900;letter-spacing:1px;margin-top:10px;margin-bottom:4px;">
+              <span style="color:#ffffff !important;">Douane</span><span style="color:#00aaff !important;">Xtract</span>
+            </div>
+            <div style="color:rgba(150,190,255,0.65) !important;font-size:0.76rem;letter-spacing:0.7px;margin-bottom:18px;">
+              Base de données — Avis de Classement Tarifaire
+            </div>
+            <div style="display:flex;justify-content:center;align-items:center;">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:0 12px;">
+                <div style="width:36px;height:36px;background:rgba(0,80,200,0.3);border:1px solid rgba(0,150,255,0.3);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;">📄</div>
+                <span style="color:rgba(160,200,255,0.8) !important;font-size:0.6rem;font-weight:700;letter-spacing:1px;">EXTRAIRE</span>
+              </div>
+              <div style="width:1px;height:40px;background:rgba(0,150,255,0.18);"></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:0 12px;">
+                <div style="width:36px;height:36px;background:rgba(0,80,200,0.3);border:1px solid rgba(0,150,255,0.3);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;">🗄️</div>
+                <span style="color:rgba(160,200,255,0.8) !important;font-size:0.6rem;font-weight:700;letter-spacing:1px;">COMPRENDRE</span>
+              </div>
+              <div style="width:1px;height:40px;background:rgba(0,150,255,0.18);"></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:0 12px;">
+                <div style="width:36px;height:36px;background:rgba(0,80,200,0.3);border:1px solid rgba(0,150,255,0.3);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;">📈</div>
+                <span style="color:rgba(160,200,255,0.8) !important;font-size:0.6rem;font-weight:700;letter-spacing:1px;">VALORISER</span>
+              </div>
+              <div style="width:1px;height:40px;background:rgba(0,150,255,0.18);"></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:0 12px;">
+                <div style="width:36px;height:36px;background:rgba(0,80,200,0.3);border:1px solid rgba(0,150,255,0.3);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;">🛡️</div>
+                <span style="color:rgba(160,200,255,0.8) !important;font-size:0.6rem;font-weight:700;letter-spacing:1px;">SÉCURISÉ</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="padding:20px 28px 4px 28px;">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+              <div style="width:42px;height:42px;background:rgba(0,80,200,0.3);border:1px solid rgba(0,150,255,0.4);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🔐</div>
+              <div>
+                <div style="font-size:1.05rem;font-weight:800;color:#ffffff !important;">Authentification</div>
+                <div style="font-size:0.72rem;color:rgba(130,175,230,0.65) !important;">Accédez à votre base de données en toute sécurité</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        """, unsafe_allow_html=True)
 
         with st.form("login_form"):
-            _email = st.text_input("em", placeholder="✉   User@email.com", label_visibility="collapsed")
-            _pwd   = st.text_input("pw", placeholder="🔒   Mot de passe", type="password", label_visibility="collapsed")
-
+            _email = st.text_input("em", placeholder="✉   User@email.com",  label_visibility="collapsed")
+            _pwd   = st.text_input("pw", placeholder="🔒   Mot de passe",    type="password", label_visibility="collapsed")
             _c1, _c2 = st.columns([1.2, 1])
-            with _c1:
-                st.checkbox("Se souvenir de moi")
-            with _c2:
-                st.markdown(
-                    '<div style="text-align:right;padding-top:6px;color:#0099ff !important;font-size:0.77rem;">Mot de passe oublié ?</div>',
-                    unsafe_allow_html=True
-                )
-
+            with _c1: st.checkbox("Se souvenir de moi")
+            with _c2: st.markdown('<div style="text-align:right;padding-top:6px;color:#0099ff !important;font-size:0.77rem;cursor:pointer;">Mot de passe oublié ?</div>', unsafe_allow_html=True)
             _submit = st.form_submit_button("Se connecter  →", use_container_width=True)
 
-        st.markdown(
-            '<div style="text-align:center;color:rgba(80,120,180,0.45);font-size:0.67rem;margin-top:12px;">DouaneXtract v1.0 · Direction Générale des Douanes Tunisiennes</div>',
-            unsafe_allow_html=True
-        )
+        st.markdown('<div style="text-align:center;color:rgba(80,120,180,0.45) !important;font-size:0.67rem;margin-top:12px;">DouaneXtract v1.0 &nbsp;·&nbsp; Direction Générale des Douanes Tunisiennes</div>', unsafe_allow_html=True)
 
         if _submit:
             if not _email or not _pwd:
                 st.error("⚠️ Veuillez remplir tous les champs.")
             else:
-                # 🔴 PROTECTION si auth non défini
-                try:
-                    _user = auth.login(_email, _pwd)
-                except Exception as e:
-                    st.error(f"Erreur auth: {e}")
-                    return
-
+                _user = auth.login(_email, _pwd)
                 if _user:
                     st.session_state["user"] = _user
                     st.rerun()
@@ -243,24 +318,56 @@ def show_login():
 #  SESSION
 # ══════════════════════════════════════════════════════════════════════════════
 if "user" not in st.session_state:
-    show_login()
-    st.stop()
+    show_login(); st.stop()
 
-user = st.session_state["user"]
-
-# 🔴 éviter crash si role absent
-is_admin = user.get("role") == "admin"
-
-# 🔴 protéger db
-try:
-    stats = db.get_stats()
-except:
-    stats = {}
+user     = st.session_state["user"]
+is_admin = user["role"] == "admin"
+stats    = db.get_stats()
 
 if "module" not in st.session_state:
     st.session_state["module"] = "dashboard"
-
 module = st.session_state["module"]
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  SIDEBAR
+# ══════════════════════════════════════════════════════════════════════════════
+with st.sidebar:
+    logo_html = f'<img src="data:image/png;base64,{LOGO_B64}" style="width:90px;display:block;margin:0 auto 12px auto;filter:drop-shadow(0 0 10px rgba(100,160,255,0.3));">' if LOGO_B64 else ""
+    st.markdown(f"""
+    <div style="padding:24px 16px 8px 16px;text-align:center;">
+        {logo_html}
+        <div style="font-size:1.6rem;font-weight:900;letter-spacing:0.5px;margin-bottom:2px;">
+            <span style="color:#ffffff;">Douane</span><span style="color:#60a5fa;">Xtract</span>
+        </div>
+        <div style="font-size:0.68rem;color:rgba(148,163,184,0.8);letter-spacing:0.5px;">
+            Base de données Douanes
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("<hr style='border-color:rgba(255,255,255,0.08);margin:12px 0;'>", unsafe_allow_html=True)
+
+    # Bouton actif en surbrillance
+    mod = st.session_state.get("module","dashboard")
+    def nav_btn(label, key, icon=""):
+        active = "background:rgba(37,99,235,0.6) !important;border-color:rgba(96,165,250,0.5) !important;color:white !important;" if mod==key else ""
+        if st.button(label, use_container_width=True, key=f"nav_{key}"):
+            st.session_state["module"] = key; st.rerun()
+
+    nav_btn("🏠  Tableau de bord",  "dashboard")
+    nav_btn("📋  Avis Tarifaires",  "tarifaires")
+    nav_btn("📁  Secrétariat",      "secretariat")
+    nav_btn("🌐  Décisions OMD",    "omd")
+    if is_admin:
+        nav_btn("👥  Utilisateurs", "users")
+
+    st.markdown("<hr style='border-color:rgba(255,255,255,0.08);margin:16px 0 12px 0;'>", unsafe_allow_html=True)
+    if st.button("🚪  Se déconnecter", use_container_width=True, key="nav_logout"):
+        del st.session_state["user"]
+        st.session_state["module"] = "dashboard"
+        st.rerun()
+
 
 # ══════════════════════════════════════════════════════════════════════════════
 #  DASHBOARD
