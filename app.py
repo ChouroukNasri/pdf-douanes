@@ -497,7 +497,99 @@ elif module == "tarifaires":
                         with st.expander("📄 Texte OCR complet"):
                             st.text(doc.get("full_text","")[:4000])
 
-    
+    # ── RECHERCHE ─────────────────────────────────────────────────────────────
+    elif page == "🔍 Recherche":
+        st.subheader("🔍 Recherche")
+
+        cq, cb = st.columns([4,1])
+        with cq:
+            query = st.text_input("q",
+                placeholder="Mot-clé, désignation, N° avis…",
+                label_visibility="collapsed")
+        with cb:
+            rechercher = st.button("Rechercher", type="primary", use_container_width=True)
+
+        with st.expander("🔧 Filtres par champ", expanded=True):
+            f1, f2, f3 = st.columns(3)
+            filter_avis  = f1.text_input("🔵 N° Avis",        placeholder="ex: 2206755")
+            filter_ndp   = f2.text_input("🟢 NDP (partiel)",   placeholder="ex: 94, 9405, 94054010099")
+            filter_tarif = f3.text_input("🟡 N° Tarifaire",    placeholder="ex: 940540")
+
+        if query or filter_avis or filter_ndp or filter_tarif or rechercher:
+            results = db.search_documents(query) if query else db.get_all_documents()
+
+            if filter_avis.strip():
+                results = [r for r in results if filter_avis.strip() in (r.get("numero_avis") or "")]
+            if filter_ndp.strip():
+                results = [r for r in results if filter_ndp.strip() in (r.get("ndp") or "")]
+            if filter_tarif.strip():
+                results = [r for r in results if filter_tarif.strip() in (r.get("tarif_number") or "")]
+
+            nb = len(results)
+            if nb == 0:
+                st.warning("🔍 Aucun document trouvé.")
+            else:
+                extra = f" pour <b>{query}</b>" if query else ""
+                st.markdown(f"""
+                <div style="background:rgba(0,80,200,0.2);border:1px solid rgba(0,180,255,0.35);
+                    border-radius:10px;padding:12px 20px;margin-bottom:16px;
+                    display:flex;align-items:center;gap:12px;">
+                    <span style="font-size:1.6rem;font-weight:800;color:#00c8ff;">{nb}</span>
+                    <span style="color:rgba(180,215,255,0.8);font-size:0.9rem;">document(s) trouvé(s){extra}</span>
+                </div>""", unsafe_allow_html=True)
+
+                for doc in results:
+                    ndp_val   = doc.get("ndp")          or "—"
+                    avis_val  = doc.get("numero_avis")  or "—"
+                    tarif_val = doc.get("tarif_number") or "—"
+                    desig_val = doc.get("designation")  or "—"
+                    usage_val = doc.get("usage_text")   or "—"
+                    date_val  = doc.get("upload_date","")[:10]
+                    desig_short = desig_val[:60] + ("…" if len(desig_val)>60 else "")
+                    usage_short = usage_val[:120] + ("…" if len(usage_val)>120 else "")
+
+                    # Surligner NDP
+                    ndp_display = ndp_val
+                    if filter_ndp.strip() and filter_ndp.strip() in ndp_val:
+                        ndp_display = ndp_val.replace(
+                            filter_ndp.strip(),
+                            f'<span style="background:rgba(0,200,100,0.3);border-radius:3px;padding:0 2px;">{filter_ndp.strip()}</span>'
+                        )
+
+                    st.markdown(f"""
+                    <div style="background:rgba(4,20,70,0.6);border:1px solid rgba(0,150,255,0.25);
+                        border-radius:12px;padding:16px;margin-bottom:12px;">
+                        <div style="display:flex;justify-content:space-between;margin-bottom:12px;">
+                            <span style="font-size:0.88rem;font-weight:700;color:#fff;">📄 {doc['filename']}</span>
+                            <span style="color:rgba(150,180,220,0.5);font-size:0.75rem;">{date_val}</span>
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-bottom:10px;">
+                            <div style="background:rgba(0,50,140,0.4);border:1px solid rgba(0,140,255,0.2);border-radius:8px;padding:10px;">
+                                <div style="color:rgba(140,180,230,0.55);font-size:0.65rem;letter-spacing:0.5px;margin-bottom:3px;">N° AVIS</div>
+                                <div style="color:#00c8ff;font-weight:700;font-size:0.9rem;">{avis_val}</div>
+                            </div>
+                            <div style="background:rgba(0,50,140,0.4);border:1px solid rgba(0,140,255,0.2);border-radius:8px;padding:10px;">
+                                <div style="color:rgba(140,180,230,0.55);font-size:0.65rem;letter-spacing:0.5px;margin-bottom:3px;">NDP</div>
+                                <div style="color:#00e090;font-weight:700;font-size:0.9rem;">{ndp_display}</div>
+                            </div>
+                            <div style="background:rgba(0,50,140,0.4);border:1px solid rgba(0,140,255,0.2);border-radius:8px;padding:10px;">
+                                <div style="color:rgba(140,180,230,0.55);font-size:0.65rem;letter-spacing:0.5px;margin-bottom:3px;">N° TARIFAIRE</div>
+                                <div style="color:#ffb800;font-weight:700;font-size:0.9rem;">{tarif_val}</div>
+                            </div>
+                            <div style="background:rgba(0,50,140,0.4);border:1px solid rgba(0,140,255,0.2);border-radius:8px;padding:10px;">
+                                <div style="color:rgba(140,180,230,0.55);font-size:0.65rem;letter-spacing:0.5px;margin-bottom:3px;">DÉSIGNATION</div>
+                                <div style="color:rgba(200,225,255,0.9);font-size:0.8rem;line-height:1.3;">{desig_short}</div>
+                            </div>
+                        </div>
+                        <div style="background:rgba(0,30,100,0.3);border-radius:6px;padding:8px 12px;">
+                            <span style="color:rgba(140,180,230,0.5);font-size:0.67rem;">POUR LE CLASSEMENT TARIFAIRE : </span>
+                            <span style="color:rgba(170,205,255,0.75);font-size:0.8rem;">{usage_short}</span>
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    with st.expander("📄 Voir texte OCR complet"):
+                        st.text(doc.get("full_text","")[:3000])
+
     # ── MODIFIER ──────────────────────────────────────────────────────────────
     elif page == "✏️ Modifier":
         st.subheader("✏️ Modifier / Supprimer")
@@ -934,6 +1026,7 @@ elif module == "omd":
                         'Classement : <span style="color:#d97706;font-weight:700;">' + clas + '</span>'
                         '</div>'
                         '</div>'
+
 
 
                         # Session
