@@ -436,16 +436,12 @@ elif module == "tarifaires":
                         '</div>'
 
                         # Pour le classement tarifaire
-                        '<div style="background:#f9fafb;border-radius:6px;padding:8px 12px;">'
-                        '<span style="color:#9ca3af;font-size:0.67rem;">POUR LE CLASSEMENT TARIFAIRE :</span>'
-                        '<span style="color:#374151;font-size:0.82rem;">' + usage_short + '</span>'
-                        '</div>'
-                        
                         '<div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;'
                         'padding:8px 12px;margin-bottom:10px;">'
                         '<span style="color:#0369a1;font-size:0.68rem;font-weight:700;letter-spacing:0.5px;">POUR LE CLASSEMENT TARIFAIRE :</span>'
                         '<span style="color:#1e3a5f;font-size:0.85rem;">' + usage_short + '</span>'
                         '</div>'
+                        
                         # Désignation au-dessus
                         '<div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;'
                         'padding:8px 12px;margin-bottom:10px;">'
