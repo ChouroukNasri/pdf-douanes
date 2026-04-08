@@ -99,8 +99,6 @@ section[data-testid="stMain"] hr { border-color:#e5e7eb !important; }
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-#  PAGE LOGIN — Design Streamlit natif (fiable, pas de HTML brut)
-# ══════════════════════════════════════════════════════════════════════════════
 def show_login():
     st.markdown("""
     <style>
@@ -109,26 +107,35 @@ def show_login():
     section[data-testid="stSidebar"] { display:none !important; }
     #MainMenu, footer { display:none !important; }
     .block-container { padding-top:40px !important; max-width:480px !important; margin:0 auto !important; background:transparent !important; box-shadow:none !important; }
+
     /* Carte login */
-    [data-testid="stVerticalBlock"] > div:first-child { background:rgba(255,255,255,0.06) !important; border:1px solid rgba(100,160,255,0.25) !important; border-radius:20px !important; padding:32px !important; backdrop-filter:blur(10px) !important; }
+    [data-testid="stVerticalBlock"] > div:first-child { 
+        background:rgba(255,255,255,0.06) !important; 
+        border:1px solid rgba(100,160,255,0.25) !important; 
+        border-radius:20px !important; 
+        padding:32px !important; 
+        backdrop-filter:blur(10px) !important; 
+    }
+
     /* Inputs */
     section[data-testid="stMain"] input[type="text"], section[data-testid="stMain"] input[type="password"] {
-        background:rgba(255,255,255,0.08) !important; border:1px solid rgba(100,160,255,0.3) !important;
-        color:#ffffff !important; border-radius:10px !important;
+        background:rgba(255,255,255,0.08) !important; 
+        border:1px solid rgba(100,160,255,0.3) !important;
+        color:#ffffff !important; 
+        border-radius:10px !important;
     }
     section[data-testid="stMain"] input::placeholder { color:rgba(180,200,240,0.5) !important; }
     section[data-testid="stMain"] label { color:rgba(180,210,255,0.8) !important; }
+
     /* Bouton */
     section[data-testid="stMain"] .stFormSubmitButton button {
         background:linear-gradient(90deg,#1a56db,#3b82f6) !important;
         color:white !important; border:none !important; border-radius:10px !important;
         font-weight:700 !important; font-size:1rem !important; padding:12px !important;
     }
+
     /* Checkbox */
     section[data-testid="stMain"] .stCheckbox label span { color:rgba(180,210,255,0.8) !important; }
-    /* Textes */
-    section[data-testid="stMain"] p, section[data-testid="stMain"] span, section[data-testid="stMain"] div { color:rgba(200,225,255,0.85) !important; }
-    section[data-testid="stMain"] h1 { color:#ffffff !important; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -139,43 +146,6 @@ def show_login():
             '<img src="data:image/png;base64,' + LOGO_B64 + '" style="width:120px;">'
             '</div>', unsafe_allow_html=True)
 
-    # Titre
-    st.markdown("""
-    <div style="text-align:center;margin-bottom:24px;">
-        <div style="font-size:2rem;font-weight:900;color:#ffffff;letter-spacing:1px;">
-            Douane<span style="color:#60a5fa;">Xtract</span>
-        </div>
-        <div style="font-size:0.78rem;color:rgba(150,190,255,0.7);margin-top:4px;">
-            Base de données — Avis de Classement Tarifaire
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-    # 4 features
-    col1, col2, col3, col4 = st.columns(4)
-    for col, icon, label in [
-        (col1,"📄","Extraire"), (col2,"🗄️","Comprendre"),
-        (col3,"📈","Valoriser"), (col4,"🛡️","Sécurisé")
-    ]:
-        col.markdown(
-            '<div style="text-align:center;padding:10px 4px;">'
-            '<div style="font-size:1.4rem;margin-bottom:4px;">' + icon + '</div>'
-            '<div style="font-size:0.62rem;font-weight:700;color:rgba(160,200,255,0.9);letter-spacing:1px;">' + label.upper() + '</div>'
-            '</div>', unsafe_allow_html=True)
-
-    st.markdown("<hr style='border-color:rgba(100,160,255,0.2);margin:16px 0;'>", unsafe_allow_html=True)
-
-    # En-tête auth
-    st.markdown("""
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
-        <div style="width:40px;height:40px;background:rgba(26,86,219,0.4);border:1px solid rgba(96,165,250,0.5);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;">🔐</div>
-        <div>
-            <div style="font-weight:800;font-size:1rem;color:#ffffff;">Authentification</div>
-            <div style="font-size:0.72rem;color:rgba(150,185,230,0.7);">Accédez à votre base de données en toute sécurité</div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
     # Formulaire
     with st.form("login_form"):
         email    = st.text_input("Adresse email", placeholder="user@email.com")
@@ -184,8 +154,6 @@ def show_login():
         with c1: st.checkbox("Se souvenir de moi")
         with c2: st.markdown('<div style="text-align:right;padding-top:6px;font-size:0.78rem;color:#60a5fa;">Mot de passe oublié ?</div>', unsafe_allow_html=True)
         submit = st.form_submit_button("Se connecter →", use_container_width=True)
-
-    st.markdown('<div style="text-align:center;font-size:0.68rem;color:rgba(100,140,200,0.5);margin-top:12px;">DouaneXtract v1.0 · Direction Générale des Douanes Tunisiennes</div>', unsafe_allow_html=True)
 
     if submit:
         if not email or not password:
@@ -197,8 +165,6 @@ def show_login():
                 st.rerun()
             else:
                 st.error("❌ Email ou mot de passe incorrect.")
-
-
 # ══════════════════════════════════════════════════════════════════════════════
 #  SESSION
 # ══════════════════════════════════════════════════════════════════════════════
