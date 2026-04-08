@@ -132,6 +132,8 @@ def show_login():
     </style>
     """, unsafe_allow_html=True)
 
+
+
     # Titre
     st.markdown("""
     <div style="text-align:center;margin-bottom:24px;">
@@ -146,16 +148,16 @@ def show_login():
 
 
 
+
+
     # Formulaire
     with st.form("login_form"):
-     st.markdown('<div style="text-align:center;font-size:1.2rem;font-weight:600;color:#ffffff;margin-bottom:16px;">Connexion</div>', unsafe_allow_html=True)
-     email = st.text_input("Adresse email", placeholder="user@email.com", key="email_input")
-     password = st.text_input("Mot de passe", placeholder="••••••••", type="password", key="password_input")
-
-    st.markdown(
-        '<div style="text-align:right;font-size:0.78rem;color:#60a5fa;margin-top:6px;">Mot de passe oublié ?</div>',
-        unsafe_allow_html=True
-    )
+        email    = st.text_input("Adresse email", placeholder="user@email.com")
+        password = st.text_input("Mot de passe",  placeholder="••••••••", type="password")
+        c1, c2 = st.columns([1, 1])
+        with c1: st.checkbox("Se souvenir de moi")
+        with c2: st.markdown('<div style="text-align:right;padding-top:6px;font-size:0.78rem;color:#60a5fa;">Mot de passe oublié ?</div>', unsafe_allow_html=True)
+        submit = st.form_submit_button("Se connecter →", use_container_width=True)
 
     st.markdown('<div style="text-align:center;font-size:0.68rem;color:rgba(100,140,200,0.5);margin-top:12px;">DouaneXtract v1.0 · Direction Générale des Douanes Tunisiennes</div>', unsafe_allow_html=True)
 
