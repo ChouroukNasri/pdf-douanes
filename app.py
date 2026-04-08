@@ -692,19 +692,24 @@ elif module == "omd":
                             '<span style="color:#374151;font-size:0.83rem;"><b>Motif</b> : ' + motif[:150] + ('…' if len(motif)>150 else '') + '</span></div>'
                         )
 
+
                     card = (
                         '<div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:14px;'
                         'padding:18px 22px;margin-bottom:14px;box-shadow:0 1px 6px rgba(0,0,0,0.05);">'
+
+                        # Icône + Classement
                         '<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">'
                         '<div style="width:34px;height:34px;background:#fef3c7;border:1px solid #fcd34d;'
                         'border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;">📁</div>'
                         '<div style="font-size:1rem;font-weight:600;color:#1a1a1a;">'
-                        'Classement : <span style="color:#d97706;font-weight:700;">' + clas + '</span></div>'
+                        'Classement : <span style="color:#d97706;font-weight:700;">' + clas + '</span>'
                         '</div>'
-                        '<div style="color:#1a1a1a;font-size:0.9rem;line-height:1.6;margin-bottom:6px;">'
-                        '<b>' + first_w + '</b>' + rest_d[:120] + ('…' if len(desc)>120 else '') + '</div>'
-                        '<div style="color:#374151;font-size:0.83rem;"><b>Session</b> : <em>' + sess + '</em></div>'
-                        + motif_line +
+                        '</div>'
+
+                        # Session uniquement
+                        '<div style="color:#374151;font-size:0.85rem;">'
+                        '<b>Session</b> : <em>' + sess + '</em>'
+                        '</div>'
                         '</div>'
                     )
                     st.markdown(card, unsafe_allow_html=True)
