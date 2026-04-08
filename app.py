@@ -206,8 +206,8 @@ def show_login():
 
     # ── Footer ─────────────────────────────────────────────────────────────────
     st.markdown(
-        '<div style="text-align:center;margin-top:24px;color:#b91c1c;font-size:0.75rem;">'
-        '<b style="color:#dc2626;">DouaneXtract</b> v1.0 &nbsp;·&nbsp; '
+        '<div style="text-align:center;margin-top:24px;color:rgba(200,220,255,0.55);font-size:0.75rem;">'
+        '<b style="color:rgba(200,220,255,0.75);">DouaneXtract</b> v1.0 &nbsp;·&nbsp; '
         'Direction Générale des Douanes Tunisiennes</div>',
         unsafe_allow_html=True)
 
