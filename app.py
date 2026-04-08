@@ -167,6 +167,12 @@ def show_login():
     """, unsafe_allow_html=True)
 
     # ── Logo + titre (au-dessus de la carte) ──────────────────────────────────
+    logo_b64 = LOGO_B64
+    logo_html = (
+        '<img src="data:image/png;base64,' + logo_b64 + '" '
+        'style="width:72px;vertical-align:middle;margin-right:14px;'
+        'filter:drop-shadow(0 2px 8px rgba(0,0,0,0.3));">'
+    ) if logo_b64 else ""
 
     st.markdown(
         '<div style="text-align:center;margin-bottom:28px;padding-top:8px;">'
@@ -300,40 +306,6 @@ if module == "dashboard":
     s3.metric("🌐 Décisions OMD",   stats['omd'])
     s4.metric("📊 Total",           stats['total'])
 
-    st.markdown("---")
-    st.markdown("### 🕐 Derniers documents ajoutés")
-    t1, t2, t3 = st.tabs(["📋 Tarifaires","📁 Secrétariat","🌐 OMD"])
-    with t1:
-        docs = db.get_all_documents()[:5]
-        if not docs: st.info("Aucun document.")
-        else:
-            for d in docs:
-                st.markdown(
-                    '<div class="result-card"><b>📄 ' + d['filename'] + '</b> &nbsp;'
-                    '<span class="badge">' + (d.get('tarif_number') or '?') + '</span>'
-                    '<span style="float:right;color:#6b7280;font-size:0.78rem">' + d.get('upload_date','')[:10] + '</span><br>'
-                    '<small style="color:#6b7280">N° ' + (d.get('numero_avis') or '—') + ' · NDP ' + (d.get('ndp') or '—') + '</small></div>',
-                    unsafe_allow_html=True)
-    with t2:
-        docs = db.get_all_secretariat()[:5]
-        if not docs: st.info("Aucun document.")
-        else:
-            for d in docs:
-                st.markdown(
-                    '<div class="result-card"><b>' + (d.get('numero_lettre') or d.get('filename','')) + '</b>'
-                    '<span style="float:right;color:#6b7280;font-size:0.78rem">' + d.get('upload_date','')[:10] + '</span><br>'
-                    '<small style="color:#6b7280">' + (d.get('desc_fr') or '')[:80] + '</small></div>',
-                    unsafe_allow_html=True)
-    with t3:
-        docs = db.get_all_omd()[:5]
-        if not docs: st.info("Aucun document.")
-        else:
-            for d in docs:
-                st.markdown(
-                    '<div class="result-card"><span class="badge-purple">' + (d.get('classement') or '?') + '</span>'
-                    '<span style="float:right;color:#6b7280;font-size:0.78rem">' + d.get('upload_date','')[:10] + '</span><br>'
-                    '<small style="color:#6b7280">' + (d.get('description') or '')[:80] + '</small></div>',
-                    unsafe_allow_html=True)
 
 
 # ══════════════════════════════════════════════════════════════════════════════
