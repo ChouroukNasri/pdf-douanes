@@ -576,14 +576,15 @@ elif module == "tarifaires":
                                 <div style="color:rgba(140,180,230,0.55);font-size:0.65rem;letter-spacing:0.5px;margin-bottom:3px;">N° TARIFAIRE</div>
                                 <div style="color:#ffb800;font-weight:700;font-size:0.9rem;">{tarif_val}</div>
                             </div>
-                            <div style="background:rgba(0,50,140,0.4);border:1px solid rgba(0,140,255,0.2);border-radius:8px;padding:10px;">
-                                <div style="color:rgba(140,180,230,0.55);font-size:0.65rem;letter-spacing:0.5px;margin-bottom:3px;">DÉSIGNATION</div>
-                                <div style="color:rgba(200,225,255,0.9);font-size:0.8rem;line-height:1.3;">{desig_short}</div>
-                            </div>
+
                         </div>
                         <div style="background:rgba(0,30,100,0.3);border-radius:6px;padding:8px 12px;">
-                            <span style="color:rgba(140,180,230,0.5);font-size:0.67rem;">POUR LE CLASSEMENT TARIFAIRE · </span>
+                            <span style="color:rgba(140,180,230,0.5);font-size:0.67rem;">POUR LE CLASSEMENT TARIFAIRE : </span>
                             <span style="color:rgba(170,205,255,0.75);font-size:0.8rem;">{usage_short}</span>
+                        </div>
+                        <div style="background:rgba(0,30,100,0.3);border-radius:6px;padding:8px 12px;">
+                            <span style="color:rgba(140,180,230,0.5);font-size:0.67rem;">DÉSIGNATION : </span>
+                            <span style="color:rgba(170,205,255,0.75);font-size:0.8rem;">{desig_short}</span>
                         </div>
                     </div>
                     """, unsafe_allow_html=True)
