@@ -461,8 +461,8 @@ elif module == "tarifaires":
 #  MODULE 2 — SECRETARIAT
 # ══════════════════════════════════════════════════════════════════════════════
 elif module == "secretariat":
-    st.markdown("## 📁 Avis Secrétariat")
-    st.caption("Documents PDF scannés — Classement tarifaire douanier")
+    st.markdown("## 📁 Secrétariat")
+    st.caption("Documents et fichiers relatifs au Secrétariat")
     st.markdown("---")
 
     page = st.radio("", ["🔍 Recherche", "📤 Ajouter fichier xlsx", "✏️ Modifier"],
@@ -618,6 +618,9 @@ elif module == "secretariat":
 #  MODULE 3 — DECISIONS OMD
 # ══════════════════════════════════════════════════════════════════════════════
 elif module == "omd":
+    st.markdown("## 🌐 Décisions OMD")
+    st.caption("Textes officiels et décisions de l'OMD")
+    st.markdown("---")
 
     page = st.radio("", ["🔍 Recherche", "📤 Ajouter", "✏️ Modifier"],
                     horizontal=True, label_visibility="collapsed")
