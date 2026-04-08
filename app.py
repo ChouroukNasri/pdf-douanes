@@ -1027,18 +1027,12 @@ elif module == "omd":
                         '</div>'
                         '</div>'
 
-                        # Description
-                        '<div style="color:#1a1a1a;font-size:0.9rem;line-height:1.6;margin-bottom:6px;">'
-                        '<b>' + first_w + '</b>' + rest_desc[:120] + ('…' if len(desc) > 120 else '')
-                        + '</div>'
 
                         # Session
                         '<div style="color:#374151;font-size:0.83rem;">'
                         '<b>Session</b> : <em>' + sess + '</em>'
                         '</div>'
 
-                        + motif_line +
-                        '</div>'
                     )
                     st.markdown(card, unsafe_allow_html=True)
 
