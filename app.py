@@ -557,35 +557,56 @@ elif module == "tarifaires":
                         )
 
                     st.markdown(f"""
-                    <div style="background:rgba(4,20,70,0.6);border:1px solid rgba(0,150,255,0.25);
-                        border-radius:12px;padding:16px;margin-bottom:12px;">
-                        <div style="display:flex;justify-content:space-between;margin-bottom:12px;">
-                            <span style="font-size:0.88rem;font-weight:700;color:#fff;">📄 {doc['filename']}</span>
-                            <span style="color:rgba(150,180,220,0.5);font-size:0.75rem;">{date_val}</span>
-                        </div>
-                        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-bottom:10px;">
-                            <div style="background:rgba(0,50,140,0.4);border:1px solid rgba(0,140,255,0.2);border-radius:8px;padding:10px;">
-                                <div style="color:rgba(140,180,230,0.55);font-size:0.65rem;letter-spacing:0.5px;margin-bottom:3px;">N° AVIS</div>
-                                <div style="color:#00c8ff;font-weight:700;font-size:0.9rem;">{avis_val}</div>
-                            </div>
-                            <div style="background:rgba(0,50,140,0.4);border:1px solid rgba(0,140,255,0.2);border-radius:8px;padding:10px;">
-                                <div style="color:rgba(140,180,230,0.55);font-size:0.65rem;letter-spacing:0.5px;margin-bottom:3px;">NDP</div>
-                                <div style="color:#00e090;font-weight:700;font-size:0.9rem;">{ndp_display}</div>
-                            </div>
-                            <div style="background:rgba(0,50,140,0.4);border:1px solid rgba(0,140,255,0.2);border-radius:8px;padding:10px;">
-                                <div style="color:rgba(140,180,230,0.55);font-size:0.65rem;letter-spacing:0.5px;margin-bottom:3px;">N° TARIFAIRE</div>
-                                <div style="color:#ffb800;font-weight:700;font-size:0.9rem;">{tarif_val}</div>
-                            </div>
-                            <div style="background:rgba(0,50,140,0.4);border:1px solid rgba(0,140,255,0.2);border-radius:8px;padding:10px;">
-                                <div style="color:rgba(140,180,230,0.55);font-size:0.65rem;letter-spacing:0.5px;margin-bottom:3px;">DÉSIGNATION</div>
-                                <div style="color:rgba(200,225,255,0.9);font-size:0.8rem;line-height:1.3;">{desig_short}</div>
-                            </div>
-                        </div>
-                        <div style="background:rgba(0,30,100,0.3);border-radius:6px;padding:8px 12px;">
-                            <span style="color:rgba(140,180,230,0.5);font-size:0.67rem;">POUR LE CLASSEMENT TARIFAIRE : </span>
-                            <span style="color:rgba(170,205,255,0.75);font-size:0.8rem;">{usage_short}</span>
-                        </div>
-                    </div>
+<div style="background:rgba(4,20,70,0.6);border:1px solid rgba(0,150,255,0.25); 
+border-radius:12px;padding:16px;margin-bottom:12px;">
+
+    <!-- HEADER -->
+    <div style="display:flex;justify-content:space-between;margin-bottom:12px;">
+        <span style="font-size:0.88rem;font-weight:700;color:#fff;">📄 {doc['filename']}</span>
+        <span style="color:rgba(150,180,220,0.5);font-size:0.75rem;">{date_val}</span>
+    </div>
+
+    <!-- GRID -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px;">
+
+        <div style="background:rgba(0,50,140,0.4);border:1px solid rgba(0,140,255,0.2);border-radius:8px;padding:10px;">
+            <div style="color:rgba(140,180,230,0.55);font-size:0.65rem;">N° AVIS</div>
+            <div style="color:#00c8ff;font-weight:700;font-size:0.9rem;">{avis_val}</div>
+        </div>
+
+        <div style="background:rgba(0,50,140,0.4);border:1px solid rgba(0,140,255,0.2);border-radius:8px;padding:10px;">
+            <div style="color:rgba(140,180,230,0.55);font-size:0.65rem;">NDP</div>
+            <div style="color:#00e090;font-weight:700;font-size:0.9rem;">{ndp_display}</div>
+        </div>
+
+        <div style="background:rgba(0,50,140,0.4);border:1px solid rgba(0,140,255,0.2);border-radius:8px;padding:10px;">
+            <div style="color:rgba(140,180,230,0.55);font-size:0.65rem;">N° TARIFAIRE</div>
+            <div style="color:#ffb800;font-weight:700;font-size:0.9rem;">{tarif_val}</div>
+        </div>
+
+    </div>
+
+    <!-- USAGE -->
+    <div style="background:rgba(0,30,100,0.3);border-radius:6px;padding:8px 12px;margin-bottom:6px;">
+        <span style="color:rgba(140,180,230,0.5);font-size:0.67rem;">
+            POUR LE CLASSEMENT TARIFAIRE :
+        </span><br>
+        <span style="color:rgba(170,205,255,0.75);font-size:0.8rem;">
+            {usage_short}
+        </span>
+    </div>
+
+    <!-- DESIGNATION déplacée ici -->
+    <div style="background:rgba(0,30,100,0.3);border-radius:6px;padding:8px 12px;">
+        <span style="color:rgba(140,180,230,0.5);font-size:0.67rem;">
+            DÉSIGNATION :
+        </span><br>
+        <span style="color:rgba(200,225,255,0.9);font-size:0.8rem;">
+            {desig_short}
+        </span>
+    </div>
+
+</div>
                     """, unsafe_allow_html=True)
                     with st.expander("📄 Voir texte OCR complet"):
                         st.text(doc.get("full_text","")[:3000])
