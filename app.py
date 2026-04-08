@@ -167,12 +167,6 @@ def show_login():
     """, unsafe_allow_html=True)
 
     # ── Logo + titre (au-dessus de la carte) ──────────────────────────────────
-    logo_b64 = LOGO_B64
-    logo_html = (
-        '<img src="data:image/png;base64,' + logo_b64 + '" '
-        'style="width:72px;vertical-align:middle;margin-right:14px;'
-        'filter:drop-shadow(0 2px 8px rgba(0,0,0,0.3));">'
-    ) if logo_b64 else ""
 
     st.markdown(
         '<div style="text-align:center;margin-bottom:28px;padding-top:8px;">'
