@@ -927,78 +927,66 @@ elif module == "omd":
             Recherche — Décisions OMD
         </h2>
         <p style='color:#6b7280;font-size:0.9rem;margin-bottom:20px;'>
-            Recherchez par code de classement, description ou motif.
+            Recherchez par code de classement (partiel ou complet), description ou session.
         </p>
         """, unsafe_allow_html=True)
 
         if total_omd > 0:
-            st.markdown(f"""
-            <div style='display:inline-flex;align-items:center;gap:8px;
-                background:#eff6ff;border:1px solid #bfdbfe;
-                border-radius:8px;padding:6px 14px;margin-bottom:16px;'>
-                <span style='color:#1d4ed8;font-size:0.82rem;'>
-                    ℹ️ Base de données : <b>{total_omd:,}</b> décisions disponibles
-                </span>
-            </div>
-            """, unsafe_allow_html=True)
+            st.markdown(
+                '<div style="display:inline-flex;align-items:center;gap:8px;'
+                'background:#eff6ff;border:1px solid #bfdbfe;'
+                'border-radius:8px;padding:6px 14px;margin-bottom:16px;">'
+                '<span style="color:#1d4ed8;font-size:0.82rem;">'
+                'ℹ️ Base de données : <b>' + str(total_omd) + '</b> décisions disponibles'
+                '</span></div>',
+                unsafe_allow_html=True)
 
-        # Barre de recherche
-        st.markdown("""
-        <div style='background:#f8fafc;border:1.5px solid #e2e8f0;
-            border-radius:12px;padding:20px 24px;margin-bottom:24px;'>
-            <div style='color:#374151;font-size:0.82rem;font-weight:600;margin-bottom:8px;'>
-                Recherche libre
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+        # Zone recherche
+        st.markdown(
+            '<div style="background:#f8fafc;border:1.5px solid #e2e8f0;'
+            'border-radius:12px;padding:20px 24px;margin-bottom:24px;">'
+            '<div style="color:#374151;font-size:0.82rem;font-weight:600;margin-bottom:8px;">'
+            'Classement (partiel ou complet)</div></div>',
+            unsafe_allow_html=True)
 
-        col_q, col_btn = st.columns([4, 1])
-        with col_q:
-            query = st.text_input("q", placeholder="Ex: 17.04, sucreries, bacon, 22ème session...",
-                                  label_visibility="collapsed", key="omd_q")
+        col_inp, col_btn = st.columns([4, 1])
+        with col_inp:
+            q_class = st.text_input("cl",
+                placeholder="ex: 17  ou  17.04  ou  19.05  ou  8471...",
+                label_visibility="collapsed", key="omd_search")
         with col_btn:
             rechercher = st.button("🔍  Rechercher", type="primary", use_container_width=True)
 
-        # Filtres
-        with st.expander("🔧 Filtres par champ", expanded=False):
-            fc1, fc2, fc3 = st.columns(3)
-            f_classement = fc1.text_input("Classement (ex: 17, 19.05)", key="omd_fc")
-            f_session    = fc2.text_input("Session (ex: 22ème)", key="omd_fs")
-            f_desc       = fc3.text_input("Description contient", key="omd_fd")
+        # Filtre texte libre
+        with st.expander("🔧 Recherche dans la description"):
+            q_desc = st.text_input("Description contient", placeholder="ex: sucreries, bacon, véhicule...", key="omd_desc")
 
-        if (rechercher or query or f_classement or f_session or f_desc) and total_omd > 0:
-            # Recherche
-            if query:
-                results = db.search_omd(query)
-            else:
-                results = db.get_all_omd()
+        # Lancer recherche
+        if (rechercher or q_class or q_desc) and total_omd > 0:
+            all_docs = db.get_all_omd()
+            results  = all_docs
 
-            # Filtres additionnels
-            if f_classement.strip():
-                results = [r for r in results if f_classement.strip() in (r.get("classement") or "")]
-            if f_session.strip():
-                results = [r for r in results if f_session.strip().lower() in (r.get("session") or "").lower()]
-            if f_desc.strip():
-                results = [r for r in results if f_desc.strip().lower() in (r.get("description") or "").lower()]
+            if q_class.strip():
+                results = [r for r in results if q_class.strip() in (r.get("classement") or "")]
+            if q_desc.strip():
+                results = [r for r in results if q_desc.strip().lower() in (r.get("description") or "").lower()]
 
             nb = len(results)
 
             if nb == 0:
-                st.markdown("""
-                <div style='background:#fef2f2;border:1px solid #fecaca;border-radius:10px;
-                    padding:14px 20px;display:flex;align-items:center;gap:10px;'>
-                    <span>❌</span>
-                    <span style='color:#dc2626;font-size:0.9rem;'>Aucune décision trouvée.</span>
-                </div>""", unsafe_allow_html=True)
+                st.markdown(
+                    '<div style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;'
+                    'padding:14px 20px;display:flex;align-items:center;gap:10px;">'
+                    '<span>❌</span>'
+                    '<span style="color:#dc2626;font-size:0.9rem;">Aucune décision trouvée.</span>'
+                    '</div>', unsafe_allow_html=True)
             else:
-                st.markdown(f"""
-                <div style='background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;
-                    padding:12px 20px;display:flex;align-items:center;gap:10px;margin-bottom:20px;'>
-                    <span>✅</span>
-                    <span style='color:#15803d;font-size:0.9rem;'>
-                        <b>{nb}</b> décision(s) trouvée(s)
-                    </span>
-                </div>""", unsafe_allow_html=True)
+                st.markdown(
+                    '<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;'
+                    'padding:12px 20px;display:flex;align-items:center;gap:10px;margin-bottom:20px;">'
+                    '<span>✅</span>'
+                    '<span style="color:#15803d;font-size:0.9rem;"><b>' + str(nb) + '</b> décision(s) trouvée(s)</span>'
+                    '</div>', unsafe_allow_html=True)
 
                 for doc in results:
                     clas  = doc.get("classement")  or "—"
@@ -1007,189 +995,110 @@ elif module == "omd":
                     motif = doc.get("motif")       or ""
                     num   = doc.get("numero")      or ""
 
-                    # Description courte pour l'en-tête (première ligne)
-                    desc_lines = desc.strip().split("\n")
-                    desc_short = desc_lines[0][:80] + ("…" if len(desc_lines[0]) > 80 else "")
-                    desc_bold  = desc_short.split(" ")[0] if desc_short else ""
-                    desc_rest  = desc_short[len(desc_bold):]
+                    # Premier mot en gras
+                    words     = desc.strip().split(" ")
+                    first_w   = words[0] if words else ""
+                    rest_desc = desc[len(first_w):]
+                    short     = (first_w + rest_desc)[:120] + ("…" if len(desc) > 120 else "")
 
-                    motif_html = (
-                        '<div style="margin-top:10px;padding-top:10px;'
-                        'border-top:1px solid #e5e7eb;">'
-                        '<span style="color:#374151;font-size:0.82rem;">'
-                        '<b>Motif</b> : ' + motif + '</span></div>'
-                    ) if motif else ""
+                    # Ligne motif
+                    motif_line = ""
+                    if motif and motif not in ("—","nan","None",""):
+                        motif_short = motif[:150] + ("…" if len(motif) > 150 else "")
+                        motif_line = (
+                            '<div style="margin-top:10px;padding-top:10px;'
+                            'border-top:1px solid #e5e7eb;">'
+                            '<span style="color:#374151;font-size:0.83rem;">'
+                            '<b>Motif</b> : ' + motif_short + '</span></div>'
+                        )
 
                     card = (
                         '<div style="background:#ffffff;border:1px solid #e2e8f0;'
-                        'border-radius:12px;padding:18px 20px;margin-bottom:12px;'
+                        'border-radius:14px;padding:18px 22px;margin-bottom:14px;'
                         'box-shadow:0 1px 6px rgba(0,0,0,0.05);">'
 
-                        # Icône + Classement
-                        '<div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">'
-                        '<div style="width:36px;height:36px;background:#fef3c7;border:1px solid #fcd34d;'
+                        # Icone + Classement (exactement comme la photo)
+                        '<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">'
+                        '<div style="width:34px;height:34px;background:#fef3c7;border:1px solid #fcd34d;'
                         'border-radius:8px;display:flex;align-items:center;justify-content:center;'
-                        'font-size:18px;flex-shrink:0;">📁</div>'
-                        '<div style="font-size:1rem;font-weight:700;color:#1a1a1a;">'
-                        'Classement : <span style="color:#d97706;">' + clas + '</span>'
+                        'font-size:17px;flex-shrink:0;">📁</div>'
+                        '<div style="font-size:1rem;font-weight:600;color:#1a1a1a;">'
+                        'Classement : <span style="color:#d97706;font-weight:700;">' + clas + '</span>'
                         '</div>'
                         '</div>'
 
                         # Description
-                        '<div style="color:#374151;font-size:0.875rem;line-height:1.6;margin-bottom:6px;">'
-                        '<b>' + desc_bold + '</b>' + desc_rest
+                        '<div style="color:#1a1a1a;font-size:0.9rem;line-height:1.6;margin-bottom:6px;">'
+                        '<b>' + first_w + '</b>' + rest_desc[:120] + ('…' if len(desc) > 120 else '')
                         + '</div>'
 
                         # Session
-                        '<div style="color:#6b7280;font-size:0.8rem;">'
+                        '<div style="color:#374151;font-size:0.83rem;">'
                         '<b>Session</b> : <em>' + sess + '</em>'
                         '</div>'
 
-                        + motif_html +
+                        + motif_line +
                         '</div>'
                     )
                     st.markdown(card, unsafe_allow_html=True)
 
-                    # Description complète si longue
-                    if len(desc) > 80 or len(desc_lines) > 1:
+                    # Description complète si besoin
+                    if len(desc) > 120:
                         with st.expander("📄 Description complète"):
                             st.write(desc)
+                            if motif:
+                                st.markdown("**Motif :** " + motif)
 
         elif total_omd == 0:
-            st.warning("⚠️ Aucune décision en base. Ajoutez un fichier via 'Ajouter'.")
+            st.warning("⚠️ Aucune décision en base. Ajoutez des PDFs via 'Ajouter'.")
 
     # ── AJOUTER ──────────────────────────────────────────────────────────────
     elif page == "📤 Ajouter":
         st.markdown("""
         <h2 style='color:#0a1628;font-size:1.5rem;font-weight:800;margin-bottom:8px;'>
-            📤 Ajouter des décisions OMD
+            📤 Ajouter des PDFs OMD
         </h2>
         """, unsafe_allow_html=True)
         st.markdown("---")
 
-        st.info("""
-        **Format du fichier Excel attendu :**
-        - Colonne **N°** ou **NUMERO** — numéro de la décision
-        - Colonne **DESCRIPTION** — description du produit
-        - Colonne **CLASSEMENT** — code HS (ex: 17.04, 19.05)
-        - Colonne **MOTIF** — motif du classement (optionnel)
-        - Colonne **SESSION** — session du comité (ex: 22ème Session (1998))
+        st.markdown(
+            '<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;'
+            'padding:14px 18px;margin-bottom:20px;">'
+            '<b style="color:#1d4ed8;">📄 Extraction automatique</b><br>'
+            '<span style="color:#374151;font-size:0.85rem;">'
+            'Glissez votre PDF OMD — les décisions sont extraites automatiquement '
+            '(N°, Classement, Description, Motif, Session) et enregistrées en base.'
+            '</span></div>',
+            unsafe_allow_html=True)
 
-        **Ou uploadez directement le PDF** — les données seront extraites automatiquement.
-        """)
+        files = st.file_uploader("Glissez vos PDFs OMD", type=["pdf"], accept_multiple_files=True)
 
-        tab_xl, tab_pdf, tab_manuel = st.tabs(["📊 Fichier Excel", "📄 PDF", "✏️ Saisie manuelle"])
+        if files:
+            st.markdown(f"**{len(files)} fichier(s) sélectionné(s)**")
+            if st.button("🚀 Lancer l'extraction OCR", type="primary"):
+                total_added = 0
+                progress = st.progress(0)
+                status   = st.empty()
 
-        # ── Excel
-        with tab_xl:
-            uploaded_xl = st.file_uploader("Glisser le fichier Excel", type=["xlsx","xls"], key="omd_xl")
-            if uploaded_xl:
-                import pandas as _pd
-                try:
-                    df = _pd.read_excel(uploaded_xl)
-                    st.success(f"✅ {len(df)} lignes détectées")
-                    st.dataframe(df.head(5), use_container_width=True, hide_index=True)
+                for i, f in enumerate(files):
+                    status.info(f"⏳ Traitement : {f.name} ({i+1}/{len(files)})")
+                    dest = os.path.join(PDF_DIR, f.name)
+                    with open(dest,"wb") as fp: fp.write(f.getbuffer())
 
-                    # Mapper les colonnes
-                    cols = [c.upper() for c in df.columns]
-                    col_map = {}
-                    for field, aliases in {
-                        "numero":      ["N°","NUMERO","NUM","NO"],
-                        "description": ["DESCRIPTION","DESC","PRODUIT"],
-                        "classement":  ["CLASSEMENT","HS CODE","CODE","HS"],
-                        "motif":       ["MOTIF","MOTIF DU CLASSEMENT","RAISON"],
-                        "session":     ["SESSION","COMITE"],
-                    }.items():
-                        for a in aliases:
-                            if a in cols:
-                                col_map[field] = df.columns[cols.index(a)]
-                                break
+                    decisions = ocr.parse_omd_pdf(dest, f.name)
 
-                    st.write("**Correspondance colonnes :**", col_map)
-
-                    if st.button("🚀 Importer", type="primary"):
-                        ok_count = 0
-                        for _, row in df.iterrows():
-                            data = {
-                                "filename":    uploaded_xl.name,
-                                "numero":      str(row.get(col_map.get("numero",""),"")) if col_map.get("numero") else "",
-                                "description": str(row.get(col_map.get("description",""),"")) if col_map.get("description") else "",
-                                "classement":  str(row.get(col_map.get("classement",""),"")) if col_map.get("classement") else "",
-                                "motif":       str(row.get(col_map.get("motif",""),"")) if col_map.get("motif") else "",
-                                "session":     str(row.get(col_map.get("session",""),"")) if col_map.get("session") else "",
-                            }
-                            if data["description"] and data["description"] != "nan":
-                                db.insert_omd(data)
-                                ok_count += 1
-                        st.success(f"✅ {ok_count} décisions importées !")
-                        st.rerun()
-                except Exception as e:
-                    st.error(f"Erreur : {e}")
-
-        # ── PDF (Extraction automatique)
-        with tab_pdf:
-            st.markdown(
-                '<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;'
-                'padding:14px 18px;margin-bottom:16px;">"'
-                '<b style="color:#1d4ed8;">📄 Extraction automatique</b><br>'
-                '<span style="color:#374151;font-size:0.85rem;">Le PDF est analysé automatiquement.'
-                ' Décisions extraites et enregistrées directement.</span></div>',
-                unsafe_allow_html=True)
-            uploaded_pdf = st.file_uploader("Glisser le PDF OMD", type=["pdf"], key="omd_pdf")
-            if uploaded_pdf:
-                dest = os.path.join(PDF_DIR, uploaded_pdf.name)
-                with open(dest,"wb") as fp: fp.write(uploaded_pdf.getbuffer())
-                if st.button("🚀 Extraire et enregistrer automatiquement", type="primary", key="omd_extract"):
-                    with st.spinner("Extraction en cours..."):
-                        decisions = ocr.parse_omd_pdf(dest, uploaded_pdf.name)
                     if not decisions:
-                        st.error("❌ Aucune décision trouvée. Vérifiez le format du PDF.")
+                        st.warning(f"⚠️ Aucune décision trouvée dans {f.name}")
                     else:
-                        st.success(f"✅ **{len(decisions)}** décision(s) détectée(s) !")
-                        st.markdown("**Aperçu des premières décisions extraites :**")
-                        for d in decisions[:5]:
-                            card = (
-                                '<div style="background:#f8fafc;border:1px solid #e2e8f0;'
-                                'border-radius:8px;padding:10px 14px;margin-bottom:8px;">'
-                                '<span style="color:#d97706;font-weight:700;">N°' + d["numero"] + ' — ' + d["classement"] + '</span><br>'
-                                '<span style="color:#374151;font-size:0.82rem;">' + d["description"][:100] + '...</span></div>'
-                            )
-                            st.markdown(card, unsafe_allow_html=True)
-                        if len(decisions) > 5:
-                            st.caption(f"... et {len(decisions)-5} autres décisions")
-                        st.markdown("---")
-                        col_ok, col_ann = st.columns(2)
-                        with col_ok:
-                            if st.button("💾 Confirmer et enregistrer en base", type="primary", key="omd_save"):
-                                for d in decisions:
-                                    db.insert_omd(d)
-                                st.success(f"✅ {len(decisions)} décisions enregistrées !")
-                                st.rerun()
-                        with col_ann:
-                            if st.button("❌ Annuler", key="omd_cancel"):
-                                st.rerun()
+                        for d in decisions:
+                            db.insert_omd(d)
+                        total_added += len(decisions)
+                        st.success(f"✅ {f.name} — **{len(decisions)}** décisions extraites")
 
-        # ── Saisie manuelle
-        with tab_manuel:
-            with st.form("add_omd_form"):
-                st.markdown("**Ajouter une décision manuellement**")
-                c1, c2 = st.columns(2)
-                num  = c1.text_input("N° de décision")
-                clas = c2.text_input("Classement (ex: 17.04)")
-                sess = st.text_input("Session (ex: 22ème Session (1998))")
-                desc = st.text_area("Description du produit", height=120)
-                motif_txt = st.text_area("Motif du classement (optionnel)", height=80)
-                if st.form_submit_button("➕ Ajouter", type="primary"):
-                    if not desc or not clas:
-                        st.error("Description et Classement sont obligatoires.")
-                    else:
-                        db.insert_omd({
-                            "filename": "saisie_manuelle",
-                            "numero": num, "description": desc,
-                            "classement": clas, "motif": motif_txt, "session": sess
-                        })
-                        st.success("✅ Décision ajoutée !")
-                        st.rerun()
+                    progress.progress((i+1)/len(files))
+
+                status.success(f"✅ Import terminé — **{total_added}** décisions enregistrées au total !")
+                st.rerun()
 
     # ── MODIFIER ──────────────────────────────────────────────────────────────
     elif page == "✏️ Modifier":
@@ -1222,18 +1131,18 @@ elif module == "omd":
                 with tab_e:
                     with st.form("edit_omd"):
                         c1, c2 = st.columns(2)
-                        num  = c1.text_input("N°",           value=doc.get("numero")     or "")
-                        clas = c2.text_input("Classement",   value=doc.get("classement") or "")
-                        sess = st.text_input("Session",      value=doc.get("session")    or "")
-                        desc = st.text_area("Description",   value=doc.get("description") or "", height=120)
-                        motif_txt = st.text_area("Motif",    value=doc.get("motif")      or "", height=80)
+                        num      = c1.text_input("N°",         value=doc.get("numero")      or "")
+                        clas     = c2.text_input("Classement", value=doc.get("classement")  or "")
+                        sess     = st.text_input("Session",    value=doc.get("session")     or "")
+                        desc     = st.text_area("Description", value=doc.get("description") or "", height=120)
+                        motif_t  = st.text_area("Motif",       value=doc.get("motif")       or "", height=80)
                         if st.form_submit_button("💾 Enregistrer", type="primary"):
                             db.update_omd(opts[sel],{
                                 "numero":num,"description":desc,
-                                "classement":clas,"motif":motif_txt,"session":sess})
+                                "classement":clas,"motif":motif_t,"session":sess})
                             st.success("✅ Mis à jour !"); st.rerun()
                 with tab_d:
-                    st.warning(f"⚠️ Supprimer la décision **{doc.get('classement')}** ?")
+                    st.warning(f"⚠️ Supprimer **{doc.get('classement')}** ?")
                     if st.checkbox("Je confirme"):
                         if st.button("🗑️ Supprimer", type="primary"):
                             db.delete_omd(opts[sel])
