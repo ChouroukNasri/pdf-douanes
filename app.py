@@ -132,13 +132,6 @@ def show_login():
     </style>
     """, unsafe_allow_html=True)
 
-    # Logo
-    if LOGO_B64:
-        st.markdown(
-            '<div style="text-align:center;margin-bottom:16px;">'
-            '<img src="data:image/png;base64,' + LOGO_B64 + '" style="width:120px;">'
-            '</div>', unsafe_allow_html=True)
-
     # Titre
     st.markdown("""
     <div style="text-align:center;margin-bottom:24px;">
