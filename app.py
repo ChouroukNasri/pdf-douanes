@@ -461,6 +461,9 @@ elif module == "tarifaires":
 #  MODULE 2 — SECRETARIAT
 # ══════════════════════════════════════════════════════════════════════════════
 elif module == "secretariat":
+    st.markdown("## 📁 Avis Secrétariat")
+    st.caption("Documents PDF scannés — Classement tarifaire douanier")
+    st.markdown("---")
 
     page = st.radio("", ["🔍 Recherche", "📤 Ajouter fichier xlsx", "✏️ Modifier"],
                     horizontal=True, label_visibility="collapsed")
