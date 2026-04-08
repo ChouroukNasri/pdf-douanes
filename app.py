@@ -147,42 +147,28 @@ def show_login():
 
 
     # Formulaire
-with st.form("login_form"):
-    st.markdown('<div style="text-align:center;font-size:1.2rem;font-weight:600;color:#ffffff;margin-bottom:16px;">Connexion</div>', unsafe_allow_html=True)
+    with st.form("login_form"):
+     st.markdown('<div style="text-align:center;font-size:1.2rem;font-weight:600;color:#ffffff;margin-bottom:16px;">Connexion</div>', unsafe_allow_html=True)
+     email = st.text_input("Adresse email", placeholder="user@email.com", key="email_input")
+     password = st.text_input("Mot de passe", placeholder="••••••••", type="password", key="password_input")
 
-    email = st.text_input("Adresse email", placeholder="user@email.com", key="email_input")
-    password = st.text_input("Mot de passe", placeholder="••••••••", type="password", key="password_input")
+    st.markdown(
+        '<div style="text-align:right;font-size:0.78rem;color:#60a5fa;margin-top:6px;">Mot de passe oublié ?</div>',
+        unsafe_allow_html=True
+    )
 
-    # Checkbox et mot de passe oublié sur la même ligne
-    c1, c2 = st.columns([1, 1])
-    with c1:
-        remember = st.checkbox("Se souvenir de moi")
-    with c2:
-        st.markdown(
-            '<div style="text-align:right;font-size:0.78rem;color:#60a5fa;margin-top:6px;">Mot de passe oublié ?</div>',
-            unsafe_allow_html=True
-        )
+    st.markdown('<div style="text-align:center;font-size:0.68rem;color:rgba(100,140,200,0.5);margin-top:12px;">DouaneXtract v1.0 · Direction Générale des Douanes Tunisiennes</div>', unsafe_allow_html=True)
 
-    # Bouton de connexion
-    submit = st.form_submit_button("Se connecter →", use_container_width=True)
-
-# Footer minimaliste
-st.markdown(
-    '<div style="text-align:center;font-size:0.68rem;color:rgba(100,140,200,0.5);margin-top:20px;">DouaneXtract v1.0 · Direction Générale des Douanes Tunisiennes</div>',
-    unsafe_allow_html=True
-)
-
-# Gestion de la soumission
-if submit:
-    if not email or not password:
-        st.error("⚠️ Veuillez remplir tous les champs.")
-    else:
-        user = auth.login(email, password)
-        if user:
-            st.session_state["user"] = user
-            st.rerun()
+    if submit:
+        if not email or not password:
+            st.error("⚠️ Veuillez remplir tous les champs.")
         else:
-            st.error("❌ Email ou mot de passe incorrect.")
+            user = auth.login(email, password)
+            if user:
+                st.session_state["user"] = user
+                st.rerun()
+            else:
+                st.error("❌ Email ou mot de passe incorrect.")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
