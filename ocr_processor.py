@@ -191,83 +191,101 @@ def process_pdf(pdf_path, filename=None):
     }
 
 
+
+
 # ══════════════════════════════════════════════════════════════════════════════
 #  PARSER SPECIAL : DECISIONS OMD
 # ══════════════════════════════════════════════════════════════════════════════
 def parse_omd_pdf(pdf_path, filename=None):
     """
     Parse un PDF de decisions OMD (Comite du Systeme Harmonise).
-    Retourne une liste de dicts prets pour db.insert_omd().
-    Format attendu : N°, Description, Classement, Motif, Session.
+    Utilise pdfplumber (texte natif) pour capturer la session correctement.
+    La session detectee (ex: 22eme Session - Novembre 1998) est diffusee
+    a TOUTES les decisions du meme PDF.
     """
     import re
+    try:
+        import pdfplumber
+        HAS_PDFPLUMBER = True
+    except ImportError:
+        HAS_PDFPLUMBER = False
+
     if filename is None:
         filename = Path(pdf_path).name
 
-    text = extract_text_from_pdf(pdf_path)
-    # Supprimer separateurs de pages
-    text = re.sub(r'--- Page \d+ ---\n', '', text)
+    # 1. Extraction texte
+    if HAS_PDFPLUMBER:
+        try:
+            with pdfplumber.open(pdf_path) as pdf:
+                full_text = "\n".join(
+                    p.extract_text() or "" for p in pdf.pages
+                )
+        except Exception:
+            full_text = extract_text_from_pdf(pdf_path)
+            full_text = re.sub(r'--- Page \d+ ---\n', '', full_text)
+    else:
+        full_text = extract_text_from_pdf(pdf_path)
+        full_text = re.sub(r'--- Page \d+ ---\n', '', full_text)
+
+    # 2. Detecter la session UNIQUE du PDF et la diffuser a tous
+    session = ""
+    m_num  = re.search(r'(\d+).?[eèê]me?\s+session', full_text, re.IGNORECASE)
+    m_date = re.search(
+        r'(janvier|f[eé]vrier|mars|avril|mai|juin|juillet|ao[uû]t|'
+        r'septembre|octobre|novembre|d[eé]cembre)\s+(\d{4})',
+        full_text[:500], re.IGNORECASE
+    )
+    if m_num:
+        num = m_num.group(1)
+        if m_date:
+            mois  = m_date.group(1).capitalize()
+            annee = m_date.group(2)
+            session = num + "ème Session (" + mois + " " + annee + ")"
+        else:
+            m_year = re.search(r'\b(19|20)\d{2}\b', full_text[:500])
+            session = num + "ème Session (" + (m_year.group(0) if m_year else "?") + ")"
+
+    print("[OMD] Session detectee : " + repr(session))
+
+    # 3. Couper avant Liste A / Liste B
+    for marker in ["Liste A", "Liste B", "List A", "List B"]:
+        if marker in full_text:
+            full_text = full_text[:full_text.index(marker)]
+
+    # 4. Splitter par entrees numerotees "N. texte"
+    entries = re.split(r'\n(?=\d{1,2}\.\s)', full_text)
 
     decisions = []
-
-    # 1. Extraire la session
-    s = re.search(r'(\d+.?[ee]me?\s+[Ss]ession[^)\n]*)', text)
-    session = re.sub(r'\s+', ' ', s.group(1)).strip() if s else ""
-
-    # 2. Couper apres Liste A / Liste B
-    for marker in ["Liste A", "Liste B", "List A", "List B"]:
-        if marker in text:
-            text = text[:text.index(marker)]
-
-    # 3. Splitter par entrees numerotees
-    entries = re.split(r'\n(?=\d{1,2}\.\s)', text)
-
     for entry in entries:
         entry = entry.strip()
         if not entry:
             continue
 
-        num_match = re.match(r'^(\d{1,2})\.\s+(.+)', entry, re.DOTALL)
-        if not num_match:
+        num_m = re.match(r'^(\d{1,2})\.\s+(.+)', entry, re.DOTALL)
+        if not num_m:
             continue
 
-        num  = num_match.group(1)
-        rest = num_match.group(2)
+        num  = num_m.group(1)
+        rest = num_m.group(2)
 
-        # Chercher code HS (ex: 17.04, 1901.90, 8471.90)
-        hs_pattern = r'\b(\d{2,4}\.\d{2,3})\b'
-        hs_matches = list(re.finditer(hs_pattern, rest))
-        if not hs_matches:
+        # Code HS (ex: 17.04, 1901.90)
+        hs_m = re.search(r'\b(\d{2,4}\.\d{2,3})\b', rest)
+        if not hs_m:
             continue
 
-        hs_match   = hs_matches[0]
-        classement = hs_match.group(1)
-        hs_pos     = hs_match.start()
+        classement = hs_m.group(1)
+        desc  = re.sub(r'\s+', ' ', rest[:hs_m.start()]).strip()
+        motif = re.sub(r'\s+', ' ', rest[hs_m.end():]).strip()[:500]
 
-        # Description = tout avant le code HS, nettoyee
-        desc = re.sub(r'\s+', ' ', rest[:hs_pos]).strip()
-        # Ajouter le texte apres le code HS qui fait partie de la description
-        # (le motif est souvent interleave avec la description dans les PDFs)
-        after_hs = rest[hs_match.end():].strip()
-
-        # Heuristique : si apres le HS il y a du texte court avant une majuscule,
-        # c'est probablement le motif
-        motif_match = re.search(r'\b(RGI\s*\d+[a-z]?|Note\s+\d|Chapitre\s+\d+)', after_hs, re.IGNORECASE)
-        motif = after_hs.strip()
-
-        # Nettoyer motif
-        motif = re.sub(r'\s+', ' ', motif)[:600]
-        desc  = desc[:800]
-
-        if desc and classement and len(desc) > 5:
+        if desc and len(desc) > 5:
             decisions.append({
                 "filename":    filename,
                 "numero":      num,
-                "description": desc,
+                "description": desc[:800],
                 "classement":  classement,
                 "motif":       motif,
                 "session":     session,
             })
 
-    print(f"[OMD] {len(decisions)} decisions extraites de {filename}")
+    print("[OMD] " + str(len(decisions)) + " decisions extraites — session=" + repr(session))
     return decisions
