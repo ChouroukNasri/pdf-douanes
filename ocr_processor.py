@@ -274,10 +274,41 @@ def parse_omd_pdf(pdf_path, filename=None):
             continue
 
         classement = hs_m.group(1)
-        desc  = re.sub(r'\s+', ' ', rest[:hs_m.start()]).strip()
-        motif = re.sub(r'\s+', ' ', rest[hs_m.end():]).strip()[:500]
+        before = re.sub(r'\s+', ' ', rest[:hs_m.start()]).strip()
+        after  = re.sub(r'\s+', ' ', rest[hs_m.end():]).strip()
 
-        if desc and len(desc) > 5:
+        # Reconstruction intelligente selon la position du code HS
+        motif_markers = ['RGI', 'Note ', 'Chapitre ', 'Exclusion', 'Section ']
+
+        if len(before) >= 5 and len(after) >= 5:
+            desc  = before
+            motif = after[:500]
+        elif len(before) >= 5:
+            desc  = before
+            motif = ''
+        elif len(after) >= 5:
+            # HS en debut : description est dans 'after'
+            motif_pos = None
+            for mk in motif_markers:
+                pos = after.find(mk)
+                if pos > 10 and (motif_pos is None or pos < motif_pos):
+                    motif_pos = pos
+            if motif_pos:
+                desc  = after[:motif_pos].strip()
+                motif = after[motif_pos:].strip()[:500]
+            else:
+                desc  = after
+                motif = ''
+        else:
+            # Ni avant ni apres : prendre tout le texte sans le code HS
+            desc  = re.sub(r'\s+', ' ', rest).replace(classement, '').strip()[:800]
+            motif = ''
+
+        # Securite : si encore vide, prendre le texte brut
+        if not desc or len(desc) < 3:
+            desc = re.sub(r'\s+', ' ', rest).strip()[:800]
+
+        if desc:
             decisions.append({
                 "filename":    filename,
                 "numero":      num,
