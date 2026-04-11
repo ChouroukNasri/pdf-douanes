@@ -179,12 +179,16 @@ def show_login():
         + logo_html +
         '<span style="font-size:2.2rem;font-weight:900;color:#ffffff;vertical-align:middle;">'
         'Douane<span style="color:#60a5fa;">Xtract</span></span>'
-        '<div style="color:#1e3a8a;font-size:0.85rem;margin-top:10px;letter-spacing:0.3px;">'
+        '<div style="color:rgba(200,220,255,0.75);font-size:0.85rem;margin-top:10px;letter-spacing:0.3px;">'
         'Base de données — Avis de Classement Tarifaire'
         '</div></div>',
         unsafe_allow_html=True)
 
     # ── Carte blanche ──────────────────────────────────────────────────────────
+    st.markdown(
+        '<div style="background:#ffffff;border-radius:16px;padding:36px 40px 28px 40px;'
+        'box-shadow:0 8px 32px rgba(0,0,0,0.18);">',
+        unsafe_allow_html=True)
 
     with st.form("login_form"):
         email    = st.text_input("Adresse email", placeholder="user@email.com")
@@ -306,6 +310,40 @@ if module == "dashboard":
     s3.metric("🌐 Décisions OMD",   stats['omd'])
     s4.metric("📊 Total",           stats['total'])
 
+    st.markdown("---")
+    st.markdown("### 🕐 Derniers documents ajoutés")
+    t1, t2, t3 = st.tabs(["📋 Tarifaires","📁 Secrétariat","🌐 OMD"])
+    with t1:
+        docs = db.get_all_documents()[:5]
+        if not docs: st.info("Aucun document.")
+        else:
+            for d in docs:
+                st.markdown(
+                    '<div class="result-card"><b>📄 ' + d['filename'] + '</b> &nbsp;'
+                    '<span class="badge">' + (d.get('tarif_number') or '?') + '</span>'
+                    '<span style="float:right;color:#6b7280;font-size:0.78rem">' + d.get('upload_date','')[:10] + '</span><br>'
+                    '<small style="color:#6b7280">N° ' + (d.get('numero_avis') or '—') + ' · NDP ' + (d.get('ndp') or '—') + '</small></div>',
+                    unsafe_allow_html=True)
+    with t2:
+        docs = db.get_all_secretariat()[:5]
+        if not docs: st.info("Aucun document.")
+        else:
+            for d in docs:
+                st.markdown(
+                    '<div class="result-card"><b>' + (d.get('numero_lettre') or d.get('filename','')) + '</b>'
+                    '<span style="float:right;color:#6b7280;font-size:0.78rem">' + d.get('upload_date','')[:10] + '</span><br>'
+                    '<small style="color:#6b7280">' + (d.get('desc_fr') or '')[:80] + '</small></div>',
+                    unsafe_allow_html=True)
+    with t3:
+        docs = db.get_all_omd()[:5]
+        if not docs: st.info("Aucun document.")
+        else:
+            for d in docs:
+                st.markdown(
+                    '<div class="result-card"><span class="badge-purple">' + (d.get('classement') or '?') + '</span>'
+                    '<span style="float:right;color:#6b7280;font-size:0.78rem">' + d.get('upload_date','')[:10] + '</span><br>'
+                    '<small style="color:#6b7280">' + (d.get('description') or '')[:80] + '</small></div>',
+                    unsafe_allow_html=True)
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -600,6 +638,35 @@ elif module == "secretariat":
             except Exception as e:
                 st.error(f"❌ Erreur : {e}")
 
+        # ── Onglet 3 : Nettoyer doublons ────────────────────────────────────
+        with tab_clean:
+            st.markdown("**Supprimer les décisions en double dans la base**")
+            st.caption("Un doublon = même fichier source + même classement + même description.")
+
+            nb_dup = db.get_omd_duplicate_count()
+            total  = len(db.get_all_omd())
+
+            col_a, col_b = st.columns(2)
+            col_a.metric("Total décisions", total)
+            col_b.metric("Doublons détectés", nb_dup,
+                         delta=f"-{nb_dup}" if nb_dup > 0 else "0",
+                         delta_color="inverse")
+
+            if nb_dup == 0:
+                st.success("✅ Aucun doublon détecté — base propre !")
+            else:
+                st.warning(f"⚠️ **{nb_dup}** décision(s) en double détectée(s).")
+                st.markdown(
+                    '<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;'
+                    'padding:12px 16px;margin:12px 0;color:#92400e;font-size:0.88rem;">'
+                    '⚠️ Cette action supprimera les doublons et conservera uniquement '
+                    'la première occurrence de chaque décision.'
+                    '</div>', unsafe_allow_html=True)
+                if st.button("🧹 Supprimer les doublons", type="primary", key="clean_dup"):
+                    deleted = db.deduplicate_omd()
+                    st.success(f"✅ **{deleted}** doublon(s) supprimé(s) — base nettoyée !")
+                    st.rerun()
+
     elif page == "✏️ Modifier":
         st.markdown("<h2 style='color:#0a1628;'>✏️ Modifier / Supprimer</h2>", unsafe_allow_html=True)
         st.markdown("---")
@@ -677,6 +744,9 @@ elif module == "omd":
                     sess  = doc.get("session")     or "—"
                     motif = doc.get("motif")       or ""
 
+                    # Securite affichage : description obligatoire
+                    if not desc or desc in ('—','nan','None',''):
+                        desc = '(description non disponible — veuillez réimporter ce PDF)'
                     words   = desc.strip().split(" ")
                     first_w = words[0] if words else ""
                     rest_d  = desc[len(first_w):]
@@ -721,26 +791,153 @@ elif module == "omd":
     elif page == "📤 Ajouter":
         st.markdown("<h2 style='color:#0a1628;'>📤 Ajouter des PDFs OMD</h2>", unsafe_allow_html=True)
         st.markdown("---")
-        st.info("📄 **Extraction automatique** — les décisions sont extraites et enregistrées directement.")
-        files = st.file_uploader("Glissez vos PDFs OMD", type=["pdf"], accept_multiple_files=True)
-        if files:
-            st.markdown(f"**{len(files)} fichier(s) sélectionné(s)**")
-            if st.button("🚀 Lancer l'extraction OCR", type="primary"):
-                total_added = 0; progress = st.progress(0); status = st.empty()
-                for i, f in enumerate(files):
-                    status.info(f"⏳ {f.name} ({i+1}/{len(files)})")
-                    dest = os.path.join(PDF_DIR, f.name)
-                    with open(dest,"wb") as fp: fp.write(f.getbuffer())
-                    decisions = ocr.parse_omd_pdf(dest, f.name)
-                    if not decisions:
-                        st.warning(f"⚠️ Aucune décision trouvée dans {f.name}")
+
+        tab_import, tab_fix, tab_clean = st.tabs(["📄 Importer un PDF", "🔄 Corriger les sessions", "🧹 Nettoyer doublons"])
+
+        # ── Onglet 1 : Import normal ─────────────────────────────────────────
+        with tab_import:
+            st.info("📄 **Extraction automatique** — session + décisions extraites et enregistrées directement.")
+            files = st.file_uploader("Glissez vos PDFs OMD", type=["pdf"], accept_multiple_files=True, key="omd_upload")
+            if files:
+                st.markdown(f"**{len(files)} fichier(s) sélectionné(s)**")
+                reimport = st.checkbox("Réimporter (remplace les décisions existantes du même fichier)", value=False)
+                if st.button("🚀 Lancer l'extraction", type="primary", key="omd_launch"):
+                    total_added = 0; progress = st.progress(0); status = st.empty()
+                    for i, f in enumerate(files):
+                        status.info(f"⏳ {f.name} ({i+1}/{len(files)})")
+                        dest = os.path.join(PDF_DIR, f.name)
+                        with open(dest,"wb") as fp: fp.write(f.getbuffer())
+                        decisions = ocr.parse_omd_pdf(dest, f.name)
+                        if not decisions:
+                            st.warning(f"⚠️ Aucune décision trouvée dans **{f.name}**")
+                        else:
+                            session_det = decisions[0].get("session","") if decisions else ""
+                            if reimport:
+                                deleted = db.delete_omd_by_filename(f.name)
+                                st.info(f"🔄 {deleted} anciennes décisions supprimées")
+                            # Anti-doublon : ne pas reinserrer ce qui existe deja
+                            existing_keys = {
+                                (r["filename"], r["classement"], r["description"])
+                                for r in db.get_all_omd()
+                            }
+                            new_dec = [d for d in decisions
+                                       if (d["filename"], d["classement"], d["description"]) not in existing_keys]
+                            skip_dup = len(decisions) - len(new_dec)
+                            for d in new_dec: db.insert_omd(d)
+                            total_added += len(new_dec)
+                            info_msg = f"✅ **{f.name}** — {len(new_dec)} décisions · Session : **{session_det}**"
+                            if skip_dup > 0: info_msg += f" · ⚠️ {skip_dup} doublon(s) ignoré(s)"
+                            st.success(info_msg)
+                        progress.progress((i+1)/len(files))
+                    status.success(f"✅ Import terminé — **{total_added}** décisions enregistrées !")
+                    st.rerun()
+
+        # ── Onglet 2 : Corriger session des fichiers deja en base ────────────
+        with tab_fix:
+            st.markdown("**Corriger la session des décisions déjà importées**")
+            st.caption("Utilisez cet outil si des décisions ont été importées avant la correction du parser.")
+
+            filenames = db.get_omd_filenames()
+            if not filenames:
+                st.info("Aucune décision en base.")
+            else:
+                # Afficher l'état actuel par fichier
+                all_docs = db.get_all_omd()
+                file_sessions = {}
+                for doc in all_docs:
+                    fn = doc.get("filename","")
+                    sess = doc.get("session","") or ""
+                    if fn not in file_sessions:
+                        file_sessions[fn] = sess
+
+                st.markdown("**Fichiers en base :**")
+                for fn, sess in file_sessions.items():
+                    if not sess or sess == "—":
+                        icon = "❌"
+                        label = "Session manquante"
                     else:
-                        for d in decisions: db.insert_omd(d)
-                        total_added += len(decisions)
-                        st.success(f"✅ {f.name} — **{len(decisions)}** décisions extraites")
-                    progress.progress((i+1)/len(files))
-                status.success(f"✅ Import terminé — **{total_added}** décisions enregistrées !")
-                st.rerun()
+                        icon = "✅"
+                        label = sess
+                    st.markdown(
+                        '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;'
+                        'padding:10px 14px;margin-bottom:6px;display:flex;justify-content:space-between;">'
+                        '<span style="color:#374151;font-size:0.85rem;">📄 ' + fn + '</span>'
+                        '<span style="color:' + ('#15803d' if icon=='✅' else '#dc2626') + ';font-size:0.82rem;">'
+                        + icon + ' ' + label + '</span>'
+                        '</div>',
+                        unsafe_allow_html=True)
+
+                st.markdown("---")
+                st.markdown("**Réimporter un fichier pour corriger sa session :**")
+                fix_file = st.file_uploader("Glisser le PDF à corriger", type=["pdf"], key="omd_fix")
+                if fix_file:
+                    dest = os.path.join(PDF_DIR, fix_file.name)
+                    with open(dest,"wb") as fp: fp.write(fix_file.getbuffer())
+                    if st.button("🔄 Détecter et corriger la session", type="primary", key="omd_fix_btn"):
+                        with st.spinner("Extraction en cours..."):
+                            decisions = ocr.parse_omd_pdf(dest, fix_file.name)
+                        if not decisions:
+                            st.error("❌ Impossible d'extraire la session depuis ce PDF.")
+                        else:
+                            session_det = decisions[0].get("session","")
+                            if not session_det:
+                                st.error("❌ Session non détectée dans ce PDF.")
+                            else:
+                                # Mettre a jour la session en base
+                                updated = db.update_omd_session_by_filename(fix_file.name, session_det)
+                                if updated > 0:
+                                    st.success(f"✅ Session **{session_det}** appliquée à **{updated}** décisions de *{fix_file.name}*")
+                                else:
+                                    # Fichier pas encore en base — importer directement
+                                    for d in decisions: db.insert_omd(d)
+                                    st.success(f"✅ {len(decisions)} décisions importées avec session **{session_det}**")
+                                st.rerun()
+
+                st.markdown("---")
+                st.markdown("**Ou saisissez la session manuellement :**")
+                col_fn, col_sess, col_btn = st.columns([2,2,1])
+                with col_fn:
+                    fn_sel = col_fn.selectbox("Fichier", filenames, key="fn_sel")
+                with col_sess:
+                    sess_input = st.text_input("Session", placeholder="ex: 22ème Session (Novembre 1998)", key="sess_input")
+                with col_btn:
+                    st.markdown("<br>", unsafe_allow_html=True)
+                    if st.button("💾 Appliquer", type="primary", key="apply_sess"):
+                        if sess_input.strip():
+                            updated = db.update_omd_session_by_filename(fn_sel, sess_input.strip())
+                            st.success(f"✅ Session appliquée à **{updated}** décisions de *{fn_sel}*")
+                            st.rerun()
+                        else:
+                            st.error("Saisissez une session.")
+
+        # ── Onglet 3 : Nettoyer doublons ────────────────────────────────────
+        with tab_clean:
+            st.markdown("**Supprimer les décisions en double dans la base**")
+            st.caption("Un doublon = même fichier source + même classement + même description.")
+
+            nb_dup = db.get_omd_duplicate_count()
+            total  = len(db.get_all_omd())
+
+            col_a, col_b = st.columns(2)
+            col_a.metric("Total décisions", total)
+            col_b.metric("Doublons détectés", nb_dup,
+                         delta=f"-{nb_dup}" if nb_dup > 0 else "0",
+                         delta_color="inverse")
+
+            if nb_dup == 0:
+                st.success("✅ Aucun doublon détecté — base propre !")
+            else:
+                st.warning(f"⚠️ **{nb_dup}** décision(s) en double détectée(s).")
+                st.markdown(
+                    '<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;'
+                    'padding:12px 16px;margin:12px 0;color:#92400e;font-size:0.88rem;">'
+                    '⚠️ Cette action supprimera les doublons et conservera uniquement '
+                    'la première occurrence de chaque décision.'
+                    '</div>', unsafe_allow_html=True)
+                if st.button("🧹 Supprimer les doublons", type="primary", key="clean_dup"):
+                    deleted = db.deduplicate_omd()
+                    st.success(f"✅ **{deleted}** doublon(s) supprimé(s) — base nettoyée !")
+                    st.rerun()
 
     elif page == "✏️ Modifier":
         st.markdown("<h2 style='color:#0a1628;'>✏️ Modifier / Supprimer</h2>", unsafe_allow_html=True)
@@ -778,30 +975,105 @@ elif module == "omd":
 #  GESTION UTILISATEURS
 # ══════════════════════════════════════════════════════════════════════════════
 elif module == "users" and is_admin:
-    st.header("👥 Gestion des utilisateurs")
-    tab_list, tab_add = st.tabs(["📋 Liste","➕ Ajouter"])
+    st.markdown("<h2 style='color:#0a1628;font-weight:800;'>👥 Gestion des utilisateurs</h2>", unsafe_allow_html=True)
+    st.markdown("---")
+
+    tab_list, tab_add, tab_pwd = st.tabs(["📋 Liste des utilisateurs", "➕ Ajouter", "🔑 Changer mot de passe"])
+
+    # ── LISTE ─────────────────────────────────────────────────────────────────
     with tab_list:
-        users = auth.get_all_users()
-        for u in users:
-            c1,c2,c3,c4,c5 = st.columns([3,2,1,1,1])
-            c1.write(f"**{u['nom']}** — {u['email']}")
-            c2.write(f"🔑 {u['role']}")
-            c3.write("✅" if u["actif"] else "❌")
-            if u["role"] != "admin":
-                if c4.button("Activer" if not u["actif"] else "Désactiver", key=f"t{u['id']}"):
-                    auth.toggle_user(u["id"], 0 if u["actif"] else 1); st.rerun()
-                if c5.button("🗑️", key=f"d{u['id']}"):
-                    auth.delete_user(u["id"]); st.rerun()
-            st.markdown("---")
+        users_list = auth.get_all_users()
+        if not users_list:
+            st.info("Aucun utilisateur.")
+        else:
+            for u in users_list:
+                is_self   = u["email"] == user["email"]
+                is_admin_u = u["role"] == "admin"
+                actif_icon = "🟢" if u["actif"] else "🔴"
+                role_badge = (
+                    '<span style="background:#dbeafe;color:#1d4ed8;border-radius:4px;'
+                    'padding:2px 8px;font-size:0.75rem;font-weight:700;">ADMIN</span>'
+                    if is_admin_u else
+                    '<span style="background:#f3f4f6;color:#6b7280;border-radius:4px;'
+                    'padding:2px 8px;font-size:0.75rem;font-weight:600;">USER</span>'
+                )
+                st.markdown(
+                    '<div style="background:#ffffff;border:1.5px solid #e2e8f0;border-radius:10px;'
+                    'padding:14px 18px;margin-bottom:8px;display:flex;align-items:center;'
+                    'justify-content:space-between;">'
+                    '<div>'
+                    '<span style="font-size:0.95rem;font-weight:700;color:#0a1628;">'
+                    + actif_icon + ' ' + (u["nom"] or "—") + '</span>'
+                    '<span style="color:#6b7280;font-size:0.82rem;margin-left:10px;">' + u["email"] + '</span>'
+                    '<span style="margin-left:10px;">' + role_badge + '</span>'
+                    '</div>'
+                    '<div style="color:#9ca3af;font-size:0.75rem;">'
+                    + ('(vous)' if is_self else (u.get("created_at") or "")) +
+                    '</div>'
+                    '</div>',
+                    unsafe_allow_html=True)
+
+                if not is_admin_u and not is_self:
+                    ca, cb, _ = st.columns([1, 1, 4])
+                    with ca:
+                        lbl = "🔴 Désactiver" if u["actif"] else "🟢 Activer"
+                        if st.button(lbl, key=f"tog_{u['id']}", use_container_width=True):
+                            auth.toggle_user(u["id"], 0 if u["actif"] else 1)
+                            st.rerun()
+                    with cb:
+                        if st.button("🗑️ Supprimer", key=f"del_{u['id']}", use_container_width=True):
+                            auth.delete_user(u["id"])
+                            st.success(f"Utilisateur supprimé.")
+                            st.rerun()
+
+    # ── AJOUTER ───────────────────────────────────────────────────────────────
     with tab_add:
-        with st.form("add_u"):
-            c1,c2 = st.columns(2)
-            nm = c1.text_input("Nom"); em = c2.text_input("Email")
-            pw = c1.text_input("Mot de passe", type="password")
-            ro = c2.selectbox("Rôle",["user","admin"])
-            if st.form_submit_button("➕ Créer", type="primary"):
-                if not nm or not em or not pw: st.error("Tous les champs requis.")
+        st.markdown("**Créer un nouveau compte**")
+        with st.form("add_user_form"):
+            c1, c2 = st.columns(2)
+            nm = c1.text_input("Nom complet",     placeholder="ex: Jean Dupont")
+            em = c2.text_input("Adresse email",   placeholder="ex: jean.dupont@douanes.tn")
+            pw = c1.text_input("Mot de passe",    placeholder="min. 8 caractères", type="password")
+            pw2= c2.text_input("Confirmer",       placeholder="répétez le mot de passe", type="password")
+            ro = st.selectbox("Rôle", ["user", "admin"],
+                              format_func=lambda x: "👤 Utilisateur" if x=="user" else "🔑 Administrateur")
+            submitted = st.form_submit_button("➕ Créer le compte", type="primary", use_container_width=True)
+
+        if submitted:
+            if not nm or not em or not pw:
+                st.error("⚠️ Tous les champs sont obligatoires.")
+            elif pw != pw2:
+                st.error("⚠️ Les mots de passe ne correspondent pas.")
+            elif len(pw) < 8:
+                st.error("⚠️ Le mot de passe doit contenir au moins 8 caractères.")
+            else:
+                ok, msg = auth.add_user(em, pw, nm, ro)
+                if ok:
+                    st.success(f"✅ Compte créé pour **{nm}** ({em})")
+                    st.rerun()
                 else:
-                    ok,msg = auth.add_user(em,pw,nm,ro)
-                    if ok: st.success(f"✅ {msg}"); st.rerun()
-                    else:  st.error(f"❌ {msg}")
+                    st.error(f"❌ {msg}")
+
+    # ── CHANGER MOT DE PASSE ──────────────────────────────────────────────────
+    with tab_pwd:
+        st.markdown("**Modifier le mot de passe d'un utilisateur**")
+
+        users_list2 = auth.get_all_users()
+        opts_pwd = {f"{u['nom']} ({u['email']})": u['id'] for u in users_list2}
+
+        with st.form("change_pwd_form"):
+            sel_user = st.selectbox("Choisir l'utilisateur", list(opts_pwd.keys()))
+            new_pw   = st.text_input("Nouveau mot de passe",   type="password", placeholder="min. 8 caractères")
+            new_pw2  = st.text_input("Confirmer",              type="password", placeholder="répétez")
+            submitted_pwd = st.form_submit_button("🔑 Changer le mot de passe", type="primary", use_container_width=True)
+
+        if submitted_pwd:
+            if not new_pw:
+                st.error("⚠️ Saisissez un nouveau mot de passe.")
+            elif new_pw != new_pw2:
+                st.error("⚠️ Les mots de passe ne correspondent pas.")
+            elif len(new_pw) < 8:
+                st.error("⚠️ Minimum 8 caractères.")
+            else:
+                auth.change_password(opts_pwd[sel_user], new_pw)
+                st.success(f"✅ Mot de passe mis à jour pour **{sel_user}**")
