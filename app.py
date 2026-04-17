@@ -201,6 +201,16 @@ def show_login():
 
 # ── Carte blanche ─────────────────────────────────────────────────────
         # Sous-titre
+        st.markdown("""
+                    <div style="
+                    background: rgba(255,255,255,0.92);
+                    padding: 28px;
+                    border-radius: 16px;
+                    box-shadow: 0 10px 35px rgba(0,0,0,0.15);
+                    backdrop-filter: blur(8px);">
+                    """, unsafe_allow_html=True)
+        with st.form("login_form"):
+        
 
 
 
@@ -223,8 +233,10 @@ def show_login():
                 unsafe_allow_html=True)
 
             _submit = st.form_submit_button("Se connecter", use_container_width=True)
+            st.markdown("</div>", unsafe_allow_html=True)
 
         st.markdown('</div>', unsafe_allow_html=True)
+   
 
         # Footer
         st.markdown(
@@ -235,6 +247,8 @@ def show_login():
             'Direction Générale des Douanes Tunisiennes'
             '</span></div>',
             unsafe_allow_html=True)
+        
+
 
     if _submit:
         if not _email or not _password:
