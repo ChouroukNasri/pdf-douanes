@@ -212,9 +212,6 @@ def show_login():
         with st.form("login_form"):
         
 
-
-
-        with st.form("login_form"):
             st.markdown(
             '<div style="text-align:center;margin-bottom:24px;">'
             '<span style="font-size:1.1rem;font-weight:700;color:#ffffff;'
