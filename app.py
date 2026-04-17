@@ -197,15 +197,9 @@ def show_login():
     _, _col, _ = st.columns([1, 1.3, 1])
 
     with _col:
-        # Logo blason douanes
-        if _logo_b64:
-            st.markdown(
-                '<div style="text-align:center;margin-bottom:10px;">'
-                f'<img src="data:image/png;base64,{_logo_b64}" '
-                'style="width:150px;filter:drop-shadow(0 4px 20px rgba(0,0,0,0.5));">'
-                '</div>',
-                unsafe_allow_html=True)
 
+
+# ── Carte blanche ─────────────────────────────────────────────────────
         # Sous-titre
         st.markdown(
             '<div style="text-align:center;margin-bottom:24px;">'
@@ -214,8 +208,6 @@ def show_login():
             'Plateforme intelligente de classement tarifaire'
             '</span></div>',
             unsafe_allow_html=True)
-
-        # ── Carte blanche ─────────────────────────────────────────────────────
         st.markdown(
             '<div style="background:rgba(255,255,255,0.88);'
             'backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);'
