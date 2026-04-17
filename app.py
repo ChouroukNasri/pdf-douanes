@@ -208,13 +208,7 @@ def show_login():
             'Plateforme intelligente de classement tarifaire'
             '</span></div>',
             unsafe_allow_html=True)
-        st.markdown(
-            '<div style="background:rgba(255,255,255,0.88);'
-            'backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);'
-            'border-radius:18px;padding:32px 36px 20px 36px;'
-            'box-shadow:0 8px 48px rgba(0,0,0,0.3);'
-            'border:1px solid rgba(255,255,255,0.65);">',
-            unsafe_allow_html=True)
+
 
         with st.form("login_form"):
             _email    = st.text_input("Adresse e-mail", placeholder="✉  user@email.com")
