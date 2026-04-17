@@ -638,35 +638,6 @@ elif module == "secretariat":
             except Exception as e:
                 st.error(f"❌ Erreur : {e}")
 
-        # ── Onglet 3 : Nettoyer doublons ────────────────────────────────────
-        with tab_clean:
-            st.markdown("**Supprimer les décisions en double dans la base**")
-            st.caption("Un doublon = même fichier source + même classement + même description.")
-
-            nb_dup = db.get_omd_duplicate_count()
-            total  = len(db.get_all_omd())
-
-            col_a, col_b = st.columns(2)
-            col_a.metric("Total décisions", total)
-            col_b.metric("Doublons détectés", nb_dup,
-                         delta=f"-{nb_dup}" if nb_dup > 0 else "0",
-                         delta_color="inverse")
-
-            if nb_dup == 0:
-                st.success("✅ Aucun doublon détecté — base propre !")
-            else:
-                st.warning(f"⚠️ **{nb_dup}** décision(s) en double détectée(s).")
-                st.markdown(
-                    '<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;'
-                    'padding:12px 16px;margin:12px 0;color:#92400e;font-size:0.88rem;">'
-                    '⚠️ Cette action supprimera les doublons et conservera uniquement '
-                    'la première occurrence de chaque décision.'
-                    '</div>', unsafe_allow_html=True)
-                if st.button("🧹 Supprimer les doublons", type="primary", key="clean_dup"):
-                    deleted = db.deduplicate_omd()
-                    st.success(f"✅ **{deleted}** doublon(s) supprimé(s) — base nettoyée !")
-                    st.rerun()
-
     elif page == "✏️ Modifier":
         st.markdown("<h2 style='color:#0a1628;'>✏️ Modifier / Supprimer</h2>", unsafe_allow_html=True)
         st.markdown("---")
@@ -910,33 +881,22 @@ elif module == "omd":
                         else:
                             st.error("Saisissez une session.")
 
-        # ── Onglet 3 : Nettoyer doublons ────────────────────────────────────
+        # ── Onglet 3 : Nettoyer doublons ─────────────────────────────────────
         with tab_clean:
             st.markdown("**Supprimer les décisions en double dans la base**")
             st.caption("Un doublon = même fichier source + même classement + même description.")
-
             nb_dup = db.get_omd_duplicate_count()
             total  = len(db.get_all_omd())
-
             col_a, col_b = st.columns(2)
             col_a.metric("Total décisions", total)
-            col_b.metric("Doublons détectés", nb_dup,
-                         delta=f"-{nb_dup}" if nb_dup > 0 else "0",
-                         delta_color="inverse")
-
+            col_b.metric("Doublons détectés", nb_dup)
             if nb_dup == 0:
-                st.success("✅ Aucun doublon détecté — base propre !")
+                st.success("✅ Aucun doublon — base propre !")
             else:
-                st.warning(f"⚠️ **{nb_dup}** décision(s) en double détectée(s).")
-                st.markdown(
-                    '<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;'
-                    'padding:12px 16px;margin:12px 0;color:#92400e;font-size:0.88rem;">'
-                    '⚠️ Cette action supprimera les doublons et conservera uniquement '
-                    'la première occurrence de chaque décision.'
-                    '</div>', unsafe_allow_html=True)
+                st.warning(f"⚠️ **{nb_dup}** doublon(s) détecté(s).")
                 if st.button("🧹 Supprimer les doublons", type="primary", key="clean_dup"):
                     deleted = db.deduplicate_omd()
-                    st.success(f"✅ **{deleted}** doublon(s) supprimé(s) — base nettoyée !")
+                    st.success(f"✅ **{deleted}** doublon(s) supprimé(s) !")
                     st.rerun()
 
     elif page == "✏️ Modifier":
