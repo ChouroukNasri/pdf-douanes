@@ -206,10 +206,10 @@ def show_login():
 
         with st.form("login_form"):
             st.markdown(
-        '<div style="padding:24px 16px 8px;text-align:center;">'
-        '<div style="font-size:1.6rem;font-weight:900;margin-bottom:2px;">'
-        '<span style="color:#fff;">Douane</span><span style="color:#60a5fa;">Xtract</span></div>'
-        '<div style="font-size:0.68rem;color:rgba(148,163,184,0.8);">Base de données Douanes</div>'
+        '<div style="padding:28px 16px 10px;text-align:center;">'
+        '<div style="font-size:2rem;font-weight:900;margin-bottom:4px;">'
+        '<span style="color:#ffffff;">Douane</span><span style="color:#ffffff;">Xtract</span></div>'
+        '<div style="font-size:0.85rem;color:rgba(255,255,255,0.85);">Base de données Douanes</div>'
         '</div>', unsafe_allow_html=True)
             
             
