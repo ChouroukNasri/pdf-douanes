@@ -191,7 +191,7 @@ def show_login():
     """, unsafe_allow_html=True)
 
     # ── Espacement haut ──────────────────────────────────────────────────────
-    st.markdown("<div style='height:28px'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height:50px'></div>", unsafe_allow_html=True)
 
     # ── Colonne centrale ─────────────────────────────────────────────────────
     _, _col, _ = st.columns([1, 1.3, 1])
