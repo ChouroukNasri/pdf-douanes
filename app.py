@@ -354,7 +354,7 @@ elif module == "tarifaires":
     st.caption("Documents PDF scannés — Classement tarifaire douanier")
     st.markdown("---")
 
-    page = st.radio("", ["📤 Ajouter","🔍 Recherche","✏️ Modifier"],
+    page = st.radio("", ["🔍 Recherche","📤 Ajouter","✏️ Modifier"],
                     horizontal=True, label_visibility="collapsed")
 
     if page == "📤 Ajouter":
