@@ -206,13 +206,26 @@ def show_login():
 
         with st.form("login_form"):
             st.markdown(
-        '<div style="padding:28px 16px 10px;text-align:center;">'
-        '<div style="font-size:2rem;font-weight:900;margin-bottom:4px;">'
-        '<span style="font-size:2rem;font-weight:900;color:#ffffff !important;">Douane</span>'
-        '<span style="font-size:2rem;font-weight:900;color:#ffffff !important;">Xtract</span>'
-        '</div>'
-        '<div style="font-size:0.85rem;color:rgba(255,255,255,0.85);">Base de données Douanes</div>'
-        '</div>', unsafe_allow_html=True)
+        '''
+        <div style="padding:28px 16px 10px;text-align:center;">
+
+            <div style="
+                font-size:2.2rem;
+                font-weight:900;
+                color:#ffffff !important;
+            ">
+                DouaneXtract
+            </div>
+
+            <div style="
+                font-size:0.85rem;
+                color:rgba(255,255,255,0.85);
+            ">
+                Base de données Douanes
+            </div>
+
+        </div>
+        ''', unsafe_allow_html=True)
             
             
             _email    = st.text_input("Adresse e-mail", placeholder="✉  user@email.com")
