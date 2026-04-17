@@ -266,10 +266,8 @@ module = st.session_state["module"]
 #  SIDEBAR
 # ══════════════════════════════════════════════════════════════════════════════
 with st.sidebar:
-    logo_html = ('<img src="data:image/png;base64,' + LOGO_B64 + '" style="width:90px;display:block;margin:0 auto 12px auto;">') if LOGO_B64 else ""
     st.markdown(
         '<div style="padding:24px 16px 8px;text-align:center;">'
-        + logo_html +
         '<div style="font-size:1.6rem;font-weight:900;margin-bottom:2px;">'
         '<span style="color:#fff;">Douane</span><span style="color:#60a5fa;">Xtract</span></div>'
         '<div style="font-size:0.68rem;color:rgba(148,163,184,0.8);">Base de données Douanes</div>'
