@@ -520,7 +520,7 @@ elif module == "secretariat":
     st.caption("Documents et fichiers relatifs au Secrétariat")
     st.markdown("---")
 
-    page = st.radio("", ["🔍 Recherche", "📤 Ajouter fichier xlsx", "✏️ Modifier"],
+    page = st.radio("", ["🔍 Recherche", "📤 Ajouter", "✏️ Modifier"],
                     horizontal=True, label_visibility="collapsed")
 
     if page == "🔍 Recherche":
@@ -598,7 +598,7 @@ elif module == "secretariat":
         elif total == 0:
             st.warning("⚠️ Aucune donnée. Ajoutez un fichier via 'Ajouter fichier xlsx'.")
 
-    elif page == "📤 Ajouter fichier xlsx":
+    elif page == "📤 Ajouter":
         st.markdown("<h2 style='color:#0a1628;'>📤 Ajouter un fichier Excel</h2>", unsafe_allow_html=True)
         st.markdown("---")
         st.info("**Colonnes requises :** LETTER NUMBER · DATE · HS CODE · DESCRIPTION EN FRANCAIS")
