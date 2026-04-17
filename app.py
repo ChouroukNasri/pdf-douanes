@@ -208,8 +208,9 @@ def show_login():
             st.markdown(
         '<div style="padding:28px 16px 10px;text-align:center;">'
         '<div style="font-size:2rem;font-weight:900;margin-bottom:4px;">'
-        '<span style="font-size:2rem;font-weight:900;color:#ffffff;">Douane</span>'
-        '<span style="font-size:2rem;font-weight:900;color:#ffffff;">Xtract</span></div>'
+        '<span style="font-size:2rem;font-weight:900;color:#ffffff !important;">Douane</span>'
+        '<span style="font-size:2rem;font-weight:900;color:#ffffff !important;">Xtract</span>'
+        '</div>'
         '<div style="font-size:0.85rem;color:rgba(255,255,255,0.85);">Base de données Douanes</div>'
         '</div>', unsafe_allow_html=True)
             
