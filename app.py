@@ -104,23 +104,19 @@ section[data-testid="stMain"] hr { border-color:#e5e7eb !important; }
 def show_login():
     import base64 as _b64, os as _os
 
-    _bg_path   = _os.path.join(_os.path.dirname(__file__), "bg_login.png")
     _logo_path = _os.path.join(_os.path.dirname(__file__), "logo.png")
 
-    _bg_b64   = ""
-    _logo_b64 = ""
 
-    if _os.path.exists(_bg_path):
-        with open(_bg_path,"rb") as _f:
-            _bg_b64 = _b64.b64encode(_f.read()).decode()
+    _logo_b64 = ""
 
     if _os.path.exists(_logo_path):
         with open(_logo_path,"rb") as _f:
             _logo_b64 = _b64.b64encode(_f.read()).decode()
 
-    _bg_css = (
-        f"background-image: url('data:image/png;base64,{_bg_b64}') !important;"
-        if _bg_b64 else
+
+    _logo_css = (
+        f"background-image: url('data:image/png;base64,{_logo_b64}') !important;"
+        if _logo_b64 else
         "background: linear-gradient(135deg,#0a1628,#1a3a6e) !important;"
     )
 
@@ -128,7 +124,7 @@ def show_login():
     <style>
     /* ══ RESET COMPLET — écrase tout CSS global ══ */
     .stApp {{
-        {_bg_css}
+        {_logo_css}
         background-size: cover !important;
         background-position: center top !important;
         background-repeat: no-repeat !important;
