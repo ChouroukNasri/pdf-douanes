@@ -179,8 +179,8 @@ def show_login():
         + logo_html +
         '<span style="font-size:2.2rem;font-weight:900;color:#ffffff;vertical-align:middle;">'
         'Douane<span style="color:#60a5fa;">Xtract</span></span>'
-        '<div style="color:rgba(200,220,255,0.75);font-size:0.85rem;margin-top:10px;letter-spacing:0.3px;">'
-        'Base de données — Avis de Classement Tarifaire'
+        '<div style="color:#0b2a5b;font-size:1.05rem;margin-top:10px;letter-spacing:0.3px;">'
+        'Plateforme intelligente de classement tarifaire'
         '</div></div>',
         unsafe_allow_html=True)
 
