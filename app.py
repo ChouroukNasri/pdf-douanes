@@ -184,12 +184,6 @@ def show_login():
         '</div></div>',
         unsafe_allow_html=True)
 
-    # ── Carte blanche ──────────────────────────────────────────────────────────
-    st.markdown(
-        '<div style="background:#ffffff;border-radius:16px;padding:36px 40px 28px 40px;'
-        'box-shadow:0 8px 32px rgba(0,0,0,0.18);">',
-        unsafe_allow_html=True)
-
     with st.form("login_form"):
         email    = st.text_input("Adresse email", placeholder="user@email.com")
         password = st.text_input("Mot de passe",  placeholder="••••••••", type="password")
