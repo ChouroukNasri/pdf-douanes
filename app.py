@@ -104,7 +104,6 @@ section[data-testid="stMain"] hr { border-color:#e5e7eb !important; }
 def show_login():
     import base64 as _b64, os as _os
 
-    # Charger l'image de fond
     _bg_path   = _os.path.join(_os.path.dirname(__file__), "bg_login.png")
     _logo_path = _os.path.join(_os.path.dirname(__file__), "logo.png")
 
@@ -119,46 +118,47 @@ def show_login():
         with open(_logo_path,"rb") as _f:
             _logo_b64 = _b64.b64encode(_f.read()).decode()
 
-    # CSS page login avec image de fond
     _bg_css = (
         f"background-image: url('data:image/png;base64,{_bg_b64}') !important;"
         if _bg_b64 else
-        "background: linear-gradient(135deg, #0a1628 0%, #1a3a6e 100%) !important;"
+        "background: linear-gradient(135deg,#0a1628,#1a3a6e) !important;"
     )
 
     st.markdown(f"""
     <style>
-    /* ── Fond image plein écran ── */
+    /* ══ RESET COMPLET — écrase tout CSS global ══ */
     .stApp {{
         {_bg_css}
         background-size: cover !important;
-        background-position: center !important;
+        background-position: center top !important;
         background-repeat: no-repeat !important;
         background-attachment: fixed !important;
-        min-height: 100vh;
+        min-height: 100vh !important;
     }}
+    /* Supprimer la boîte blanche du block-container */
+    section[data-testid="stMain"] .block-container {{
+        background: transparent !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        padding: 0 !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+    }}
+    /* Cacher header, sidebar, menu */
     header[data-testid="stHeader"]   {{ display:none !important; }}
     section[data-testid="stSidebar"] {{ display:none !important; }}
     #MainMenu, footer                 {{ display:none !important; }}
-    .block-container {{
-        padding-top: 0 !important;
-        max-width: 100% !important;
-        background: transparent !important;
-        box-shadow: none !important;
-        padding-left: 0 !important;
-        padding-right: 0 !important;
-    }}
-    /* ── Labels ── */
+    /* Labels */
     section[data-testid="stMain"] label {{
         color: #1e3a5f !important;
         font-weight: 700 !important;
         font-size: 0.92rem !important;
     }}
-    /* ── Inputs style photo : fond blanc semi-transparent ── */
+    /* Inputs */
     section[data-testid="stMain"] input[type="text"],
     section[data-testid="stMain"] input[type="password"] {{
-        background: rgba(255,255,255,0.92) !important;
-        border: 1.5px solid rgba(200,215,235,0.8) !important;
+        background: rgba(255,255,255,0.95) !important;
+        border: 1.5px solid rgba(180,200,230,0.7) !important;
         color: #1a2f50 !important;
         border-radius: 10px !important;
         padding: 14px 16px !important;
@@ -172,9 +172,9 @@ def show_login():
         border-color: #2563eb !important;
         box-shadow: 0 0 0 3px rgba(37,99,235,0.15) !important;
     }}
-    /* ── Bouton Se connecter ── */
+    /* Bouton */
     section[data-testid="stMain"] .stFormSubmitButton button {{
-        background: linear-gradient(180deg, #3b7dd8 0%, #1d4ed8 100%) !important;
+        background: linear-gradient(180deg,#3b7dd8 0%,#1d4ed8 100%) !important;
         color: white !important;
         border: none !important;
         border-radius: 10px !important;
@@ -183,79 +183,75 @@ def show_login():
         padding: 13px !important;
         letter-spacing: 0.5px !important;
         box-shadow: 0 4px 16px rgba(29,78,216,0.45) !important;
-        margin-top: 4px !important;
     }}
     section[data-testid="stMain"] .stFormSubmitButton button:hover {{
-        background: linear-gradient(180deg, #4a8fe8 0%, #2563eb 100%) !important;
-        box-shadow: 0 6px 20px rgba(29,78,216,0.55) !important;
+        background: linear-gradient(180deg,#4a8fe8 0%,#2563eb 100%) !important;
     }}
-    /* ── Alertes ── */
-    section[data-testid="stMain"] .stSuccess {{ background:#f0fdf4 !important; }}
-    section[data-testid="stMain"] .stError   {{ background:rgba(254,242,242,0.95) !important; }}
+    /* Alertes */
+    section[data-testid="stMain"] .stError {{
+        background: rgba(254,242,242,0.95) !important;
+    }}
     </style>
     """, unsafe_allow_html=True)
 
-    # ── Layout : centré verticalement avec padding ──────────────────────────
-    st.markdown("<div style='height:32px'></div>", unsafe_allow_html=True)
+    # ── Espacement haut ──────────────────────────────────────────────────────
+    st.markdown("<div style='height:28px'></div>", unsafe_allow_html=True)
 
-    # Colonne centrale
-    _, _col, _ = st.columns([1, 1.4, 1])
+    # ── Colonne centrale ─────────────────────────────────────────────────────
+    _, _col, _ = st.columns([1, 1.3, 1])
 
     with _col:
-        # Logo en haut centré
+        # Logo blason douanes
         if _logo_b64:
             st.markdown(
-                '<div style="text-align:center;margin-bottom:8px;">'
+                '<div style="text-align:center;margin-bottom:10px;">'
                 f'<img src="data:image/png;base64,{_logo_b64}" '
-                'style="width:140px;filter:drop-shadow(0 4px 16px rgba(0,0,0,0.45));">'
+                'style="width:150px;filter:drop-shadow(0 4px 20px rgba(0,0,0,0.5));">'
                 '</div>',
                 unsafe_allow_html=True)
 
         # Sous-titre
-        st.markdown("""
-        <div style="text-align:center;margin-bottom:22px;">
-            <div style="font-size:1.1rem;font-weight:700;
-                color:#ffffff;letter-spacing:0.3px;
-                text-shadow:0 2px 8px rgba(0,0,0,0.6);">
-                Plateforme intelligente de classement tarifaire
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+        st.markdown(
+            '<div style="text-align:center;margin-bottom:24px;">'
+            '<span style="font-size:1.1rem;font-weight:700;color:#ffffff;'
+            'text-shadow:0 2px 10px rgba(0,0,0,0.7);letter-spacing:0.3px;">'
+            'Plateforme intelligente de classement tarifaire'
+            '</span></div>',
+            unsafe_allow_html=True)
 
-        # ── Carte formulaire blanche ──────────────────────────────────────────
-        st.markdown("""
-        <div style="background:rgba(255,255,255,0.82);
-            backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-            border-radius:18px;padding:32px 36px 24px 36px;
-            box-shadow:0 8px 40px rgba(0,0,0,0.25);
-            border:1px solid rgba(255,255,255,0.6);">
-        </div>
-        """, unsafe_allow_html=True)
+        # ── Carte blanche ─────────────────────────────────────────────────────
+        st.markdown(
+            '<div style="background:rgba(255,255,255,0.88);'
+            'backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);'
+            'border-radius:18px;padding:32px 36px 20px 36px;'
+            'box-shadow:0 8px 48px rgba(0,0,0,0.3);'
+            'border:1px solid rgba(255,255,255,0.65);">',
+            unsafe_allow_html=True)
 
         with st.form("login_form"):
             _email    = st.text_input("Adresse e-mail", placeholder="✉  user@email.com")
             _password = st.text_input("Mot de passe",   placeholder="🔒  ••••••••", type="password")
 
-            # Lien mot de passe oublié
             st.markdown(
-                '<div style="text-align:right;margin:-4px 0 12px;">'
+                '<div style="text-align:right;margin:-2px 0 14px;">'
                 '<span style="color:#2563eb;font-size:0.82rem;cursor:pointer;">'
                 'Mot de passe oublié ?</span></div>',
                 unsafe_allow_html=True)
 
             _submit = st.form_submit_button("Se connecter", use_container_width=True)
 
+        st.markdown('</div>', unsafe_allow_html=True)
+
         # Footer
         st.markdown(
-            '<div style="text-align:center;margin-top:16px;'
-            'color:rgba(255,255,255,0.75);font-size:0.72rem;'
-            'text-shadow:0 1px 4px rgba(0,0,0,0.5);">'
+            '<div style="text-align:center;margin-top:18px;">'
+            '<span style="color:rgba(255,255,255,0.8);font-size:0.72rem;'
+            'text-shadow:0 1px 6px rgba(0,0,0,0.6);">'
             '<b style="color:white;">DouaneXtract</b> v1.0 &nbsp;·&nbsp; '
             'Direction Générale des Douanes Tunisiennes'
-            '</div>',
+            '</span></div>',
             unsafe_allow_html=True)
 
-    # ── Logique authentification ────────────────────────────────────────────
     if _submit:
         if not _email or not _password:
             st.error("⚠️ Veuillez remplir tous les champs.")
