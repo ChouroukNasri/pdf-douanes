@@ -203,7 +203,6 @@ def show_login():
         # Sous-titre
 
 
-
         with st.form("login_form"):
             st.markdown(
             '<div style="text-align:center;margin-bottom:24px;">'
