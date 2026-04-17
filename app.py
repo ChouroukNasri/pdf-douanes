@@ -206,8 +206,7 @@ def show_login():
         with st.form("login_form"):
             st.markdown(
             '<div style="text-align:center;margin-bottom:24px;">'
-            '<span style="font-size:1.1rem;font-weight:700;color:#ffffff;'
-            'text-shadow:0 2px 10px rgba(0,0,0,0.7);letter-spacing:0.3px;">'
+            '<span style="font-size:1.1rem;font-weight:700;color:rgba(255,255,255,0.95);'            'text-shadow:0 2px 10px rgba(0,0,0,0.7);letter-spacing:0.3px;">'
             'Plateforme intelligente de classement tarifaire'
             '</span></div>',
             unsafe_allow_html=True)
