@@ -102,121 +102,167 @@ section[data-testid="stMain"] hr { border-color:#e5e7eb !important; }
 #  PAGE LOGIN — Design Streamlit natif (fiable, pas de HTML brut)
 # ══════════════════════════════════════════════════════════════════════════════
 def show_login():
-    # CSS global login
-    st.markdown("""
+    import base64 as _b64, os as _os
+
+    # Charger l'image de fond
+    _bg_path   = _os.path.join(_os.path.dirname(__file__), "bg_login.png")
+    _logo_path = _os.path.join(_os.path.dirname(__file__), "logo.png")
+
+    _bg_b64   = ""
+    _logo_b64 = ""
+
+    if _os.path.exists(_bg_path):
+        with open(_bg_path,"rb") as _f:
+            _bg_b64 = _b64.b64encode(_f.read()).decode()
+
+    if _os.path.exists(_logo_path):
+        with open(_logo_path,"rb") as _f:
+            _logo_b64 = _b64.b64encode(_f.read()).decode()
+
+    # CSS page login avec image de fond
+    _bg_css = (
+        f"background-image: url('data:image/png;base64,{_bg_b64}') !important;"
+        if _bg_b64 else
+        "background: linear-gradient(135deg, #0a1628 0%, #1a3a6e 100%) !important;"
+    )
+
+    st.markdown(f"""
     <style>
-    .stApp {
-        background: #2d4a7a !important;
+    /* ── Fond image plein écran ── */
+    .stApp {{
+        {_bg_css}
+        background-size: cover !important;
+        background-position: center !important;
+        background-repeat: no-repeat !important;
+        background-attachment: fixed !important;
         min-height: 100vh;
-    }
-    header[data-testid="stHeader"]   { display:none !important; }
-    section[data-testid="stSidebar"] { display:none !important; }
-    #MainMenu, footer                 { display:none !important; }
-    .block-container {
-        padding-top: 48px !important;
-        max-width: 520px !important;
-        margin: 0 auto !important;
+    }}
+    header[data-testid="stHeader"]   {{ display:none !important; }}
+    section[data-testid="stSidebar"] {{ display:none !important; }}
+    #MainMenu, footer                 {{ display:none !important; }}
+    .block-container {{
+        padding-top: 0 !important;
+        max-width: 100% !important;
         background: transparent !important;
         box-shadow: none !important;
-    }
-    /* Labels champs */
-    section[data-testid="stMain"] label {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }}
+    /* ── Labels ── */
+    section[data-testid="stMain"] label {{
         color: #1e3a5f !important;
         font-weight: 700 !important;
-        font-size: 0.95rem !important;
-    }
-    /* Inputs — style photo : fond blanc, bordure grise */
+        font-size: 0.92rem !important;
+    }}
+    /* ── Inputs style photo : fond blanc semi-transparent ── */
     section[data-testid="stMain"] input[type="text"],
-    section[data-testid="stMain"] input[type="password"] {
-        background: #f7f8fa !important;
-        border: 1px solid #d0d7e3 !important;
-        color: #1e3a5f !important;
-        border-radius: 8px !important;
+    section[data-testid="stMain"] input[type="password"] {{
+        background: rgba(255,255,255,0.92) !important;
+        border: 1.5px solid rgba(200,215,235,0.8) !important;
+        color: #1a2f50 !important;
+        border-radius: 10px !important;
         padding: 14px 16px !important;
         font-size: 1rem !important;
-    }
-    section[data-testid="stMain"] input::placeholder {
+        box-shadow: 0 1px 4px rgba(0,0,0,0.08) !important;
+    }}
+    section[data-testid="stMain"] input::placeholder {{
         color: #a0aec0 !important;
-    }
-    section[data-testid="stMain"] input:focus {
-        border-color: #3b82f6 !important;
-        box-shadow: 0 0 0 3px rgba(59,130,246,0.15) !important;
-    }
-    /* Bouton Connexion */
-    section[data-testid="stMain"] .stFormSubmitButton button {
-        background: linear-gradient(180deg, #4a90d9 0%, #2563eb 100%) !important;
+    }}
+    section[data-testid="stMain"] input:focus {{
+        border-color: #2563eb !important;
+        box-shadow: 0 0 0 3px rgba(37,99,235,0.15) !important;
+    }}
+    /* ── Bouton Se connecter ── */
+    section[data-testid="stMain"] .stFormSubmitButton button {{
+        background: linear-gradient(180deg, #3b7dd8 0%, #1d4ed8 100%) !important;
         color: white !important;
         border: none !important;
         border-radius: 10px !important;
         font-weight: 700 !important;
         font-size: 1.05rem !important;
-        padding: 14px !important;
-        letter-spacing: 0.3px !important;
-        box-shadow: 0 4px 14px rgba(37,99,235,0.4) !important;
-    }
-    section[data-testid="stMain"] .stFormSubmitButton button:hover {
-        background: linear-gradient(180deg, #5ba3f0 0%, #1d4ed8 100%) !important;
-    }
-    /* Lien mdp oublie */
-    section[data-testid="stMain"] a,
-    section[data-testid="stMain"] .mdp-link { color: #3b82f6 !important; }
-    /* Textes généraux dans la carte */
-    section[data-testid="stMain"] p { color: #374151 !important; }
-    section[data-testid="stMain"] .stCheckbox label span { color: #374151 !important; font-size:0.88rem !important; }
+        padding: 13px !important;
+        letter-spacing: 0.5px !important;
+        box-shadow: 0 4px 16px rgba(29,78,216,0.45) !important;
+        margin-top: 4px !important;
+    }}
+    section[data-testid="stMain"] .stFormSubmitButton button:hover {{
+        background: linear-gradient(180deg, #4a8fe8 0%, #2563eb 100%) !important;
+        box-shadow: 0 6px 20px rgba(29,78,216,0.55) !important;
+    }}
+    /* ── Alertes ── */
+    section[data-testid="stMain"] .stSuccess {{ background:#f0fdf4 !important; }}
+    section[data-testid="stMain"] .stError   {{ background:rgba(254,242,242,0.95) !important; }}
     </style>
     """, unsafe_allow_html=True)
 
-    # ── Logo + titre (au-dessus de la carte) ──────────────────────────────────
-    logo_b64 = LOGO_B64
-    logo_html = (
-        '<img src="data:image/png;base64,' + logo_b64 + '" '
-        'style="width:72px;vertical-align:middle;margin-right:14px;'
-        'filter:drop-shadow(0 2px 8px rgba(0,0,0,0.3));">'
-    ) if logo_b64 else ""
+    # ── Layout : centré verticalement avec padding ──────────────────────────
+    st.markdown("<div style='height:32px'></div>", unsafe_allow_html=True)
 
-    st.markdown(
-        '<div style="text-align:center;margin-bottom:28px;padding-top:8px;">'
-        + logo_html +
-        '<span style="font-size:2.2rem;font-weight:900;color:#ffffff;vertical-align:middle;">'
-        'Douane<span style="color:#60a5fa;">Xtract</span></span>'
-        '<div style="color:#0b2a5b;font-size:1.05rem;margin-top:10px;letter-spacing:0.3px;">'
-        'Plateforme intelligente de classement tarifaire'
-        '</div></div>',
-        unsafe_allow_html=True)
+    # Colonne centrale
+    _, _col, _ = st.columns([1, 1.4, 1])
 
-    with st.form("login_form"):
-        email    = st.text_input("Adresse email", placeholder="user@email.com")
-        password = st.text_input("Mot de passe",  placeholder="••••••••", type="password")
+    with _col:
+        # Logo en haut centré
+        if _logo_b64:
+            st.markdown(
+                '<div style="text-align:center;margin-bottom:8px;">'
+                f'<img src="data:image/png;base64,{_logo_b64}" '
+                'style="width:140px;filter:drop-shadow(0 4px 16px rgba(0,0,0,0.45));">'
+                '</div>',
+                unsafe_allow_html=True)
 
-        # Lien mot de passe oublié
+        # Sous-titre
+        st.markdown("""
+        <div style="text-align:center;margin-bottom:22px;">
+            <div style="font-size:1.1rem;font-weight:700;
+                color:#ffffff;letter-spacing:0.3px;
+                text-shadow:0 2px 8px rgba(0,0,0,0.6);">
+                Plateforme intelligente de classement tarifaire
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        # ── Carte formulaire blanche ──────────────────────────────────────────
+        st.markdown("""
+        <div style="background:rgba(255,255,255,0.82);
+            backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+            border-radius:18px;padding:32px 36px 24px 36px;
+            box-shadow:0 8px 40px rgba(0,0,0,0.25);
+            border:1px solid rgba(255,255,255,0.6);">
+        </div>
+        """, unsafe_allow_html=True)
+
+        with st.form("login_form"):
+            _email    = st.text_input("Adresse e-mail", placeholder="✉  user@email.com")
+            _password = st.text_input("Mot de passe",   placeholder="🔒  ••••••••", type="password")
+
+            # Lien mot de passe oublié
+            st.markdown(
+                '<div style="text-align:right;margin:-4px 0 12px;">'
+                '<span style="color:#2563eb;font-size:0.82rem;cursor:pointer;">'
+                'Mot de passe oublié ?</span></div>',
+                unsafe_allow_html=True)
+
+            _submit = st.form_submit_button("Se connecter", use_container_width=True)
+
+        # Footer
         st.markdown(
-            '<div style="text-align:left;margin:-6px 0 16px 0;">'
-            '<span style="color:#3b82f6;font-size:0.85rem;cursor:pointer;">'
-            'Mot de passe oublié ?</span></div>',
+            '<div style="text-align:center;margin-top:16px;'
+            'color:rgba(255,255,255,0.75);font-size:0.72rem;'
+            'text-shadow:0 1px 4px rgba(0,0,0,0.5);">'
+            '<b style="color:white;">DouaneXtract</b> v1.0 &nbsp;·&nbsp; '
+            'Direction Générale des Douanes Tunisiennes'
+            '</div>',
             unsafe_allow_html=True)
 
-        # Séparateur
-        st.markdown('<hr style="border-color:#e5e7eb;margin:0 0 16px 0;">', unsafe_allow_html=True)
-
-        submit = st.form_submit_button("Connexion", use_container_width=True)
-
-    st.markdown('</div>', unsafe_allow_html=True)
-
-    # ── Footer ─────────────────────────────────────────────────────────────────
-    st.markdown(
-        '<div style="text-align:center;margin-top:24px;color:rgba(200,220,255,0.55);font-size:0.75rem;">'
-        '<b style="color:rgba(200,220,255,0.75);">DouaneXtract</b> v1.0 &nbsp;·&nbsp; '
-        'Direction Générale des Douanes Tunisiennes</div>',
-        unsafe_allow_html=True)
-
-    # ── Logique ────────────────────────────────────────────────────────────────
-    if submit:
-        if not email or not password:
+    # ── Logique authentification ────────────────────────────────────────────
+    if _submit:
+        if not _email or not _password:
             st.error("⚠️ Veuillez remplir tous les champs.")
         else:
-            user = auth.login(email, password)
-            if user:
-                st.session_state["user"] = user
+            _user = auth.login(_email, _password)
+            if _user:
+                st.session_state["user"] = _user
                 st.rerun()
             else:
                 st.error("❌ Email ou mot de passe incorrect.")
@@ -514,7 +560,7 @@ elif module == "secretariat":
     st.caption("Documents et fichiers relatifs au Secrétariat")
     st.markdown("---")
 
-    page = st.radio("", ["🔍 Recherche", "📤 Ajouter", "✏️ Modifier"],
+    page = st.radio("", ["🔍 Recherche", "📤 Ajouter fichier xlsx", "✏️ Modifier"],
                     horizontal=True, label_visibility="collapsed")
 
     if page == "🔍 Recherche":
@@ -592,7 +638,7 @@ elif module == "secretariat":
         elif total == 0:
             st.warning("⚠️ Aucune donnée. Ajoutez un fichier via 'Ajouter fichier xlsx'.")
 
-    elif page == "📤 Ajouter":
+    elif page == "📤 Ajouter fichier xlsx":
         st.markdown("<h2 style='color:#0a1628;'>📤 Ajouter un fichier Excel</h2>", unsafe_allow_html=True)
         st.markdown("---")
         st.info("**Colonnes requises :** LETTER NUMBER · DATE · HS CODE · DESCRIPTION EN FRANCAIS")
