@@ -206,18 +206,11 @@ def show_login():
 
         with st.form("login_form"):
             st.markdown(
-            '<div style="text-align:center;margin-bottom:24px;">'
-            'text-shadow:0 2px 10px rgba(0,0,0,0.7);letter-spacing:0.3px;">'
-            'Plateforme intelligente de classement tarifaire'
-            '</span></div>',
-            unsafe_allow_html=True)
-            
-            st.markdown(
-            '<div style="text-align:center;margin-bottom:24px;">'
-            'text-shadow:0 2px 10px rgba(0,0,0,0.7);letter-spacing:0.3px;">'
-            'Plateforme intelligente de classement tarifaire'
-            '</span></div>',
-            unsafe_allow_html=True)
+        '<div style="padding:24px 16px 8px;text-align:center;">'
+        '<div style="font-size:1.6rem;font-weight:900;margin-bottom:2px;">'
+        '<span style="color:#fff;">Douane</span><span style="color:#60a5fa;">Xtract</span></div>'
+        '<div style="font-size:0.68rem;color:rgba(148,163,184,0.8);">Base de données Douanes</div>'
+        '</div>', unsafe_allow_html=True)
             
             
             _email    = st.text_input("Adresse e-mail", placeholder="✉  user@email.com")
