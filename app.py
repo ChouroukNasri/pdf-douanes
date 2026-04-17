@@ -202,20 +202,16 @@ def show_login():
 # ── Carte blanche ─────────────────────────────────────────────────────
         # Sous-titre
 
+
+
         with st.form("login_form"):
             st.markdown(
-                """
-                <div style="
-                background: rgba(255, 255, 255, 0.92);
-                border-radius: 16px;
-                padding: 28px;
-                box-shadow: 0 8px 30px rgba(0,0,0,0.15);
-                max-width: 420px;
-                margin: auto;
-            ">
-            """,
-            unsafe_allow_html=True )
-
+            '<div style="text-align:center;margin-bottom:24px;">'
+            '<span style="font-size:1.1rem;font-weight:700;color:#ffffff;'
+            'text-shadow:0 2px 10px rgba(0,0,0,0.7);letter-spacing:0.3px;">'
+            'Plateforme intelligente de classement tarifaire'
+            '</span></div>',
+            unsafe_allow_html=True)
             
             _email    = st.text_input("Adresse e-mail", placeholder="✉  user@email.com")
             _password = st.text_input("Mot de passe",   placeholder="🔒  ••••••••", type="password")
