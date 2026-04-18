@@ -145,7 +145,7 @@ def show_login():
 
     /* ══ CARTE BLANCHE — cible le conteneur natif du formulaire ══ */
     section[data-testid="stMain"] [data-testid="stForm"] {{
-        background: rgba(255, 255, 255, 0.93) !important;
+        background: rgba(255, 255, 255, 0.25) !important;
         border-radius: 20px !important;
         padding: 28px 28px 20px 28px !important;
         border: 1px solid rgba(255,255,255,0.7) !important;
@@ -156,7 +156,7 @@ def show_login():
 
     /* ══ LABELS ══ */
     section[data-testid="stMain"] label {{
-        color: #1e3a5f !important;
+        color: #ffffff !important;
         font-weight: 700 !important;
         font-size: 0.92rem !important;
     }}
@@ -216,13 +216,13 @@ def show_login():
             st.markdown(
                 '<div style="padding:8px 0 18px;text-align:center;">'
                 '<div style="font-size:2rem;font-weight:900;margin-bottom:4px;">'
-                '<span style="color:#0a1628;">Douane</span>'
-                '<span style="color:#1a56db;">Xtract</span>'
+                '<span style="color:#ffffff;">Douane</span>'
+                '<span style="color:#93c5fd;">Xtract</span>'
                 '</div>'
-                '<div style="font-size:0.85rem;color:#6b7280;margin-bottom:4px;">'
+                '<div style="font-size:0.85rem;color:rgba(255,255,255,0.85);margin-bottom:4px;">'
                 'Base de données Douanes Tunisiennes'
                 '</div>'
-                '<hr style="border:none;border-top:1px solid #e5e7eb;margin:12px 0 4px;">'
+                '<hr style="border:none;border-top:1px solid rgba(255,255,255,0.3);margin:12px 0 4px;">'
                 '</div>',
                 unsafe_allow_html=True)
 
@@ -231,13 +231,14 @@ def show_login():
 
             st.markdown(
                 '<div style="text-align:right;margin:-4px 0 16px;">'
-                '<span style="color:#2563eb;font-size:0.82rem;cursor:pointer;">'
+                '<span style="color:rgba(255,255,255,0.9);font-size:0.82rem;cursor:pointer;">'
                 'Mot de passe oublié ?</span></div>',
                 unsafe_allow_html=True)
 
             _submit = st.form_submit_button("Se connecter", use_container_width=True)
-            
-            st.markdown(
+
+        # Footer sous la carte
+        st.markdown(
             '<div style="text-align:center;margin-top:20px;">'
             '<span style="color:rgba(255,255,255,0.85);font-size:0.72rem;'
             'text-shadow:0 1px 6px rgba(0,0,0,0.5);">'
@@ -245,9 +246,6 @@ def show_login():
             'Direction Générale des Douanes Tunisiennes'
             '</span></div>',
             unsafe_allow_html=True)
-
-        # Footer sous la carte
-
 
     if _submit:
         if not _email or not _password:
@@ -341,7 +339,40 @@ if module == "dashboard":
     s3.metric("🌐 Décisions OMD",   stats['omd'])
     s4.metric("📊 Total",           stats['total'])
 
-
+    st.markdown("---")
+    st.markdown("### 🕐 Derniers documents ajoutés")
+    t1, t2, t3 = st.tabs(["📋 Tarifaires","📁 Secrétariat","🌐 OMD"])
+    with t1:
+        docs = db.get_all_documents()[:5]
+        if not docs: st.info("Aucun document.")
+        else:
+            for d in docs:
+                st.markdown(
+                    '<div class="result-card"><b>📄 ' + d['filename'] + '</b> &nbsp;'
+                    '<span class="badge">' + (d.get('tarif_number') or '?') + '</span>'
+                    '<span style="float:right;color:#6b7280;font-size:0.78rem">' + d.get('upload_date','')[:10] + '</span><br>'
+                    '<small style="color:#6b7280">N° ' + (d.get('numero_avis') or '—') + ' · NDP ' + (d.get('ndp') or '—') + '</small></div>',
+                    unsafe_allow_html=True)
+    with t2:
+        docs = db.get_all_secretariat()[:5]
+        if not docs: st.info("Aucun document.")
+        else:
+            for d in docs:
+                st.markdown(
+                    '<div class="result-card"><b>' + (d.get('numero_lettre') or d.get('filename','')) + '</b>'
+                    '<span style="float:right;color:#6b7280;font-size:0.78rem">' + d.get('upload_date','')[:10] + '</span><br>'
+                    '<small style="color:#6b7280">' + (d.get('desc_fr') or '')[:80] + '</small></div>',
+                    unsafe_allow_html=True)
+    with t3:
+        docs = db.get_all_omd()[:5]
+        if not docs: st.info("Aucun document.")
+        else:
+            for d in docs:
+                st.markdown(
+                    '<div class="result-card"><span class="badge-purple">' + (d.get('classement') or '?') + '</span>'
+                    '<span style="float:right;color:#6b7280;font-size:0.78rem">' + d.get('upload_date','')[:10] + '</span><br>'
+                    '<small style="color:#6b7280">' + (d.get('description') or '')[:80] + '</small></div>',
+                    unsafe_allow_html=True)
 
 
 # ══════════════════════════════════════════════════════════════════════════════
