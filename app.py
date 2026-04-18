@@ -99,20 +99,17 @@ section[data-testid="stMain"] hr { border-color:#e5e7eb !important; }
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-#  PAGE LOGIN — Design Streamlit natif (fiable, pas de HTML brut)
+#  PAGE LOGIN
 # ══════════════════════════════════════════════════════════════════════════════
 def show_login():
     import base64 as _b64, os as _os
 
     _logo_path = _os.path.join(_os.path.dirname(__file__), "logo.png")
 
-
     _logo_b64 = ""
-
     if _os.path.exists(_logo_path):
-        with open(_logo_path,"rb") as _f:
+        with open(_logo_path, "rb") as _f:
             _logo_b64 = _b64.b64encode(_f.read()).decode()
-
 
     _logo_css = (
         f"background-image: url('data:image/png;base64,{_logo_b64}') !important;"
@@ -197,24 +194,29 @@ def show_login():
     _, _col, _ = st.columns([1, 1.3, 1])
 
     with _col:
-
-
-# ── Carte blanche ─────────────────────────────────────────────────────
-        # Sous-titre
-
-
+        # ── Carte blanc clair ────────────────────────────────────────────────
+        st.markdown(
+            '<div style="'
+            'background: rgba(255,255,255,0.92);'
+            'backdrop-filter: blur(14px);'
+            '-webkit-backdrop-filter: blur(14px);'
+            'border-radius: 20px;'
+            'padding: 10px 28px 24px;'
+            'border: 1px solid rgba(255,255,255,0.5);'
+            'box-shadow: 0 8px 32px rgba(0,0,0,0.15);'
+            '">',
+            unsafe_allow_html=True)
 
         with st.form("login_form"):
             st.markdown(
-        '<div style="padding:28px 16px 10px;text-align:center;">'
-        '<div style="font-size:2rem;font-weight:900;margin-bottom:4px;">'
-        '<span style="font-size:2rem;font-weight:900;color:#ffffff !important;">Douane</span>'
-        '<span style="font-size:2rem;font-weight:900;color:#ffffff !important;">Xtract</span>'
-        '</div>'
-        '<div style="font-size:0.85rem;color:rgba(255,255,255,0.85);">Base de données Douanes</div>'
-        '</div>', unsafe_allow_html=True)
-            
-            
+                '<div style="padding:28px 16px 10px;text-align:center;">'
+                '<div style="font-size:2rem;font-weight:900;margin-bottom:4px;">'
+                '<span style="font-size:2rem;font-weight:900;color:#0a1628 !important;">Douane</span>'
+                '<span style="font-size:2rem;font-weight:900;color:#1a56db !important;">Xtract</span>'
+                '</div>'
+                '<div style="font-size:0.85rem;color:#6b7280;">Base de données Douanes</div>'
+                '</div>', unsafe_allow_html=True)
+
             _email    = st.text_input("Adresse e-mail", placeholder="✉  user@email.com")
             _password = st.text_input("Mot de passe",   placeholder="🔒  ••••••••", type="password")
 
@@ -226,6 +228,7 @@ def show_login():
 
             _submit = st.form_submit_button("Se connecter", use_container_width=True)
 
+        # Fermeture de la carte
         st.markdown('</div>', unsafe_allow_html=True)
 
         # Footer
@@ -278,7 +281,7 @@ with st.sidebar:
 
     st.markdown("<hr style='border-color:rgba(255,255,255,0.08);margin:12px 0;'>", unsafe_allow_html=True)
 
-    mod = st.session_state.get("module","dashboard")
+    mod = st.session_state.get("module", "dashboard")
     def nav_btn(label, key):
         if st.button(label, use_container_width=True, key="nav_"+key):
             st.session_state["module"] = key; st.rerun()
@@ -324,7 +327,7 @@ if module == "dashboard":
 
     st.markdown("---")
     st.markdown("### Statistiques")
-    s1,s2,s3,s4 = st.columns(4)
+    s1, s2, s3, s4 = st.columns(4)
     s1.metric("📋 Avis Tarifaires", stats['tarifaires'])
     s2.metric("📁 Secrétariat",     stats['secretariat'])
     s3.metric("🌐 Décisions OMD",   stats['omd'])
@@ -455,49 +458,34 @@ elif module == "tarifaires":
                     card = (
                         '<div style="background:#ffffff;border:1.5px solid #e2e8f0;border-radius:12px;'
                         'padding:16px 20px;margin-bottom:12px;box-shadow:0 1px 6px rgba(0,0,0,0.05);">'
-
-                        # En-tête fichier
                         '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">'
                         '<span style="font-size:0.85rem;font-weight:700;color:#0a1628;">📄 ' + doc['filename'] + '</span>'
                         '<span style="color:#9ca3af;font-size:0.75rem;">' + date_val + '</span>'
                         '</div>'
-
-
-
-                        # 3 cartes blanches : N° AVIS / NDP / N° TARIFAIRE
                         '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px;">'
-
                         '<div style="background:#ffffff;border:1.5px solid #e2e8f0;border-radius:8px;padding:10px;">'
                         '<div style="color:#9ca3af;font-size:0.62rem;letter-spacing:0.5px;margin-bottom:3px;">N° AVIS</div>'
                         '<div style="color:#1a56db;font-weight:700;font-size:0.95rem;">' + avis_val + '</div>'
                         '</div>'
-
                         '<div style="background:#ffffff;border:1.5px solid #e2e8f0;border-radius:8px;padding:10px;">'
                         '<div style="color:#9ca3af;font-size:0.62rem;letter-spacing:0.5px;margin-bottom:3px;">NDP</div>'
                         '<div style="color:#059669;font-weight:700;font-size:0.95rem;">' + ndp_display + '</div>'
                         '</div>'
-
                         '<div style="background:#ffffff;border:1.5px solid #e2e8f0;border-radius:8px;padding:10px;">'
                         '<div style="color:#9ca3af;font-size:0.62rem;letter-spacing:0.5px;margin-bottom:3px;">N° TARIFAIRE</div>'
                         '<div style="color:#d97706;font-weight:700;font-size:0.95rem;">' + tarif_val + '</div>'
                         '</div>'
-
                         '</div>'
-
-                        # Pour le classement tarifaire
                         '<div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;'
                         'padding:8px 12px;margin-bottom:10px;">'
                         '<span style="color:#0369a1;font-size:0.68rem;font-weight:700;letter-spacing:0.5px;">POUR LE CLASSEMENT TARIFAIRE :</span>'
                         '<span style="color:#1e3a5f;font-size:0.85rem;">' + usage_short + '</span>'
                         '</div>'
-                        
-                        # Désignation au-dessus
                         '<div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;'
                         'padding:8px 12px;margin-bottom:10px;">'
                         '<span style="color:#0369a1;font-size:0.68rem;font-weight:700;letter-spacing:0.5px;">DÉSIGNATION :</span>'
                         '<span style="color:#1e3a5f;font-size:0.85rem;">' + desig_val[:100] + ('…' if len(desig_val)>100 else '') + '</span>'
                         '</div>'
-
                         '</div>'
                     )
                     st.markdown(card, unsafe_allow_html=True)
@@ -515,7 +503,7 @@ elif module == "tarifaires":
             tab_e, tab_o, tab_d = st.tabs(["✏️ Modifier","📄 OCR","🗑️ Supprimer"])
             with tab_e:
                 with st.form("edit_tar"):
-                    c1,c2,c3 = st.columns(3)
+                    c1, c2, c3 = st.columns(3)
                     na = c1.text_input("N° Avis",      value=doc.get("numero_avis")  or "")
                     tn = c2.text_input("N° Tarifaire", value=doc.get("tarif_number") or "")
                     nd = c3.text_input("NDP",          value=doc.get("ndp")          or "")
@@ -574,7 +562,6 @@ elif module == "secretariat":
                     hs_val   = doc.get("hs_code")       or "—"
                     desc_fr  = doc.get("desc_fr")       or "—"
 
-                    # Surligner recherche
                     idx = num_val.upper().find(q)
                     if idx >= 0:
                         num_display = (num_val[:idx] +
@@ -674,7 +661,7 @@ elif module == "secretariat":
                 tab_e, tab_d = st.tabs(["✏️ Modifier","🗑️ Supprimer"])
                 with tab_e:
                     with st.form("edit_sec"):
-                        c1,c2,c3 = st.columns(3)
+                        c1, c2, c3 = st.columns(3)
                         nl = c1.text_input("N° Lettre", value=doc.get("numero_lettre") or "")
                         da = c2.text_input("Date",      value=doc.get("date_avis")     or "")
                         hs = c3.text_input("HS Code",   value=doc.get("hs_code")       or "")
@@ -735,7 +722,6 @@ elif module == "omd":
                     sess  = doc.get("session")     or "—"
                     motif = doc.get("motif")       or ""
 
-                    # Securite affichage : description obligatoire
                     if not desc or desc in ('—','nan','None',''):
                         desc = '(description non disponible — veuillez réimporter ce PDF)'
                     words   = desc.strip().split(" ")
@@ -743,19 +729,9 @@ elif module == "omd":
                     rest_d  = desc[len(first_w):]
                     short   = (first_w + rest_d)[:120] + ("…" if len(desc)>120 else "")
 
-                    motif_line = ""
-                    if motif and motif not in ("—","nan","None",""):
-                        motif_line = (
-                            '<div style="margin-top:10px;padding-top:10px;border-top:1px solid #e5e7eb;">'
-                            '<span style="color:#374151;font-size:0.83rem;"><b>Motif</b> : ' + motif[:150] + ('…' if len(motif)>150 else '') + '</span></div>'
-                        )
-
-
                     card = (
                         '<div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:14px;'
                         'padding:18px 22px;margin-bottom:14px;box-shadow:0 1px 6px rgba(0,0,0,0.05);">'
-
-                        # Icône + Classement
                         '<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">'
                         '<div style="width:34px;height:34px;background:#fef3c7;border:1px solid #fcd34d;'
                         'border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;">📁</div>'
@@ -763,8 +739,6 @@ elif module == "omd":
                         'Classement : <span style="color:#d97706;font-weight:700;">' + clas + '</span>'
                         '</div>'
                         '</div>'
-
-                        # Session uniquement
                         '<div style="color:#374151;font-size:0.85rem;">'
                         '<b>Session</b> : <em>' + sess + '</em>'
                         '</div>'
@@ -785,7 +759,6 @@ elif module == "omd":
 
         tab_import, tab_fix, tab_clean = st.tabs(["📄 Importer un PDF", "🔄 Corriger les sessions", "🧹 Nettoyer doublons"])
 
-        # ── Onglet 1 : Import normal ─────────────────────────────────────────
         with tab_import:
             st.info("📄 **Extraction automatique** — session + décisions extraites et enregistrées directement.")
             files = st.file_uploader("Glissez vos PDFs OMD", type=["pdf"], accept_multiple_files=True, key="omd_upload")
@@ -806,7 +779,6 @@ elif module == "omd":
                             if reimport:
                                 deleted = db.delete_omd_by_filename(f.name)
                                 st.info(f"🔄 {deleted} anciennes décisions supprimées")
-                            # Anti-doublon : ne pas reinserrer ce qui existe deja
                             existing_keys = {
                                 (r["filename"], r["classement"], r["description"])
                                 for r in db.get_all_omd()
@@ -823,7 +795,6 @@ elif module == "omd":
                     status.success(f"✅ Import terminé — **{total_added}** décisions enregistrées !")
                     st.rerun()
 
-        # ── Onglet 2 : Corriger session des fichiers deja en base ────────────
         with tab_fix:
             st.markdown("**Corriger la session des décisions déjà importées**")
             st.caption("Utilisez cet outil si des décisions ont été importées avant la correction du parser.")
@@ -832,7 +803,6 @@ elif module == "omd":
             if not filenames:
                 st.info("Aucune décision en base.")
             else:
-                # Afficher l'état actuel par fichier
                 all_docs = db.get_all_omd()
                 file_sessions = {}
                 for doc in all_docs:
@@ -844,11 +814,9 @@ elif module == "omd":
                 st.markdown("**Fichiers en base :**")
                 for fn, sess in file_sessions.items():
                     if not sess or sess == "—":
-                        icon = "❌"
-                        label = "Session manquante"
+                        icon = "❌"; label = "Session manquante"
                     else:
-                        icon = "✅"
-                        label = sess
+                        icon = "✅"; label = sess
                     st.markdown(
                         '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;'
                         'padding:10px 14px;margin-bottom:6px;display:flex;justify-content:space-between;">'
@@ -874,12 +842,10 @@ elif module == "omd":
                             if not session_det:
                                 st.error("❌ Session non détectée dans ce PDF.")
                             else:
-                                # Mettre a jour la session en base
                                 updated = db.update_omd_session_by_filename(fix_file.name, session_det)
                                 if updated > 0:
                                     st.success(f"✅ Session **{session_det}** appliquée à **{updated}** décisions de *{fix_file.name}*")
                                 else:
-                                    # Fichier pas encore en base — importer directement
                                     for d in decisions: db.insert_omd(d)
                                     st.success(f"✅ {len(decisions)} décisions importées avec session **{session_det}**")
                                 st.rerun()
@@ -901,7 +867,6 @@ elif module == "omd":
                         else:
                             st.error("Saisissez une session.")
 
-        # ── Onglet 3 : Nettoyer doublons ─────────────────────────────────────
         with tab_clean:
             st.markdown("**Supprimer les décisions en double dans la base**")
             st.caption("Un doublon = même fichier source + même classement + même description.")
@@ -960,14 +925,13 @@ elif module == "users" and is_admin:
 
     tab_list, tab_add, tab_pwd = st.tabs(["📋 Liste des utilisateurs", "➕ Ajouter", "🔑 Changer mot de passe"])
 
-    # ── LISTE ─────────────────────────────────────────────────────────────────
     with tab_list:
         users_list = auth.get_all_users()
         if not users_list:
             st.info("Aucun utilisateur.")
         else:
             for u in users_list:
-                is_self   = u["email"] == user["email"]
+                is_self    = u["email"] == user["email"]
                 is_admin_u = u["role"] == "admin"
                 actif_icon = "🟢" if u["actif"] else "🔴"
                 role_badge = (
@@ -1003,20 +967,19 @@ elif module == "users" and is_admin:
                     with cb:
                         if st.button("🗑️ Supprimer", key=f"del_{u['id']}", use_container_width=True):
                             auth.delete_user(u["id"])
-                            st.success(f"Utilisateur supprimé.")
+                            st.success("Utilisateur supprimé.")
                             st.rerun()
 
-    # ── AJOUTER ───────────────────────────────────────────────────────────────
     with tab_add:
         st.markdown("**Créer un nouveau compte**")
         with st.form("add_user_form"):
             c1, c2 = st.columns(2)
-            nm = c1.text_input("Nom complet",     placeholder="ex: Jean Dupont")
-            em = c2.text_input("Adresse email",   placeholder="ex: jean.dupont@douanes.tn")
-            pw = c1.text_input("Mot de passe",    placeholder="min. 8 caractères", type="password")
-            pw2= c2.text_input("Confirmer",       placeholder="répétez le mot de passe", type="password")
-            ro = st.selectbox("Rôle", ["user", "admin"],
-                              format_func=lambda x: "👤 Utilisateur" if x=="user" else "🔑 Administrateur")
+            nm  = c1.text_input("Nom complet",   placeholder="ex: Jean Dupont")
+            em  = c2.text_input("Adresse email", placeholder="ex: jean.dupont@douanes.tn")
+            pw  = c1.text_input("Mot de passe",  placeholder="min. 8 caractères", type="password")
+            pw2 = c2.text_input("Confirmer",     placeholder="répétez le mot de passe", type="password")
+            ro  = st.selectbox("Rôle", ["user", "admin"],
+                               format_func=lambda x: "👤 Utilisateur" if x=="user" else "🔑 Administrateur")
             submitted = st.form_submit_button("➕ Créer le compte", type="primary", use_container_width=True)
 
         if submitted:
@@ -1034,7 +997,6 @@ elif module == "users" and is_admin:
                 else:
                     st.error(f"❌ {msg}")
 
-    # ── CHANGER MOT DE PASSE ──────────────────────────────────────────────────
     with tab_pwd:
         st.markdown("**Modifier le mot de passe d'un utilisateur**")
 
@@ -1043,8 +1005,8 @@ elif module == "users" and is_admin:
 
         with st.form("change_pwd_form"):
             sel_user = st.selectbox("Choisir l'utilisateur", list(opts_pwd.keys()))
-            new_pw   = st.text_input("Nouveau mot de passe",   type="password", placeholder="min. 8 caractères")
-            new_pw2  = st.text_input("Confirmer",              type="password", placeholder="répétez")
+            new_pw   = st.text_input("Nouveau mot de passe", type="password", placeholder="min. 8 caractères")
+            new_pw2  = st.text_input("Confirmer",            type="password", placeholder="répétez")
             submitted_pwd = st.form_submit_button("🔑 Changer le mot de passe", type="primary", use_container_width=True)
 
         if submitted_pwd:
