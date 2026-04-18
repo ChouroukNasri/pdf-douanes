@@ -44,9 +44,7 @@ section[data-testid="stSidebar"] .stButton button {
     color:rgba(200,220,255,0.9) !important; border-radius:10px !important;
     font-weight:500 !important; margin-bottom:2px !important;
 }
-section[data-testid="stSidebar"] .stButton button:hover {
-    background:rgba(26,86,219,0.5) !important;
-}
+section[data-testid="stSidebar"] .stButton button:hover { background:rgba(26,86,219,0.5) !important; }
 section[data-testid="stMain"] p, section[data-testid="stMain"] li { color:#374151 !important; }
 section[data-testid="stMain"] h1, section[data-testid="stMain"] h2, section[data-testid="stMain"] h3 { color:#0a1628 !important; }
 section[data-testid="stMain"] label { color:#374151 !important; }
@@ -117,9 +115,10 @@ def show_login():
         "background: linear-gradient(135deg,#0a1628,#1a3a6e) !important;"
     )
 
+    # ── CSS UNIQUE FUSIONNÉ ──────────────────────────────────────────────────
     st.markdown(f"""
     <style>
-    /* ══ RESET COMPLET — écrase tout CSS global ══ */
+    /* ══ BACKGROUND ══ */
     .stApp {{
         {_logo_css}
         background-size: cover !important;
@@ -128,7 +127,8 @@ def show_login():
         background-attachment: fixed !important;
         min-height: 100vh !important;
     }}
-    /* Supprimer la boîte blanche du block-container */
+
+    /* ══ RESET block-container ══ */
     section[data-testid="stMain"] .block-container {{
         background: transparent !important;
         box-shadow: none !important;
@@ -137,26 +137,40 @@ def show_login():
         max-width: 100% !important;
         margin: 0 !important;
     }}
-    /* Cacher header, sidebar, menu */
+
+    /* ══ CACHER header / sidebar / menu ══ */
     header[data-testid="stHeader"]   {{ display:none !important; }}
     section[data-testid="stSidebar"] {{ display:none !important; }}
     #MainMenu, footer                 {{ display:none !important; }}
-    /* Labels */
+
+    /* ══ CARTE BLANCHE — cible le conteneur natif du formulaire ══ */
+    section[data-testid="stMain"] [data-testid="stForm"] {{
+        background: rgba(255, 255, 255, 0.93) !important;
+        border-radius: 20px !important;
+        padding: 28px 28px 20px 28px !important;
+        border: 1px solid rgba(255,255,255,0.7) !important;
+        box-shadow: 0 8px 40px rgba(0,0,0,0.22) !important;
+        backdrop-filter: blur(14px) !important;
+        -webkit-backdrop-filter: blur(14px) !important;
+    }}
+
+    /* ══ LABELS ══ */
     section[data-testid="stMain"] label {{
         color: #1e3a5f !important;
         font-weight: 700 !important;
         font-size: 0.92rem !important;
     }}
-    /* Inputs */
+
+    /* ══ INPUTS ══ */
     section[data-testid="stMain"] input[type="text"],
     section[data-testid="stMain"] input[type="password"] {{
-        background: rgba(255,255,255,0.95) !important;
-        border: 1.5px solid rgba(180,200,230,0.7) !important;
+        background: rgba(255,255,255,0.98) !important;
+        border: 1.5px solid rgba(180,200,230,0.8) !important;
         color: #1a2f50 !important;
         border-radius: 10px !important;
         padding: 14px 16px !important;
         font-size: 1rem !important;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.08) !important;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.06) !important;
     }}
     section[data-testid="stMain"] input::placeholder {{
         color: #a0aec0 !important;
@@ -165,7 +179,8 @@ def show_login():
         border-color: #2563eb !important;
         box-shadow: 0 0 0 3px rgba(37,99,235,0.15) !important;
     }}
-    /* Bouton */
+
+    /* ══ BOUTON SE CONNECTER ══ */
     section[data-testid="stMain"] .stFormSubmitButton button {{
         background: linear-gradient(180deg,#3b7dd8 0%,#1d4ed8 100%) !important;
         color: white !important;
@@ -180,62 +195,53 @@ def show_login():
     section[data-testid="stMain"] .stFormSubmitButton button:hover {{
         background: linear-gradient(180deg,#4a8fe8 0%,#2563eb 100%) !important;
     }}
-    /* Alertes */
+
+    /* ══ ALERTES ══ */
     section[data-testid="stMain"] .stError {{
         background: rgba(254,242,242,0.95) !important;
+        border-radius: 8px !important;
     }}
     </style>
     """, unsafe_allow_html=True)
 
     # ── Espacement haut ──────────────────────────────────────────────────────
-    st.markdown("<div style='height:100px'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height:80px'></div>", unsafe_allow_html=True)
 
     # ── Colonne centrale ─────────────────────────────────────────────────────
     _, _col, _ = st.columns([1, 1.3, 1])
 
     with _col:
-        # ── Carte blanc clair ────────────────────────────────────────────────
-        st.markdown(
-            '<div style="'
-            'background: rgba(255,255,255,0.92);'
-            'backdrop-filter: blur(14px);'
-            '-webkit-backdrop-filter: blur(14px);'
-            'border-radius: 20px;'
-            'padding: 10px 28px 24px;'
-            'border: 1px solid rgba(255,255,255,0.5);'
-            'box-shadow: 0 8px 32px rgba(0,0,0,0.15);'
-            '">',
-            unsafe_allow_html=True)
-
         with st.form("login_form"):
+            # Titre dans la carte
             st.markdown(
-                '<div style="padding:28px 16px 10px;text-align:center;">'
+                '<div style="padding:8px 0 18px;text-align:center;">'
                 '<div style="font-size:2rem;font-weight:900;margin-bottom:4px;">'
-                '<span style="font-size:2rem;font-weight:900;color:#0a1628 !important;">Douane</span>'
-                '<span style="font-size:2rem;font-weight:900;color:#1a56db !important;">Xtract</span>'
+                '<span style="color:#0a1628;">Douane</span>'
+                '<span style="color:#1a56db;">Xtract</span>'
                 '</div>'
-                '<div style="font-size:0.85rem;color:#6b7280;">Base de données Douanes</div>'
-                '</div>', unsafe_allow_html=True)
+                '<div style="font-size:0.85rem;color:#6b7280;margin-bottom:4px;">'
+                'Base de données Douanes Tunisiennes'
+                '</div>'
+                '<hr style="border:none;border-top:1px solid #e5e7eb;margin:12px 0 4px;">'
+                '</div>',
+                unsafe_allow_html=True)
 
             _email    = st.text_input("Adresse e-mail", placeholder="✉  user@email.com")
             _password = st.text_input("Mot de passe",   placeholder="🔒  ••••••••", type="password")
 
             st.markdown(
-                '<div style="text-align:right;margin:-2px 0 14px;">'
+                '<div style="text-align:right;margin:-4px 0 16px;">'
                 '<span style="color:#2563eb;font-size:0.82rem;cursor:pointer;">'
                 'Mot de passe oublié ?</span></div>',
                 unsafe_allow_html=True)
 
             _submit = st.form_submit_button("Se connecter", use_container_width=True)
 
-        # Fermeture de la carte
-        st.markdown('</div>', unsafe_allow_html=True)
-
-        # Footer
+        # Footer sous la carte
         st.markdown(
-            '<div style="text-align:center;margin-top:18px;">'
-            '<span style="color:rgba(255,255,255,0.8);font-size:0.72rem;'
-            'text-shadow:0 1px 6px rgba(0,0,0,0.6);">'
+            '<div style="text-align:center;margin-top:20px;">'
+            '<span style="color:rgba(255,255,255,0.85);font-size:0.72rem;'
+            'text-shadow:0 1px 6px rgba(0,0,0,0.5);">'
             '<b style="color:white;">DouaneXtract</b> v1.0 &nbsp;·&nbsp; '
             'Direction Générale des Douanes Tunisiennes'
             '</span></div>',
@@ -449,7 +455,6 @@ elif module == "tarifaires":
                     date_val  = doc.get("upload_date","")[:10]
                     usage_short = usage_val[:120] + ("…" if len(usage_val)>120 else "")
 
-                    # Surligner NDP
                     ndp_display = ndp_val
                     if filter_ndp.strip() and filter_ndp.strip() in ndp_val:
                         ndp_display = ndp_val.replace(filter_ndp.strip(),
