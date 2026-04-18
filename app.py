@@ -236,6 +236,14 @@ def show_login():
                 unsafe_allow_html=True)
 
             _submit = st.form_submit_button("Se connecter", use_container_width=True)
+            
+            st.markdown(
+            '<span style="color:rgba(255,255,255,0.85);font-size:0.72rem;'
+            'text-shadow:0 1px 6px rgba(0,0,0,0.5);">'
+            '<b style="color:white;">DouaneXtract</b> v1.0 &nbsp;·&nbsp; '
+            'Direction Générale des Douanes Tunisiennes'
+            '</span></div>',
+            unsafe_allow_html=True)
 
         # Footer sous la carte
         st.markdown(
