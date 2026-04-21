@@ -22,8 +22,11 @@ try:
 except ImportError:
     PDF2IMAGE_OK = False
 
-# Si Tesseract n'est pas dans le PATH, decommenter :
-# pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+try:
+    import pdfplumber
+    HAS_PDFPLUMBER = True
+except ImportError:
+    HAS_PDFPLUMBER = False
 
 def _detect_best_lang():
     if not TESSERACT_OK:
@@ -97,7 +100,7 @@ def _ocr_pdf(pdf_path):
 
 def parse_fields(text):
     """
-    Extrait les 5 champs :
+    Extrait les 5 champs pour Avis Tarifaires :
       - numero_avis
       - designation
       - usage_text
@@ -115,12 +118,10 @@ def parse_fields(text):
     if not text:
         return fields
 
-    # N° Avis (7 chiffres)
     m = re.search(r'\b(\d{7})\b', text)
     if m:
         fields["numero_avis"] = m.group(1)
 
-    # Designation commerciale
     patterns_desig = [
         r'[Dd][ée]signation\s+[Cc]ommerciale?\s*:\s*(.+?)(?:\n\n|\n-|\n[A-Z]|\Z)',
         r'[Dd][ée]signation\s*:\s*(.+?)(?:\n\n|\n-|\n[A-Z]|\Z)',
@@ -131,7 +132,6 @@ def parse_fields(text):
             fields["designation"] = _clean(m.group(1))
             break
 
-    # Usage — toute la phrase
     m = re.search(
         r'[Uu]sage\s*:\s*(.+?)(?:\n\n|\n-|\nEMET|\ZEMET|\Z)',
         text, re.IGNORECASE | re.DOTALL
@@ -139,7 +139,6 @@ def parse_fields(text):
     if m:
         fields["usage_text"] = _clean(m.group(1))
 
-    # Numero tarifaire
     patterns_tarif = [
         r'classer\s+au\s+n[o0O][^\d]*(\d{9,10})',
         r'n[o0O][^\d\w]*(\d{9,10})\b',
@@ -157,7 +156,6 @@ def parse_fields(text):
             fields["tarif_number"] = raw
             break
 
-    # NDP — detecte NDP, N.D.P, N.D.P.
     patterns_ndp = [
         r'N\.?D\.?P\.?\s*[:\s]+(\d{10,15})',
         r'\(\s*N\.?D\.?P\.?\s*[:\s]*(\d{10,15})\s*\)',
@@ -191,29 +189,17 @@ def process_pdf(pdf_path, filename=None):
     }
 
 
-
-
 # ══════════════════════════════════════════════════════════════════════════════
 #  PARSER SPECIAL : DECISIONS OMD
 # ══════════════════════════════════════════════════════════════════════════════
 def parse_omd_pdf(pdf_path, filename=None):
     """
     Parse un PDF de decisions OMD (Comite du Systeme Harmonise).
-    Utilise pdfplumber (texte natif) pour capturer la session correctement.
-    La session detectee (ex: 22eme Session - Novembre 1998) est diffusee
-    a TOUTES les decisions du meme PDF.
     """
     import re
-    try:
-        import pdfplumber
-        HAS_PDFPLUMBER = True
-    except ImportError:
-        HAS_PDFPLUMBER = False
-
     if filename is None:
         filename = Path(pdf_path).name
 
-    # 1. Extraction texte
     if HAS_PDFPLUMBER:
         try:
             with pdfplumber.open(pdf_path) as pdf:
@@ -227,7 +213,6 @@ def parse_omd_pdf(pdf_path, filename=None):
         full_text = extract_text_from_pdf(pdf_path)
         full_text = re.sub(r'--- Page \d+ ---\n', '', full_text)
 
-    # 2. Detecter la session UNIQUE du PDF et la diffuser a tous
     session = ""
     m_num  = re.search(r'(\d+).?[eèê]me?\s+session', full_text, re.IGNORECASE)
     m_date = re.search(
@@ -247,12 +232,10 @@ def parse_omd_pdf(pdf_path, filename=None):
 
     print("[OMD] Session detectee : " + repr(session))
 
-    # 3. Couper avant Liste A / Liste B
     for marker in ["Liste A", "Liste B", "List A", "List B"]:
         if marker in full_text:
             full_text = full_text[:full_text.index(marker)]
 
-    # 4. Splitter par entrees numerotees "N. texte"
     entries = re.split(r'\n(?=\d{1,2}\.\s)', full_text)
 
     decisions = []
@@ -268,7 +251,6 @@ def parse_omd_pdf(pdf_path, filename=None):
         num  = num_m.group(1)
         rest = num_m.group(2)
 
-        # Code HS (ex: 17.04, 1901.90)
         hs_m = re.search(r'\b(\d{2,4}\.\d{2,3})\b', rest)
         if not hs_m:
             continue
@@ -277,7 +259,6 @@ def parse_omd_pdf(pdf_path, filename=None):
         before = re.sub(r'\s+', ' ', rest[:hs_m.start()]).strip()
         after  = re.sub(r'\s+', ' ', rest[hs_m.end():]).strip()
 
-        # Reconstruction intelligente selon la position du code HS
         motif_markers = ['RGI', 'Note ', 'Chapitre ', 'Exclusion', 'Section ']
 
         if len(before) >= 5 and len(after) >= 5:
@@ -287,7 +268,6 @@ def parse_omd_pdf(pdf_path, filename=None):
             desc  = before
             motif = ''
         elif len(after) >= 5:
-            # HS en debut : description est dans 'after'
             motif_pos = None
             for mk in motif_markers:
                 pos = after.find(mk)
@@ -300,11 +280,9 @@ def parse_omd_pdf(pdf_path, filename=None):
                 desc  = after
                 motif = ''
         else:
-            # Ni avant ni apres : prendre tout le texte sans le code HS
             desc  = re.sub(r'\s+', ' ', rest).replace(classement, '').strip()[:800]
             motif = ''
 
-        # Securite : si encore vide, prendre le texte brut
         if not desc or len(desc) < 3:
             desc = re.sub(r'\s+', ' ', rest).strip()[:800]
 
@@ -320,3 +298,218 @@ def parse_omd_pdf(pdf_path, filename=None):
 
     print("[OMD] " + str(len(decisions)) + " decisions extraites — session=" + repr(session))
     return decisions
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  PARSER SPECIAL : AVIS TARÉS (format kap_XX_f.pdf)
+# ══════════════════════════════════════════════════════════════════════════════
+def parse_kap_pdf(pdf_path, filename=None):
+    """
+    Parse un PDF de type kap_XX_f.pdf (recueil tarifaire par chapitre).
+
+    Structure d'une entrée typique :
+    ┌──────────────────────────────────────────────────────────┐
+    │  Nom du produit (bold, 1ère ligne)                        │
+    │  Description (plusieurs lignes)                           │
+    │  [Référence numérique ex: 304.64.2004.2]                 │
+    │  Mots-clés: mot1 / mot2 / mot3          CODE.XXXX        │
+    └──────────────────────────────────────────────────────────┘
+
+    Le code HS (ex: 0402.9910) apparaît aligné à droite sur la ligne
+    des mots-clés ou juste après.
+    """
+    if filename is None:
+        filename = Path(pdf_path).name
+
+    # ── 1. Extraction texte brut ──────────────────────────────────────────────
+    if HAS_PDFPLUMBER:
+        try:
+            with pdfplumber.open(pdf_path) as pdf:
+                pages_text = []
+                for page in pdf.pages:
+                    t = page.extract_text(x_tolerance=3, y_tolerance=3) or ""
+                    pages_text.append(t)
+                full_text = "\n".join(pages_text)
+        except Exception:
+            full_text = extract_text_from_pdf(pdf_path)
+    else:
+        full_text = extract_text_from_pdf(pdf_path)
+
+    # Supprimer les en-têtes de pages (ex: "0402 - 0405\n1/5 (Etat: 1.10.2022)")
+    full_text = re.sub(r'\d{4}\s*-\s*\d{4}\s*\n\d+/\d+\s*\(Etat[^\n]*\)\n?', '', full_text)
+    full_text = re.sub(r'\d+/\d+\s*\(Etat[^\n]*\)\n?', '', full_text)
+
+    print("[KAP] Texte extrait (" + str(len(full_text)) + " chars) depuis " + filename)
+
+    # ── 2. Regex pour parser chaque produit ───────────────────────────────────
+    #
+    # Pattern de détection d'un code HS en fin de ligne :
+    #   "Mots-clés: ..." suivi du code HS, ex: 0402.9910
+    #   OU le code HS seul sur sa propre ligne
+    #
+    # On split sur les occurrences de "Mots-clés:" pour isoler les blocs
+    # puis on récupère le code HS qui suit chaque bloc.
+
+    products = []
+
+    # Stratégie : découper le texte en blocs délimités par "Mots-clés:"
+    # Chaque bloc contient :  [nom + description + ref] AVANT "Mots-clés:"
+    # Et [mots-clés + code HS] APRÈS "Mots-clés:"
+
+    # Regex pour trouver toutes les occurrences de "Mots-clés:"
+    splits = list(re.finditer(r'Mots-cl[eé]s\s*:', full_text, re.IGNORECASE))
+
+    if not splits:
+        print("[KAP] Aucun 'Mots-clés' trouvé — tentative alternative")
+        return _parse_kap_fallback(full_text, filename)
+
+    for i, match in enumerate(splits):
+        # Texte AVANT ce Mots-clés (corps du produit)
+        start = splits[i-1].end() if i > 0 else 0
+        body_text = full_text[start:match.start()].strip()
+
+        # Texte APRÈS ce Mots-clés jusqu'au prochain Mots-clés
+        after_start = match.end()
+        after_end   = splits[i+1].start() if i+1 < len(splits) else len(full_text)
+        after_text  = full_text[after_start:after_end].strip()
+
+        # ── Extraire le code HS depuis after_text ────────────────────────────
+        # Le code HS est du type: 0402.9910  ou  0403.2011/ 2029  ou  0405.2011,\n0405.2091
+        hs_match = re.search(
+            r'\b(\d{4}\.\d{4}(?:/\s*\d{4})?(?:,\s*\n?\s*\d{4}\.\d{4}(?:/\s*\d{4})?)*)\b',
+            after_text
+        )
+        if not hs_match:
+            # Code HS simple (4 chiffres point 2-4 chiffres)
+            hs_match = re.search(r'\b(\d{4}\.\d{2,4}(?:[/,]\s*\d{2,4})?)\b', after_text)
+
+        hs_code = ""
+        if hs_match:
+            raw_hs = hs_match.group(1)
+            # Extraire TOUS les codes HS individuels (ex: "0405.2011,\n0405.2091")
+            all_codes = re.findall(r'\d{4}\.\d{2,4}', raw_hs)
+            hs_code = ", ".join(c for c in all_codes if c)  # stocker tous séparés par ", "
+
+        # ── Extraire les mots-clés (avant le code HS dans after_text) ────────
+        mots_cles_raw = after_text
+        if hs_match:
+            mots_cles_raw = after_text[:hs_match.start()]
+        mots_cles = re.sub(r'\s+', ' ', mots_cles_raw).strip().strip('/')
+
+        # ── Parser le body_text : nom + description + ref ────────────────────
+        # Référence numérique type: 304.64.2004.2 ou 3101.56.2014.4
+        ref_match = re.search(r'\b(\d{3,10}\.\d{1,10}\.\d{4}\.\d{1,3})\b', body_text)
+        ref_numero = ref_match.group(1) if ref_match else ""
+
+        # Supprimer la référence du body
+        clean_body = body_text
+        if ref_match:
+            clean_body = body_text[:ref_match.start()] + body_text[ref_match.end():]
+        clean_body = clean_body.strip()
+
+        # Supprimer boilerplate
+        clean_body = re.sub(
+            r'Application des R[eè]gles g[eé]n[eé]rales[^\n]*\n?',
+            '', clean_body, flags=re.IGNORECASE
+        )
+        clean_body = re.sub(r'Voir aussi[^\n]*\n?', '', clean_body, flags=re.IGNORECASE)
+        # Supprimer les codes HS parasites qui trainent dans le body (ex: "0405.2011, 0405.2091")
+        clean_body = re.sub(r'\b\d{4}\.\d{2,4}(?:[,/\s]+\d{4}\.\d{2,4})*', '', clean_body)
+        clean_body = clean_body.strip()
+
+        # ── Identifier le NOM : chercher un titre court (ligne sans virgule ni point final)
+        # Dans le format kap_XX_f.pdf, le nom est en GRAS sur la 1ère ligne du bloc
+        # et la description commence par une minuscule ou "sous forme", "constitué", etc.
+        lines = [l.strip() for l in clean_body.split('\n') if l.strip()]
+        if not lines:
+            continue
+
+        # Trouver la dernière ligne "titre" = ligne courte (≤120 cars) qui ne commence
+        # pas par une minuscule et n'est pas du texte courant (pas de virgule au milieu)
+        nom = ""
+        desc_start = 0
+        for idx, line in enumerate(lines):
+            # Critères d'un nom de produit :
+            # - commence par une majuscule ou un chiffre
+            # - relativement courte (≤ 120 chars)
+            # - ne ressemble pas à une phrase descriptive (pas de "sous forme", "constitué", etc.)
+            is_title = (
+                len(line) <= 120
+                and (line[0].isupper() or line[0].isdigit())
+                and not re.match(r'^(sous|constitué|contenant|utilisé|liquide|masse|produit|poudre|mélange de)', line, re.IGNORECASE)
+            )
+            if is_title and idx == 0:
+                nom = line
+                desc_start = 1
+                break
+            elif is_title and idx > 0:
+                # Vérifier que la ligne précédente était aussi un titre (titre multi-ligne rare)
+                nom = line
+                desc_start = idx + 1
+                break
+
+        if not nom:
+            # Fallback : première ligne
+            nom = lines[0]
+            desc_start = 1
+
+        description = ' '.join(lines[desc_start:]).strip()
+        description = re.sub(r'\s+', ' ', description).strip()
+
+        # Ignorer les blocs trop courts ou sans code HS
+        if not nom or len(nom) < 3:
+            continue
+
+        products.append({
+            "filename":    filename,
+            "hs_code":     hs_code,
+            "nom":         nom[:200],
+            "description": description[:1500],
+            "mots_cles":   mots_cles[:500],
+            "ref_numero":  ref_numero,
+        })
+
+    print("[KAP] " + str(len(products)) + " produits extraits depuis " + filename)
+    return products
+
+
+def _parse_kap_fallback(full_text, filename):
+    """
+    Fallback si pas de 'Mots-clés:' trouvé.
+    Tente de détecter des blocs par présence de code HS en fin de ligne.
+    """
+    products = []
+    lines = full_text.split('\n')
+    hs_pattern = re.compile(r'\b(\d{4}\.\d{2,4}(?:[/,]\s*\d{2,4})?)\b')
+
+    i = 0
+    while i < len(lines):
+        line = lines[i].strip()
+        hs_m = hs_pattern.search(line)
+        if hs_m and len(line) < 30:  # code HS seul ou presque
+            hs_code = hs_m.group(1)
+            # Remonter pour trouver le nom/description
+            block_lines = []
+            j = i - 1
+            while j >= 0 and j >= i - 15:
+                prev = lines[j].strip()
+                if not prev or hs_pattern.search(prev):
+                    break
+                block_lines.insert(0, prev)
+                j -= 1
+
+            if block_lines:
+                nom = block_lines[0][:200]
+                desc = ' '.join(block_lines[1:])[:1000]
+                products.append({
+                    "filename":    filename,
+                    "hs_code":     hs_code,
+                    "nom":         nom,
+                    "description": desc,
+                    "mots_cles":   "",
+                    "ref_numero":  "",
+                })
+        i += 1
+
+    print("[KAP fallback] " + str(len(products)) + " produits extraits")
+    return products

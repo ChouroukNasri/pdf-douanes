@@ -273,7 +273,7 @@ with st.sidebar:
     nav_btn("📋  Avis Tarifaires",  "tarifaires")
     nav_btn("📁  Secrétariat",      "secretariat")
     nav_btn("🌐  Décisions OMD",    "omd")
-    nav_btn("📑  Avis Tarés",       "avis_tares")
+    nav_btn("📑  Avis Tares",       "avis_tares")
     if is_admin:
         nav_btn("👥  Utilisateurs", "users")
 
@@ -375,7 +375,7 @@ elif module == "tarifaires":
     st.caption("Documents PDF scannés — Classement tarifaire douanier")
     st.markdown("---")
 
-    page = st.radio("", ["🔍 Recherche","📤 Ajouter","✏️ Modifier"],
+    page = st.radio("", ["🔍 Recherche","📤 Ajouter","📂 Fichiers indexés"],
                     horizontal=True, label_visibility="collapsed")
 
     if page == "📤 Ajouter":
@@ -489,32 +489,29 @@ elif module == "tarifaires":
                     with st.expander("📄 Voir texte OCR complet"):
                         st.text(doc.get("full_text","")[:3000])
 
-    elif page == "✏️ Modifier":
-        st.subheader("✏️ Modifier / Supprimer")
+    elif page == "📂 Fichiers indexés":
+        st.subheader("📂 Fichiers PDF indexés — Avis Tarifaires")
         docs = db.get_all_documents()
-        if not docs: st.info("Aucun document disponible.")
+        if not docs:
+            st.info("Aucun document indexé.")
         else:
-            opts = {f"[{d['id']}] {d['filename']}": d['id'] for d in docs}
-            sel  = st.selectbox("Choisir un document", list(opts.keys()))
-            doc  = db.get_document_by_id(opts[sel])
-            tab_e, tab_o, tab_d = st.tabs(["✏️ Modifier","📄 OCR","🗑️ Supprimer"])
-            with tab_e:
-                with st.form("edit_tar"):
-                    c1, c2, c3 = st.columns(3)
-                    na = c1.text_input("N° Avis",      value=doc.get("numero_avis")  or "")
-                    tn = c2.text_input("N° Tarifaire", value=doc.get("tarif_number") or "")
-                    nd = c3.text_input("NDP",          value=doc.get("ndp")          or "")
-                    de = st.text_area("Désignation",   value=doc.get("designation")  or "", height=60)
-                    us = st.text_area("Pour le classement tarifaire", value=doc.get("usage_text") or "", height=80)
-                    if st.form_submit_button("💾 Enregistrer", type="primary"):
-                        db.update_document(opts[sel],{"numero_avis":na,"designation":de,"usage_text":us,"tarif_number":tn,"ndp":nd})
-                        st.success("✅ Mis à jour !"); st.rerun()
-            with tab_o: st.text_area("Texte OCR", value=doc.get("full_text") or "", height=400)
-            with tab_d:
-                st.warning(f"⚠️ Supprimer **{doc['filename']}** ?")
-                if st.checkbox("Je confirme"):
-                    if st.button("🗑️ Supprimer", type="primary"):
-                        db.delete_document(opts[sel]); st.success("Supprimé."); st.rerun()
+            st.markdown(f"**{len(docs)} document(s) en base**")
+            for doc in docs:
+                col_info, col_del = st.columns([5, 1])
+                with col_info:
+                    st.markdown(
+                        f'<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px 18px;margin-bottom:6px;">' 
+                        f'<b style="color:#0a1628;">📄 {doc["filename"]}</b> ' 
+                        f'<span class="badge" style="background:#1a56db;color:white;border-radius:4px;padding:2px 8px;font-size:0.8rem;margin-left:8px;">{doc.get("tarif_number") or "?"}</span>' 
+                        f'<span style="float:right;color:#9ca3af;font-size:0.75rem;">{doc.get("upload_date","")[:10]}</span><br>' 
+                        f'<small style="color:#6b7280;">N° Avis : {doc.get("numero_avis") or "—"} &nbsp;·&nbsp; NDP : {doc.get("ndp") or "—"}</small>' 
+                        f'</div>',
+                        unsafe_allow_html=True
+                    )
+                with col_del:
+                    st.markdown("<br>", unsafe_allow_html=True)
+                    if st.button("🗑️", key=f"del_tar_{doc['id']}", help="Supprimer ce document"):
+                        db.delete_document(doc["id"]); st.rerun()
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -525,7 +522,7 @@ elif module == "secretariat":
     st.caption("Documents et fichiers relatifs au Secrétariat")
     st.markdown("---")
 
-    page = st.radio("", ["🔍 Recherche", "📤 Ajouter fichier xlsx", "✏️ Modifier"],
+    page = st.radio("", ["🔍 Recherche", "📤 Ajouter fichier xlsx", "📂 Fichiers indexés"],
                     horizontal=True, label_visibility="collapsed")
 
     if page == "🔍 Recherche":
@@ -605,7 +602,6 @@ elif module == "secretariat":
     elif page == "📤 Ajouter fichier xlsx":
         st.markdown("<h2 style='color:#0a1628;'>📤 Ajouter un fichier Excel</h2>", unsafe_allow_html=True)
         st.markdown("---")
-        st.info("**Colonnes requises :** LETTER NUMBER · DATE · HS CODE · DESCRIPTION EN FRANCAIS")
         uploaded = st.file_uploader("Glisser votre fichier Excel (.xlsx)", type=["xlsx","xls"])
         if uploaded:
             import pandas as _pd
@@ -642,35 +638,37 @@ elif module == "secretariat":
             except Exception as e:
                 st.error(f"❌ Erreur : {e}")
 
-    elif page == "✏️ Modifier":
-        st.markdown("<h2 style='color:#0a1628;'>✏️ Modifier / Supprimer</h2>", unsafe_allow_html=True)
+    elif page == "📂 Fichiers indexés":
+        st.markdown("<h2 style='color:#0a1628;'>📂 Fichiers Excel indexés — Secrétariat</h2>", unsafe_allow_html=True)
         st.markdown("---")
         docs = db.get_all_secretariat()
-        if not docs: st.info("Aucun document disponible.")
+        if not docs:
+            st.info("Aucune entrée indexée.")
         else:
-            q_mod = st.text_input("Rechercher un numéro de lettre", placeholder="ex: L10642A")
-            if q_mod: docs = [d for d in docs if q_mod.upper() in (d.get("numero_lettre") or "").upper()]
-            if not docs: st.warning("Aucun résultat.")
-            else:
-                opts = {f"[{d['id']}] {d.get('numero_lettre','')} — {d.get('date_avis','')}": d['id'] for d in docs}
-                sel  = st.selectbox("Choisir une entrée", list(opts.keys()))
-                doc  = db.get_secretariat_by_id(opts[sel])
-                tab_e, tab_d = st.tabs(["✏️ Modifier","🗑️ Supprimer"])
-                with tab_e:
-                    with st.form("edit_sec"):
-                        c1, c2, c3 = st.columns(3)
-                        nl = c1.text_input("N° Lettre", value=doc.get("numero_lettre") or "")
-                        da = c2.text_input("Date",      value=doc.get("date_avis")     or "")
-                        hs = c3.text_input("HS Code",   value=doc.get("hs_code")       or "")
-                        df_fr = st.text_area("Description FR", value=doc.get("desc_fr") or "", height=100)
-                        if st.form_submit_button("💾 Enregistrer", type="primary"):
-                            db.update_secretariat(opts[sel],{"numero_lettre":nl,"date_avis":da,"hs_code":hs,"desc_fr":df_fr,"desc_en":doc.get("desc_en","")})
-                            st.success("✅ Mis à jour !"); st.rerun()
-                with tab_d:
-                    st.warning(f"⚠️ Supprimer **{doc.get('numero_lettre')}** ?")
-                    if st.checkbox("Je confirme"):
-                        if st.button("🗑️ Supprimer", type="primary"):
-                            db.delete_secretariat(opts[sel]); st.success("Supprimé."); st.rerun()
+            # Regrouper par filename
+            from collections import defaultdict
+            by_file = defaultdict(list)
+            for d in docs:
+                by_file[d.get("filename", "—")].append(d)
+            st.markdown(f"**{len(docs):,} entrée(s) · {len(by_file)} fichier(s)**")
+            for fname, entries in by_file.items():
+                col_info, col_del = st.columns([5, 1])
+                with col_info:
+                    first = entries[0]
+                    st.markdown(
+                        f'<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px 18px;margin-bottom:6px;">' 
+                        f'<b style="color:#0a1628;">📁 {fname}</b>' 
+                        f'<span style="float:right;color:#9ca3af;font-size:0.75rem;">{first.get("upload_date","")[:10]}</span><br>' 
+                        f'<small style="color:#6b7280;">{len(entries):,} lettres indexées</small>' 
+                        f'</div>',
+                        unsafe_allow_html=True
+                    )
+                with col_del:
+                    st.markdown("<br>", unsafe_allow_html=True)
+                    if st.button("🗑️", key=f"del_sec_{fname}", help=f"Supprimer toutes les entrées de {fname}"):
+                        for d in entries:
+                            db.delete_secretariat(d["id"])
+                        st.rerun()
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -681,7 +679,7 @@ elif module == "omd":
     st.caption("Textes officiels et décisions de l'OMD")
     st.markdown("---")
 
-    page = st.radio("", ["🔍 Recherche", "📤 Ajouter", "✏️ Modifier"],
+    page = st.radio("", ["🔍 Recherche", "📤 Ajouter", "📂 Fichiers indexés"],
                     horizontal=True, label_visibility="collapsed")
 
     total_omd = len(db.get_all_omd())
@@ -757,7 +755,6 @@ elif module == "omd":
         tab_import, tab_fix, tab_clean = st.tabs(["📄 Importer un PDF", "🔄 Corriger les sessions", "🧹 Nettoyer doublons"])
 
         with tab_import:
-            st.info("📄 **Extraction automatique** — session + décisions extraites et enregistrées directement.")
             files = st.file_uploader("Glissez vos PDFs OMD", type=["pdf"], accept_multiple_files=True, key="omd_upload")
             if files:
                 st.markdown(f"**{len(files)} fichier(s) sélectionné(s)**")
@@ -874,47 +871,46 @@ elif module == "omd":
                     st.success(f"✅ **{deleted}** doublon(s) supprimé(s) !")
                     st.rerun()
 
-    elif page == "✏️ Modifier":
-        st.markdown("<h2 style='color:#0a1628;'>✏️ Modifier / Supprimer</h2>", unsafe_allow_html=True)
+    elif page == "📂 Fichiers indexés":
+        st.markdown("<h2 style='color:#0a1628;'>📂 Fichiers PDF indexés — Décisions OMD</h2>", unsafe_allow_html=True)
         st.markdown("---")
-        docs = db.get_all_omd()
-        if not docs: st.info("Aucune décision disponible.")
+        all_omd = db.get_all_omd()
+        if not all_omd:
+            st.info("Aucune décision indexée.")
         else:
-            q_mod = st.text_input("Rechercher par classement ou description", placeholder="ex: 17.04, sucreries")
-            if q_mod: docs = [d for d in docs if q_mod.lower() in (d.get("classement") or "").lower() or q_mod.lower() in (d.get("description") or "").lower()]
-            if not docs: st.warning("Aucun résultat.")
-            else:
-                opts = {f"[{d['id']}] {d.get('classement','')} — {(d.get('description') or '')[:40]}": d['id'] for d in docs}
-                sel  = st.selectbox("Choisir une décision", list(opts.keys()))
-                doc  = db.get_omd_by_id(opts[sel])
-                tab_e, tab_d = st.tabs(["✏️ Modifier","🗑️ Supprimer"])
-                with tab_e:
-                    with st.form("edit_omd"):
-                        c1, c2 = st.columns(2)
-                        num  = c1.text_input("N°",         value=doc.get("numero")      or "")
-                        clas = c2.text_input("Classement", value=doc.get("classement")  or "")
-                        sess = st.text_input("Session",    value=doc.get("session")     or "")
-                        desc = st.text_area("Description", value=doc.get("description") or "", height=120)
-                        moti = st.text_area("Motif",       value=doc.get("motif")       or "", height=80)
-                        if st.form_submit_button("💾 Enregistrer", type="primary"):
-                            db.update_omd(opts[sel],{"numero":num,"description":desc,"classement":clas,"motif":moti,"session":sess})
-                            st.success("✅ Mis à jour !"); st.rerun()
-                with tab_d:
-                    st.warning(f"⚠️ Supprimer **{doc.get('classement')}** ?")
-                    if st.checkbox("Je confirme"):
-                        if st.button("🗑️ Supprimer", type="primary"):
-                            db.delete_omd(opts[sel]); st.success("Supprimé."); st.rerun()
+            from collections import defaultdict
+            by_file = defaultdict(list)
+            for d in all_omd:
+                by_file[d.get("filename", "—")].append(d)
+            st.markdown(f"**{len(all_omd):,} décision(s) · {len(by_file)} fichier(s)**")
+            for fname, entries in by_file.items():
+                session = entries[0].get("session") or "—"
+                col_info, col_del = st.columns([5, 1])
+                with col_info:
+                    st.markdown(
+                        f'<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px 18px;margin-bottom:6px;">' 
+                        f'<b style="color:#0a1628;">🌐 {fname}</b>' 
+                        f'<span style="float:right;color:#9ca3af;font-size:0.75rem;">{entries[0].get("upload_date","")[:10]}</span><br>' 
+                        f'<small style="color:#6b7280;">{len(entries)} décisions &nbsp;·&nbsp; Session : {session}</small>' 
+                        f'</div>',
+                        unsafe_allow_html=True
+                    )
+                with col_del:
+                    st.markdown("<br>", unsafe_allow_html=True)
+                    if st.button("🗑️", key=f"del_omd_{fname}", help=f"Supprimer toutes les décisions de {fname}"):
+                        db.delete_omd_by_filename(fname)
+                        st.rerun()
 
 
 # ══════════════════════════════════════════════════════════════════════════════
 #  MODULE 4 — AVIS TARÉS (kap_XX_f.pdf)
 # ══════════════════════════════════════════════════════════════════════════════
 elif module == "avis_tares":
-    st.markdown("## 📑 Avis Tarés")
+    st.markdown("## 📑 Avis Tares")
     st.caption("Recueils tarifaires par chapitre — format kap_XX_f.pdf")
     st.markdown("---")
 
-    page = st.radio("", ["🔍 Recherche", "📤 Ajouter", "✏️ Modifier"],
+    page = st.radio("", ["🔍 Recherche", "📤 Ajouter", "📂 Fichiers indexés"],
                     horizontal=True, label_visibility="collapsed")
 
     total_at = len(db.get_all_avis_tares())
@@ -923,7 +919,7 @@ elif module == "avis_tares":
     if page == "🔍 Recherche":
         st.markdown(
             "<h2 style='color:#0a1628;font-size:1.65rem;font-weight:800;margin-bottom:4px;'>"
-            "Recherche — Avis Tarés</h2>", unsafe_allow_html=True)
+            "Recherche — Avis Tares</h2>", unsafe_allow_html=True)
         st.caption("Tapez un code SH (partiel), un nom de produit ou un mot-clé.")
 
         if total_at > 0:
@@ -936,16 +932,6 @@ elif module == "avis_tares":
         with col_btn:
             rechercher = st.button("🔍  Rechercher", type="primary", use_container_width=True)
 
-        # Aide contextuelle
-        st.markdown(
-            '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;'
-            'padding:10px 16px;margin:8px 0 16px;font-size:0.8rem;color:#6b7280;">'
-            '💡 <b>Exemples :</b>&nbsp;&nbsp;'
-            '<code>0402</code> → tous les produits du chapitre 04 contenant 0402 &nbsp;|&nbsp;'
-            '<code>0402.9910</code> → lait concentré (exact) &nbsp;|&nbsp;'
-            '<code>lait</code> → tous les produits avec "lait" &nbsp;|&nbsp;'
-            '<code>fromage</code> → Fromage frais, Mozzarella, Skyr…'
-            '</div>', unsafe_allow_html=True)
 
         if (rechercher or q_at) and q_at.strip():
             results = db.search_avis_tares(q_at.strip())
@@ -1023,10 +1009,9 @@ elif module == "avis_tares":
 
     # ── Ajouter ───────────────────────────────────────────────────────────────
     elif page == "📤 Ajouter":
-        st.markdown("<h2 style='color:#0a1628;'>📤 Ajouter des PDFs — Avis Tarés</h2>", unsafe_allow_html=True)
+        st.markdown("<h2 style='color:#0a1628;'>📤 Ajouter des PDFs — Avis Tares</h2>", unsafe_allow_html=True)
         st.markdown("---")
         st.info(
-            "📄 **Format attendu :** fichiers `kap_XX_f.pdf` (recueils tarifaires par chapitre SH).\n\n"
             "L'extraction détecte automatiquement : code SH · nom du produit · description · mots-clés."
         )
 
@@ -1059,14 +1044,14 @@ elif module == "avis_tares":
                             deleted = db.delete_avis_tares_by_filename(f.name)
                             st.info(f"🔄 {deleted} anciens produits supprimés pour {f.name}")
 
-                        # Dédoublonnage par (filename, hs_code, nom)
+                        # Dédoublonnage par (hs_code, description) — clé métier unique
                         existing_keys = {
-                            (r["filename"], r["hs_code"], r["nom"])
+                            (r["hs_code"], (r["description"] or "").strip())
                             for r in db.get_all_avis_tares()
                         }
                         new_prods = [
                             p for p in products
-                            if (p["filename"], p["hs_code"], p["nom"]) not in existing_keys
+                            if (p["hs_code"], (p["description"] or "").strip()) not in existing_keys
                         ]
                         skip_dup = len(products) - len(new_prods)
 
@@ -1097,6 +1082,22 @@ elif module == "avis_tares":
                 status.success(f"✅ Import terminé — **{total_added}** produit(s) enregistré(s) !")
                 st.rerun()
 
+        # ── Nettoyage doublons en base
+        st.markdown("---")
+        nb_dup = db.get_avis_tares_duplicate_count()
+        total_at_db = len(db.get_all_avis_tares())
+        col_da, col_db = st.columns(2)
+        col_da.metric("Total produits en base", total_at_db)
+        col_db.metric("🔁 Doublons détectés", nb_dup)
+        if nb_dup > 0:
+            st.warning(f"⚠️ **{nb_dup}** doublon(s) détecté(s) en base.")
+            if st.button("🧹 Supprimer les doublons", type="primary", key="clean_at_dup"):
+                deleted = db.deduplicate_avis_tares()
+                st.success(f"✅ **{deleted}** doublon(s) supprimé(s) !")
+                st.rerun()
+        else:
+            st.success("✅ Aucun doublon — base propre !")
+
         # Fichiers déjà importés
         filenames_at = db.get_avis_tares_filenames()
         if filenames_at:
@@ -1114,56 +1115,40 @@ elif module == "avis_tares":
                 )
 
     # ── Modifier ──────────────────────────────────────────────────────────────
-    elif page == "✏️ Modifier":
-        st.markdown("<h2 style='color:#0a1628;'>✏️ Modifier / Supprimer</h2>", unsafe_allow_html=True)
+    elif page == "📂 Fichiers indexés":
+        st.markdown("<h2 style='color:#0a1628;'>📂 Fichiers PDF indexés — Avis Tares</h2>", unsafe_allow_html=True)
         st.markdown("---")
-
-        docs = db.get_all_avis_tares()
-        if not docs:
-            st.info("Aucun produit disponible.")
+        all_at = db.get_all_avis_tares()
+        if not all_at:
+            st.info("Aucun produit indexé.")
         else:
-            q_mod = st.text_input("Rechercher par code HS ou nom", placeholder="ex: 0402, lait, fromage")
-            if q_mod:
-                docs = [d for d in docs if
-                        q_mod.lower() in (d.get("hs_code") or "").lower() or
-                        q_mod.lower() in (d.get("nom") or "").lower()]
-            if not docs:
-                st.warning("Aucun résultat.")
-            else:
-                opts = {
-                    f"[{d['id']}] {d.get('hs_code','')} — {(d.get('nom') or '')[:50]}": d['id']
-                    for d in docs
-                }
-                sel = st.selectbox("Choisir un produit", list(opts.keys()))
-                doc = db.get_avis_tare_by_id(opts[sel])
-
-                tab_e, tab_d = st.tabs(["✏️ Modifier", "🗑️ Supprimer"])
-
-                with tab_e:
-                    with st.form("edit_at"):
-                        c1, c2 = st.columns(2)
-                        hs_e  = c1.text_input("Code HS",    value=doc.get("hs_code")   or "")
-                        ref_e = c2.text_input("Réf. N°",    value=doc.get("ref_numero") or "")
-                        nom_e = st.text_input("Nom",         value=doc.get("nom")       or "")
-                        desc_e = st.text_area("Description", value=doc.get("description") or "", height=120)
-                        mots_e = st.text_area("Mots-clés (séparés par /)",
-                                              value=doc.get("mots_cles") or "", height=60)
-                        if st.form_submit_button("💾 Enregistrer", type="primary"):
-                            db.update_avis_tare(opts[sel], {
-                                "hs_code":     hs_e,
-                                "nom":         nom_e,
-                                "description": desc_e,
-                                "mots_cles":   mots_e,
-                                "ref_numero":  ref_e,
-                            })
-                            st.success("✅ Mis à jour !"); st.rerun()
-
-                with tab_d:
-                    st.warning(f"⚠️ Supprimer **{doc.get('hs_code')} — {doc.get('nom','')}** ?")
-                    if st.checkbox("Je confirme la suppression"):
-                        if st.button("🗑️ Supprimer", type="primary"):
-                            db.delete_avis_tare(opts[sel])
-                            st.success("Supprimé."); st.rerun()
+            from collections import defaultdict
+            by_file = defaultdict(list)
+            for d in all_at:
+                by_file[d.get("filename", "—")].append(d)
+            st.markdown(f"**{len(all_at):,} produit(s) · {len(by_file)} fichier(s)**")
+            for fname, entries in by_file.items():
+                # Codes HS uniques dans ce fichier
+                codes = sorted(set(
+                    c.strip() for d in entries
+                    for c in (d.get("hs_code") or "").split(",") if c.strip()
+                ))
+                codes_preview = ", ".join(codes[:6]) + ("…" if len(codes) > 6 else "")
+                col_info, col_del = st.columns([5, 1])
+                with col_info:
+                    st.markdown(
+                        f'<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px 18px;margin-bottom:6px;">' 
+                        f'<b style="color:#0a1628;">📑 {fname}</b>' 
+                        f'<span style="float:right;color:#9ca3af;font-size:0.75rem;">{entries[0].get("upload_date","")[:10]}</span><br>' 
+                        f'<small style="color:#6b7280;">{len(entries)} produits &nbsp;·&nbsp; Codes HS : {codes_preview}</small>' 
+                        f'</div>',
+                        unsafe_allow_html=True
+                    )
+                with col_del:
+                    st.markdown("<br>", unsafe_allow_html=True)
+                    if st.button("🗑️", key=f"del_at_{fname}", help=f"Supprimer tous les produits de {fname}"):
+                        db.delete_avis_tares_by_filename(fname)
+                        st.rerun()
 
 
 # ══════════════════════════════════════════════════════════════════════════════

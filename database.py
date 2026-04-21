@@ -60,6 +60,20 @@ def init_db():
         )
     """)
 
+    # ── MODULE 4 : Avis Tarés (kap_XX_f.pdf) ─────────────────────────────────
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS avis_tares (
+            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            filename    TEXT NOT NULL,
+            upload_date TEXT,
+            hs_code     TEXT,
+            nom         TEXT,
+            description TEXT,
+            mots_cles   TEXT,
+            ref_numero  TEXT
+        )
+    """)
+
     # FTS pour avis tarifaires
     c.execute("""
         CREATE VIRTUAL TABLE IF NOT EXISTS documents_fts USING fts5(
@@ -79,6 +93,13 @@ def init_db():
         CREATE VIRTUAL TABLE IF NOT EXISTS omd_fts USING fts5(
             numero, description, classement, motif, session, filename,
             content=omd, content_rowid=id
+        )
+    """)
+    # FTS pour Avis Tarés
+    c.execute("""
+        CREATE VIRTUAL TABLE IF NOT EXISTS avis_tares_fts USING fts5(
+            hs_code, nom, description, mots_cles, filename,
+            content=avis_tares, content_rowid=id
         )
     """)
 
@@ -116,6 +137,22 @@ def init_db():
     c.execute("""CREATE TRIGGER IF NOT EXISTS omd_ad AFTER DELETE ON omd BEGIN
         INSERT INTO omd_fts(omd_fts,rowid,numero,description,classement,motif,session,filename)
         VALUES('delete',old.id,old.numero,old.description,old.classement,old.motif,old.session,old.filename);
+    END""")
+
+    # Triggers avis_tares
+    c.execute("""CREATE TRIGGER IF NOT EXISTS at_ai AFTER INSERT ON avis_tares BEGIN
+        INSERT INTO avis_tares_fts(rowid,hs_code,nom,description,mots_cles,filename)
+        VALUES(new.id,new.hs_code,new.nom,new.description,new.mots_cles,new.filename);
+    END""")
+    c.execute("""CREATE TRIGGER IF NOT EXISTS at_ad AFTER DELETE ON avis_tares BEGIN
+        INSERT INTO avis_tares_fts(avis_tares_fts,rowid,hs_code,nom,description,mots_cles,filename)
+        VALUES('delete',old.id,old.hs_code,old.nom,old.description,old.mots_cles,old.filename);
+    END""")
+    c.execute("""CREATE TRIGGER IF NOT EXISTS at_au AFTER UPDATE ON avis_tares BEGIN
+        INSERT INTO avis_tares_fts(avis_tares_fts,rowid,hs_code,nom,description,mots_cles,filename)
+        VALUES('delete',old.id,old.hs_code,old.nom,old.description,old.mots_cles,old.filename);
+        INSERT INTO avis_tares_fts(rowid,hs_code,nom,description,mots_cles,filename)
+        VALUES(new.id,new.hs_code,new.nom,new.description,new.mots_cles,new.filename);
     END""")
 
     conn.commit()
@@ -286,14 +323,145 @@ def delete_omd(doc_id):
     c.execute("DELETE FROM omd WHERE id=?",(doc_id,))
     conn.commit(); conn.close()
 
+def get_omd_filenames():
+    conn = get_connection(); c = conn.cursor()
+    c.execute("SELECT DISTINCT filename FROM omd ORDER BY filename")
+    results = [r["filename"] for r in c.fetchall()]; conn.close(); return results
+
+def delete_omd_by_filename(filename):
+    conn = get_connection(); c = conn.cursor()
+    c.execute("SELECT COUNT(*) as n FROM omd WHERE filename=?",(filename,))
+    n = c.fetchone()["n"]
+    c.execute("DELETE FROM omd WHERE filename=?",(filename,))
+    conn.commit(); conn.close(); return n
+
+def update_omd_session_by_filename(filename, session):
+    conn = get_connection(); c = conn.cursor()
+    c.execute("UPDATE omd SET session=? WHERE filename=?",(session,filename))
+    updated = conn.total_changes; conn.commit(); conn.close(); return updated
+
+def get_omd_duplicate_count():
+    conn = get_connection(); c = conn.cursor()
+    c.execute("""SELECT COUNT(*) - COUNT(DISTINCT filename||'|'||classement||'|'||description) as n FROM omd""")
+    n = c.fetchone()["n"]; conn.close(); return n or 0
+
+def deduplicate_omd():
+    conn = get_connection(); c = conn.cursor()
+    c.execute("""DELETE FROM omd WHERE id NOT IN (
+        SELECT MIN(id) FROM omd GROUP BY filename, classement, description)""")
+    deleted = conn.total_changes; conn.commit(); conn.close(); return deleted
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  MODULE 4 — AVIS TARÉS (kap_XX_f.pdf)
+# ══════════════════════════════════════════════════════════════════════════════
+def insert_avis_tare(data):
+    conn = get_connection(); c = conn.cursor()
+    c.execute("""INSERT INTO avis_tares(filename,upload_date,hs_code,nom,description,mots_cles,ref_numero)
+        VALUES(:filename,:upload_date,:hs_code,:nom,:description,:mots_cles,:ref_numero)""", {
+        "filename":    data.get("filename",""),
+        "upload_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "hs_code":     data.get("hs_code",""),
+        "nom":         data.get("nom",""),
+        "description": data.get("description",""),
+        "mots_cles":   data.get("mots_cles",""),
+        "ref_numero":  data.get("ref_numero",""),
+    })
+    doc_id = c.lastrowid; conn.commit(); conn.close(); return doc_id
+
+def search_avis_tares(query):
+    """Recherche par code HS (partiel ou complet parmi plusieurs codes), nom, description, mots-clés."""
+    conn = get_connection(); c = conn.cursor()
+    q = query.strip()
+    like = "%" + q + "%"
+    c.execute("""
+        SELECT * FROM avis_tares
+        WHERE hs_code LIKE ?
+           OR LOWER(nom) LIKE LOWER(?)
+           OR LOWER(description) LIKE LOWER(?)
+           OR LOWER(mots_cles) LIKE LOWER(?)
+        ORDER BY
+            CASE WHEN hs_code LIKE ? THEN 0 ELSE 1 END,
+            hs_code
+    """, (like, like, like, like, like))
+    # Dédoublonnage par (hs_code, description) — un produit unique = un code HS + une description
+    seen = set()
+    results = []
+    for r in c.fetchall():
+        d = dict(r)
+        key = (d["hs_code"], (d["description"] or "").strip())
+        if key not in seen:
+            seen.add(key)
+            results.append(d)
+    conn.close()
+    return results
+
+
+def deduplicate_avis_tares():
+    """Supprime les doublons exacts en base (même hs_code + même description)."""
+    conn = get_connection(); c = conn.cursor()
+    c.execute("""
+        DELETE FROM avis_tares WHERE id NOT IN (
+            SELECT MIN(id) FROM avis_tares
+            GROUP BY hs_code, TRIM(description)
+        )
+    """)
+    deleted = conn.total_changes
+    conn.commit(); conn.close()
+    return deleted
+
+
+def get_avis_tares_duplicate_count():
+    conn = get_connection(); c = conn.cursor()
+    c.execute("""
+        SELECT COUNT(*) - COUNT(DISTINCT hs_code||'|'||TRIM(description)) as n
+        FROM avis_tares
+    """)
+    n = c.fetchone()["n"]; conn.close(); return n or 0
+
+def get_all_avis_tares():
+    conn = get_connection(); c = conn.cursor()
+    c.execute("SELECT * FROM avis_tares ORDER BY hs_code")
+    results = [dict(r) for r in c.fetchall()]; conn.close(); return results
+
+def get_avis_tare_by_id(doc_id):
+    conn = get_connection(); c = conn.cursor()
+    c.execute("SELECT * FROM avis_tares WHERE id=?",(doc_id,))
+    row = c.fetchone(); conn.close(); return dict(row) if row else {}
+
+def update_avis_tare(doc_id, data):
+    conn = get_connection(); c = conn.cursor()
+    c.execute("""UPDATE avis_tares SET hs_code=:hs_code,nom=:nom,description=:description,
+        mots_cles=:mots_cles,ref_numero=:ref_numero WHERE id=:id""",
+        {**data,"id":doc_id})
+    conn.commit(); conn.close()
+
+def delete_avis_tare(doc_id):
+    conn = get_connection(); c = conn.cursor()
+    c.execute("DELETE FROM avis_tares WHERE id=?",(doc_id,))
+    conn.commit(); conn.close()
+
+def get_avis_tares_filenames():
+    conn = get_connection(); c = conn.cursor()
+    c.execute("SELECT DISTINCT filename FROM avis_tares ORDER BY filename")
+    results = [r["filename"] for r in c.fetchall()]; conn.close(); return results
+
+def delete_avis_tares_by_filename(filename):
+    conn = get_connection(); c = conn.cursor()
+    c.execute("SELECT COUNT(*) as n FROM avis_tares WHERE filename=?",(filename,))
+    n = c.fetchone()["n"]
+    c.execute("DELETE FROM avis_tares WHERE filename=?",(filename,))
+    conn.commit(); conn.close(); return n
+
 
 # ══════════════════════════════════════════════════════════════════════════════
 #  STATS GLOBALES
 # ══════════════════════════════════════════════════════════════════════════════
 def get_stats():
     conn = get_connection(); c = conn.cursor()
-    c.execute("SELECT COUNT(*) as n FROM documents");  t1 = c.fetchone()["n"]
+    c.execute("SELECT COUNT(*) as n FROM documents");   t1 = c.fetchone()["n"]
     c.execute("SELECT COUNT(*) as n FROM secretariat"); t2 = c.fetchone()["n"]
     c.execute("SELECT COUNT(*) as n FROM omd");         t3 = c.fetchone()["n"]
+    c.execute("SELECT COUNT(*) as n FROM avis_tares");  t4 = c.fetchone()["n"]
     conn.close()
-    return {"tarifaires": t1, "secretariat": t2, "omd": t3, "total": t1+t2+t3}
+    return {"tarifaires": t1, "secretariat": t2, "omd": t3, "avis_tares": t4, "total": t1+t2+t3+t4}

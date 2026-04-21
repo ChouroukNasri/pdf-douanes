@@ -1,0 +1,119 @@
+[33m779c32e[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m version finale : login image + style.css + tous modules
+[33m89e79b7[m docs: add app screenshots
+[33m46b98a0[m feat: DouaneXtract v1.0 - Tunisian Customs Document Platform
+[33m1f48821[m version final pour l'application :PROD ameliorer
+[33m46fabee[m version final pour l'application :PROD 1
+[33m5959a6f[m version final pour l'application :PROD 1
+[33m8c1b07e[m version final pour l'application :PROD
+[33m5e098a7[m version final pour l'application :PROD
+[33m841402e[m version final pour l'application :PROD
+[33m2d41fa3[m login : fond image port Tunis + logo douanes + carte verre
+[33m7eb4e37[m login : fond image port Tunis + logo douanes + carte verre
+[33m5d7f514[m login : fond image port Tunis + logo douanes + carte verre
+[33m2f3567d[m login : fond image port Tunis + logo douanes + carte verre
+[33m5cf0333[m login : fond image port Tunis + logo douanes + carte verre
+[33mc4220b8[m login : fond image port Tunis + logo douanes + carte verre
+[33m1795a7e[m login : fond image port Tunis + logo douanes + carte verre
+[33m7db383b[m login : fond image port Tunis + logo douanes + carte verre
+[33mc5064a5[m login : fond image port Tunis + logo douanes + carte verre
+[33m274b720[m login : fond image port Tunis + logo douanes + carte verre
+[33mf8b6433[m login : fond image port Tunis + logo douanes + carte verre
+[33mfde543f[m login : fond image port Tunis + logo douanes + carte verre
+[33ma964dd1[m login : fond image port Tunis + logo douanes + carte verre
+[33md73e600[m login : fond image port Tunis + logo douanes + carte verre
+[33m9bf8ebf[m login : fond image port Tunis + logo douanes + carte verre
+[33m13ea71e[m login : fond image port Tunis + logo douanes + carte verre
+[33m6129b2d[m login : fond image port Tunis + logo douanes + carte verre
+[33ma168a30[m login : fond image port Tunis + logo douanes + carte verre
+[33m4b2a185[m login : fond image port Tunis + logo douanes + carte verre
+[33m1cc61b1[m login : fond image port Tunis + logo douanes + carte verre
+[33m03f53d1[m login : fond image port Tunis + logo douanes + carte verre
+[33m4c1c298[m login : fond image port Tunis + logo douanes + carte verre
+[33mf8a1e34[m login : fond image port Tunis + logo douanes + carte verre
+[33m1fb78d7[m login : fond image port Tunis + logo douanes + carte verre
+[33md1adcc6[m login : fond image port Tunis + logo douanes + carte verre
+[33m6c7d6e9[m login : fond image port Tunis + logo douanes + carte verre
+[33m5fd2a94[m login : fond image port Tunis + logo douanes + carte verre
+[33m7624768[m login : fond image visible + carte formulaire transparente
+[33m10e9915[m login : fond image port Tunis + logo douanes + carte verre
+[33mebe6f98[m test
+[33mc36a484[m tarifaires : ordre rubriques Recherche > Ajouter > Modifier
+[33m6efc137[m tarifaires : ordre rubriques Recherche > Ajouter > Modifier
+[33m595e526[m tarifaires : ordre rubriques Recherche > Ajouter > Modifier
+[33m0426ca1[m fix : tab_clean deplace dans le bon module OMD
+[33mc198a49[m users : interface complete + changement mot de passe
+[33m821902c[m OMD : extraction description robuste + fallback si vide
+[33m0ded4f0[m OMD : detection session complete avec pdfplumber (mois+annee)
+[33m6a8adc3[m version finale client
+[33mfb089b3[m login TEST
+[33m92e2f0f[m login TEST
+[33me2a3d00[m login TEST
+[33m276c6b8[m login TEST
+[33m02a4e3b[m login TEST
+[33mc17e1a1[m login : design photo - carte blanche + logo + bouton Connexion
+[33m36bd8a6[m login : design photo - carte blanche + logo + bouton Connexion
+[33m287b393[m test avis
+[33mdd9d8d4[m test avis
+[33md08bba2[m test avis
+[33medf3dfc[m test avis
+[33m1562fa9[m test avis
+[33m6861801[m test avis
+[33m2b1fca5[m test avis
+[33m9e5eda6[m test avis
+[33m771dc1a[m test avis
+[33m8cb36f7[m test avis
+[33m5f0ce82[m test avis
+[33m5262202[m test avis
+[33mcfbc5d9[m test avis
+[33md6002da[m test avis
+[33me85d6fb[m fix login natif + designations avis tarifaires + cartes blanches + OMD complet
+[33m63b2f64[m test avis
+[33m290cd5e[m test avis
+[33m445cf82[m test avis
+[33mbd7d442[m test avis
+[33m40e13f3[m OMD : upload PDF OCR auto + recherche partielle classement + cartes style photo
+[33m575b906[m OMD : upload PDF OCR auto + recherche partielle classement + cartes style photo
+[33m2fce448[m OMD : upload PDF OCR auto + recherche partielle classement + cartes style photo
+[33ma3ee8ff[m OMD : upload PDF OCR auto + recherche partielle classement + cartes style photo
+[33m7c4acbc[m OMD : upload PDF OCR auto + recherche partielle classement + cartes style photo
+[33m9b34276[m OMD : extraction automatique PDF + enregistrement base
+[33m653f6de[m OMD : nouveau module recherche style carte + import Excel/PDF/manuel
+[33m41d8658[m retourne dernier version
+[33m6105b8f[m test auth
+[33ma8eab01[m fix secretariat : HTML rendu correctement sans f-string
+[33m4bcdd8e[m fix secretariat : HTML rendu correctement sans f-string
+[33m7a227f4[m fix login : CSS isole du theme blanc global
+[33m2e47597[m fix login : CSS isole du theme blanc global
+[33m3d91ca5[m fix login : CSS isole du theme blanc global
+[33m6000d77[m fix login : CSS isole du theme blanc global
+[33ma06e494[m fix login : CSS isole du theme blanc global
+[33mbf29fad[m fix login : CSS isole du theme blanc global
+[33mbf26eaf[m theme blanc global + sidebar bleu marine + desc EN supprimee
+[33m68c403f[m secretariat : upload xlsx + recherche partielle + theme blanc
+[33m5402a54[m secretariat : page recherche style professionnel + export
+[33m0c09385[m app propre : fix webp + module tarifaires ameliore
+[33m4799761[m test2
+[33mdc3c511[m test2
+[33m9e99df5[m test2
+[33m7f7f6f2[m test2
+[33me85ca19[m test2
+[33m5b7f609[m test2
+[33m4c703c9[m test1
+[33m3980c85[m test1
+[33m1b94f3f[m Retour version stable login (5f2997f)
+[33m152f2d3[m Retour à la version login DouaneXtract
+[33m5f2997f[m fix login HTML ne deborde plus sur dashboard
+[33meac2dc5[m dashboard 3 modules : Tarifaires + Secretariat + OMD
+[33md91fedb[m Retour à la version login DouaneXtract
+[33m820621a[m[33m ([m[1;32mbackup[m[33m)[m login page card unique avec illustration
+[33mccc9fd9[m page login theme DouaneXtract
+[33m3737a97[m login page card unique avec illustration
+[33ma6e0966[m login page card unique avec illustration
+[33m8793243[m page login style DouaneXtract complet
+[33m54ef3c4[m page login style DouaneXtract complet
+[33me3868d0[m test
+[33m1d7291a[m theme DouaneXtract complet + logo login
+[33m065d0de[m page login theme DouaneXtract
+[33m8003640[m ajout champ Usage
+[33m1280132[m fix Dockerfile libgl1
+[33mb691284[m premier commit
