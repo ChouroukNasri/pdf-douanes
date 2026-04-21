@@ -968,6 +968,12 @@ elif module == "avis_tares":
                     mots_val = doc.get("mots_cles")   or ""
                     ref_val  = doc.get("ref_numero")  or ""
 
+                    # Nettoyer le nom (supprimer codes HS parasites éventuels)
+                    import re as _re
+                    nom_val = _re.sub(r'\b\d{4}\.\d{2,4}(?:[,/\s]+\d{4}\.\d{2,4})*', '', nom_val).strip(', ').strip()
+                    if not nom_val or nom_val == "—":
+                        nom_val = doc.get("nom") or "—"
+
                     # Badges HS — un badge par code (ex: "0405.2011, 0405.2091" → 2 badges)
                     q_stripped = q_at.strip()
                     hs_codes_list = [c.strip() for c in hs_val.split(",") if c.strip()] if hs_val != "—" else [hs_val]
