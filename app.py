@@ -1,7 +1,7 @@
 """
 DouaneXtract — Base de données Douanes Tunisiennes
 """
-import os, shutil, glob, base64
+import os, shutil, glob, base64, re
 import streamlit as st
 import pandas as pd
 import database as db
