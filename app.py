@@ -92,6 +92,8 @@ section[data-testid="stMain"] hr { border-color:#e5e7eb !important; }
 .badge        { background:#1a56db; color:white !important; border-radius:4px; padding:2px 8px; font-size:0.82rem; font-weight:600; }
 .badge-green  { background:#dcfce7; border:1px solid #86efac; color:#15803d !important; border-radius:4px; padding:2px 8px; font-size:0.82rem; }
 .badge-purple { background:#ede9fe; border:1px solid #c4b5fd; color:#6d28d9 !important; border-radius:4px; padding:2px 8px; font-size:0.82rem; }
+.badge-blue   { background:#dbeafe; border:1px solid #93c5fd; color:#1d4ed8 !important; border-radius:4px; padding:2px 8px; font-size:0.75rem; font-weight:600; margin:2px 2px 2px 0; display:inline-block; }
+.badge-hs     { background:#4c1d95; color:white !important; border-radius:6px; padding:4px 12px; font-size:0.88rem; font-weight:800; letter-spacing:0.5px; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -103,7 +105,6 @@ def show_login():
     import base64 as _b64, os as _os
 
     _logo_path = _os.path.join(_os.path.dirname(__file__), "logo.png")
-
     _logo_b64 = ""
     if _os.path.exists(_logo_path):
         with open(_logo_path, "rb") as _f:
@@ -115,10 +116,8 @@ def show_login():
         "background: linear-gradient(135deg,#0a1628,#1a3a6e) !important;"
     )
 
-    # ── CSS UNIQUE FUSIONNÉ ──────────────────────────────────────────────────
     st.markdown(f"""
     <style>
-    /* ══ BACKGROUND ══ */
     .stApp {{
         {_logo_css}
         background-size: cover !important;
@@ -127,8 +126,6 @@ def show_login():
         background-attachment: fixed !important;
         min-height: 100vh !important;
     }}
-
-    /* ══ RESET block-container ══ */
     section[data-testid="stMain"] .block-container {{
         background: transparent !important;
         box-shadow: none !important;
@@ -137,13 +134,9 @@ def show_login():
         max-width: 100% !important;
         margin: 0 !important;
     }}
-
-    /* ══ CACHER header / sidebar / menu ══ */
     header[data-testid="stHeader"]   {{ display:none !important; }}
     section[data-testid="stSidebar"] {{ display:none !important; }}
     #MainMenu, footer                 {{ display:none !important; }}
-
-    /* ══ CARTE BLANCHE — cible le conteneur natif du formulaire ══ */
     section[data-testid="stMain"] [data-testid="stForm"] {{
         background: rgba(255, 255, 255, 0.25) !important;
         border-radius: 20px !important;
@@ -153,15 +146,11 @@ def show_login():
         backdrop-filter: blur(14px) !important;
         -webkit-backdrop-filter: blur(14px) !important;
     }}
-
-    /* ══ LABELS ══ */
     section[data-testid="stMain"] label {{
         color: #ffffff !important;
         font-weight: 700 !important;
         font-size: 0.92rem !important;
     }}
-
-    /* ══ INPUTS ══ */
     section[data-testid="stMain"] input[type="text"],
     section[data-testid="stMain"] input[type="password"] {{
         background: rgba(255,255,255,0.98) !important;
@@ -172,15 +161,11 @@ def show_login():
         font-size: 1rem !important;
         box-shadow: 0 1px 4px rgba(0,0,0,0.06) !important;
     }}
-    section[data-testid="stMain"] input::placeholder {{
-        color: #a0aec0 !important;
-    }}
+    section[data-testid="stMain"] input::placeholder {{ color: #a0aec0 !important; }}
     section[data-testid="stMain"] input:focus {{
         border-color: #2563eb !important;
         box-shadow: 0 0 0 3px rgba(37,99,235,0.15) !important;
     }}
-
-    /* ══ BOUTON SE CONNECTER ══ */
     section[data-testid="stMain"] .stFormSubmitButton button {{
         background: linear-gradient(180deg,#3b7dd8 0%,#1d4ed8 100%) !important;
         color: white !important;
@@ -195,8 +180,6 @@ def show_login():
     section[data-testid="stMain"] .stFormSubmitButton button:hover {{
         background: linear-gradient(180deg,#4a8fe8 0%,#2563eb 100%) !important;
     }}
-
-    /* ══ ALERTES ══ */
     section[data-testid="stMain"] .stError {{
         background: rgba(254,242,242,0.95) !important;
         border-radius: 8px !important;
@@ -204,15 +187,11 @@ def show_login():
     </style>
     """, unsafe_allow_html=True)
 
-    # ── Espacement haut ──────────────────────────────────────────────────────
     st.markdown("<div style='height:80px'></div>", unsafe_allow_html=True)
-
-    # ── Colonne centrale ─────────────────────────────────────────────────────
     _, _col, _ = st.columns([1, 1.3, 1])
 
     with _col:
         with st.form("login_form"):
-            # Titre dans la carte
             st.markdown(
                 '<div style="padding:8px 0 18px;text-align:center;">'
                 '<div style="font-size:2rem;font-weight:900;margin-bottom:4px;">'
@@ -237,7 +216,6 @@ def show_login():
 
             _submit = st.form_submit_button("Se connecter", use_container_width=True)
 
-        # Footer sous la carte
         st.markdown(
             '<div style="text-align:center;margin-top:20px;">'
             '<span style="color:rgba(255,255,255,0.85);font-size:0.72rem;'
@@ -287,7 +265,6 @@ with st.sidebar:
 
     st.markdown("<hr style='border-color:rgba(255,255,255,0.08);margin:12px 0;'>", unsafe_allow_html=True)
 
-    mod = st.session_state.get("module", "dashboard")
     def nav_btn(label, key):
         if st.button(label, use_container_width=True, key="nav_"+key):
             st.session_state["module"] = key; st.rerun()
@@ -296,6 +273,7 @@ with st.sidebar:
     nav_btn("📋  Avis Tarifaires",  "tarifaires")
     nav_btn("📁  Secrétariat",      "secretariat")
     nav_btn("🌐  Décisions OMD",    "omd")
+    nav_btn("📑  Avis Tarés",       "avis_tares")
     if is_admin:
         nav_btn("👥  Utilisateurs", "users")
 
@@ -307,17 +285,18 @@ with st.sidebar:
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-#  DASHBOARD
+#  DASHBOARD — 4 cartes
 # ══════════════════════════════════════════════════════════════════════════════
 if module == "dashboard":
     st.markdown(f"<h1 style='margin-bottom:4px;'>Bonjour, {user['nom']} 👋</h1>", unsafe_allow_html=True)
     st.caption("Que souhaitez-vous consulter aujourd'hui ?")
 
-    c1, c2, c3 = st.columns(3)
+    c1, c2, c3, c4 = st.columns(4)
     for col, icon, title, desc, key, cnt in [
-        (c1,"📋","Avis Tarifaires","Documents PDF scannés","tarifaires",stats['tarifaires']),
-        (c2,"📁","Avis Secrétariat","Correspondances et avis","secretariat",stats['secretariat']),
-        (c3,"🌐","Décisions OMD","Organisation Mondiale des Douanes","omd",stats['omd']),
+        (c1, "📋", "Avis Tarifaires",  "Documents PDF scannés",                   "tarifaires",  stats['tarifaires']),
+        (c2, "📁", "Secrétariat",      "Correspondances et avis",                  "secretariat", stats['secretariat']),
+        (c3, "🌐", "Décisions OMD",    "Organisation Mondiale des Douanes",         "omd",         stats['omd']),
+        (c4, "📑", "Avis Tarés",       "Recueils tarifaires par chapitre SH",       "avis_tares",  stats['avis_tares']),
     ]:
         with col:
             st.markdown(
@@ -333,15 +312,17 @@ if module == "dashboard":
 
     st.markdown("---")
     st.markdown("### Statistiques")
-    s1, s2, s3, s4 = st.columns(4)
+    s1, s2, s3, s4, s5 = st.columns(5)
     s1.metric("📋 Avis Tarifaires", stats['tarifaires'])
     s2.metric("📁 Secrétariat",     stats['secretariat'])
     s3.metric("🌐 Décisions OMD",   stats['omd'])
-    s4.metric("📊 Total",           stats['total'])
+    s4.metric("📑 Avis Tarés",      stats['avis_tares'])
+    s5.metric("📊 Total",           stats['total'])
 
     st.markdown("---")
     st.markdown("### 🕐 Derniers documents ajoutés")
-    t1, t2, t3 = st.tabs(["📋 Tarifaires","📁 Secrétariat","🌐 OMD"])
+    t1, t2, t3, t4 = st.tabs(["📋 Tarifaires", "📁 Secrétariat", "🌐 OMD", "📑 Avis Tarés"])
+
     with t1:
         docs = db.get_all_documents()[:5]
         if not docs: st.info("Aucun document.")
@@ -371,6 +352,17 @@ if module == "dashboard":
                 st.markdown(
                     '<div class="result-card"><span class="badge-purple">' + (d.get('classement') or '?') + '</span>'
                     '<span style="float:right;color:#6b7280;font-size:0.78rem">' + d.get('upload_date','')[:10] + '</span><br>'
+                    '<small style="color:#6b7280">' + (d.get('description') or '')[:80] + '</small></div>',
+                    unsafe_allow_html=True)
+    with t4:
+        docs = db.get_all_avis_tares()[:5]
+        if not docs: st.info("Aucun document.")
+        else:
+            for d in docs:
+                st.markdown(
+                    '<div class="result-card"><span class="badge-hs">' + (d.get('hs_code') or '?') + '</span>'
+                    '<span style="float:right;color:#6b7280;font-size:0.78rem">' + d.get('upload_date','')[:10] + '</span><br>'
+                    '<b style="color:#0a1628;font-size:0.9rem;">' + (d.get('nom') or '—') + '</b><br>'
                     '<small style="color:#6b7280">' + (d.get('description') or '')[:80] + '</small></div>',
                     unsafe_allow_html=True)
 
@@ -802,8 +794,6 @@ elif module == "omd":
 
         with tab_fix:
             st.markdown("**Corriger la session des décisions déjà importées**")
-            st.caption("Utilisez cet outil si des décisions ont été importées avant la correction du parser.")
-
             filenames = db.get_omd_filenames()
             if not filenames:
                 st.info("Aucune décision en base.")
@@ -816,7 +806,6 @@ elif module == "omd":
                     if fn not in file_sessions:
                         file_sessions[fn] = sess
 
-                st.markdown("**Fichiers en base :**")
                 for fn, sess in file_sessions.items():
                     if not sess or sess == "—":
                         icon = "❌"; label = "Session manquante"
@@ -832,7 +821,6 @@ elif module == "omd":
                         unsafe_allow_html=True)
 
                 st.markdown("---")
-                st.markdown("**Réimporter un fichier pour corriger sa session :**")
                 fix_file = st.file_uploader("Glisser le PDF à corriger", type=["pdf"], key="omd_fix")
                 if fix_file:
                     dest = os.path.join(PDF_DIR, fix_file.name)
@@ -849,32 +837,29 @@ elif module == "omd":
                             else:
                                 updated = db.update_omd_session_by_filename(fix_file.name, session_det)
                                 if updated > 0:
-                                    st.success(f"✅ Session **{session_det}** appliquée à **{updated}** décisions de *{fix_file.name}*")
+                                    st.success(f"✅ Session **{session_det}** appliquée à **{updated}** décisions")
                                 else:
                                     for d in decisions: db.insert_omd(d)
                                     st.success(f"✅ {len(decisions)} décisions importées avec session **{session_det}**")
                                 st.rerun()
 
                 st.markdown("---")
-                st.markdown("**Ou saisissez la session manuellement :**")
-                col_fn, col_sess, col_btn = st.columns([2,2,1])
+                col_fn, col_sess, col_btn2 = st.columns([2,2,1])
                 with col_fn:
                     fn_sel = col_fn.selectbox("Fichier", filenames, key="fn_sel")
                 with col_sess:
                     sess_input = st.text_input("Session", placeholder="ex: 22ème Session (Novembre 1998)", key="sess_input")
-                with col_btn:
+                with col_btn2:
                     st.markdown("<br>", unsafe_allow_html=True)
                     if st.button("💾 Appliquer", type="primary", key="apply_sess"):
                         if sess_input.strip():
                             updated = db.update_omd_session_by_filename(fn_sel, sess_input.strip())
-                            st.success(f"✅ Session appliquée à **{updated}** décisions de *{fn_sel}*")
+                            st.success(f"✅ Session appliquée à **{updated}** décisions")
                             st.rerun()
                         else:
                             st.error("Saisissez une session.")
 
         with tab_clean:
-            st.markdown("**Supprimer les décisions en double dans la base**")
-            st.caption("Un doublon = même fichier source + même classement + même description.")
             nb_dup = db.get_omd_duplicate_count()
             total  = len(db.get_all_omd())
             col_a, col_b = st.columns(2)
@@ -919,6 +904,268 @@ elif module == "omd":
                     if st.checkbox("Je confirme"):
                         if st.button("🗑️ Supprimer", type="primary"):
                             db.delete_omd(opts[sel]); st.success("Supprimé."); st.rerun()
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  MODULE 4 — AVIS TARÉS (kap_XX_f.pdf)
+# ══════════════════════════════════════════════════════════════════════════════
+elif module == "avis_tares":
+    st.markdown("## 📑 Avis Tarés")
+    st.caption("Recueils tarifaires par chapitre — format kap_XX_f.pdf")
+    st.markdown("---")
+
+    page = st.radio("", ["🔍 Recherche", "📤 Ajouter", "✏️ Modifier"],
+                    horizontal=True, label_visibility="collapsed")
+
+    total_at = len(db.get_all_avis_tares())
+
+    # ── Recherche ──────────────────────────────────────────────────────────────
+    if page == "🔍 Recherche":
+        st.markdown(
+            "<h2 style='color:#0a1628;font-size:1.65rem;font-weight:800;margin-bottom:4px;'>"
+            "Recherche — Avis Tarés</h2>", unsafe_allow_html=True)
+        st.caption("Tapez un code SH (partiel), un nom de produit ou un mot-clé.")
+
+        if total_at > 0:
+            st.info(f"ℹ️ Base de données : **{total_at:,}** produits disponibles")
+
+        col_inp, col_btn = st.columns([4, 1])
+        with col_inp:
+            q_at = st.text_input("at", placeholder="ex: 0402  ou  lait  ou  fromage  ou  sucre…",
+                                 label_visibility="collapsed", key="at_search")
+        with col_btn:
+            rechercher = st.button("🔍  Rechercher", type="primary", use_container_width=True)
+
+        # Aide contextuelle
+        st.markdown(
+            '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;'
+            'padding:10px 16px;margin:8px 0 16px;font-size:0.8rem;color:#6b7280;">'
+            '💡 <b>Exemples :</b>&nbsp;&nbsp;'
+            '<code>0402</code> → tous les produits du chapitre 04 contenant 0402 &nbsp;|&nbsp;'
+            '<code>0402.9910</code> → lait concentré (exact) &nbsp;|&nbsp;'
+            '<code>lait</code> → tous les produits avec "lait" &nbsp;|&nbsp;'
+            '<code>fromage</code> → Fromage frais, Mozzarella, Skyr…'
+            '</div>', unsafe_allow_html=True)
+
+        if (rechercher or q_at) and q_at.strip():
+            results = db.search_avis_tares(q_at.strip())
+            nb = len(results)
+
+            if nb == 0:
+                st.error(f"❌ Aucun produit trouvé pour : **{q_at}**")
+            else:
+                st.markdown(
+                    '<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;'
+                    'padding:12px 20px;margin-bottom:16px;display:flex;align-items:center;gap:12px;">'
+                    '<span style="font-size:1.4rem;font-weight:800;color:#1a56db;">' + str(nb) + '</span>'
+                    '<span style="color:#374151;font-size:0.9rem;">produit(s) trouvé(s)</span>'
+                    '</div>', unsafe_allow_html=True)
+
+                for doc in results:
+                    hs_val   = doc.get("hs_code")     or "—"
+                    nom_val  = doc.get("nom")         or "—"
+                    desc_val = doc.get("description") or ""
+                    mots_val = doc.get("mots_cles")   or ""
+                    ref_val  = doc.get("ref_numero")  or ""
+
+                    # Générer les badges mots-clés
+                    mots_list = [m.strip() for m in re.split(r'[/,]', mots_val) if m.strip()] if mots_val else []
+                    badges_html = "".join(
+                        f'<span class="badge-blue">{m}</span>' for m in mots_list[:8]
+                    )
+
+                    # Highlight code HS si recherche partielle
+                    hs_display = hs_val
+                    q_stripped = q_at.strip()
+                    if q_stripped in hs_val:
+                        hs_display = hs_val.replace(
+                            q_stripped,
+                            f'<span style="background:#fef08a;border-radius:2px;padding:0 2px;">{q_stripped}</span>'
+                        )
+
+                    desc_short = desc_val[:200] + ("…" if len(desc_val) > 200 else "")
+
+                    card = (
+                        '<div style="background:#ffffff;border:1.5px solid #e2e8f0;border-radius:14px;'
+                        'padding:18px 22px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">'
+
+                        # Header : badge HS + nom + ref
+                        '<div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:12px;">'
+                        '<div><span class="badge-hs">' + hs_display + '</span></div>'
+                        '<div style="flex:1;">'
+                        '<div style="font-size:1rem;font-weight:800;color:#0a1628;margin-bottom:2px;">' + nom_val + '</div>'
+                        + (f'<div style="font-size:0.72rem;color:#9ca3af;">Réf. {ref_val}</div>' if ref_val else '') +
+                        '</div>'
+                        '</div>'
+
+                        # Description
+                        + (
+                            '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;'
+                            'padding:10px 14px;margin-bottom:10px;color:#374151;font-size:0.84rem;line-height:1.6;">'
+                            + desc_short +
+                            '</div>'
+                            if desc_short else ''
+                        ) +
+
+                        # Mots-clés
+                        + (
+                            '<div style="margin-top:4px;">'
+                            '<span style="color:#9ca3af;font-size:0.68rem;font-weight:700;letter-spacing:0.5px;margin-right:6px;">MOTS-CLÉS :</span>'
+                            + badges_html +
+                            '</div>'
+                            if badges_html else ''
+                        ) +
+
+                        '</div>'
+                    )
+                    st.markdown(card, unsafe_allow_html=True)
+
+        elif total_at == 0:
+            st.warning("⚠️ Aucun produit en base. Ajoutez des PDFs via 'Ajouter'.")
+
+    # ── Ajouter ───────────────────────────────────────────────────────────────
+    elif page == "📤 Ajouter":
+        st.markdown("<h2 style='color:#0a1628;'>📤 Ajouter des PDFs — Avis Tarés</h2>", unsafe_allow_html=True)
+        st.markdown("---")
+        st.info(
+            "📄 **Format attendu :** fichiers `kap_XX_f.pdf` (recueils tarifaires par chapitre SH).\n\n"
+            "L'extraction détecte automatiquement : code SH · nom du produit · description · mots-clés."
+        )
+
+        files = st.file_uploader(
+            "Glissez vos PDFs kap_XX_f.pdf",
+            type=["pdf"], accept_multiple_files=True, key="at_upload"
+        )
+
+        if files:
+            st.markdown(f"**{len(files)} fichier(s) sélectionné(s)**")
+            reimport_at = st.checkbox("Réimporter (remplace les produits du même fichier)", value=False)
+
+            if st.button("🚀 Lancer l'extraction", type="primary", key="at_launch"):
+                total_added = 0
+                progress = st.progress(0)
+                status = st.empty()
+
+                for i, f in enumerate(files):
+                    status.info(f"⏳ {f.name} ({i+1}/{len(files)})")
+                    dest = os.path.join(PDF_DIR, f.name)
+                    with open(dest, "wb") as fp:
+                        fp.write(f.getbuffer())
+
+                    products = ocr.parse_kap_pdf(dest, f.name)
+
+                    if not products:
+                        st.warning(f"⚠️ Aucun produit trouvé dans **{f.name}**")
+                    else:
+                        if reimport_at:
+                            deleted = db.delete_avis_tares_by_filename(f.name)
+                            st.info(f"🔄 {deleted} anciens produits supprimés pour {f.name}")
+
+                        # Dédoublonnage par (filename, hs_code, nom)
+                        existing_keys = {
+                            (r["filename"], r["hs_code"], r["nom"])
+                            for r in db.get_all_avis_tares()
+                        }
+                        new_prods = [
+                            p for p in products
+                            if (p["filename"], p["hs_code"], p["nom"]) not in existing_keys
+                        ]
+                        skip_dup = len(products) - len(new_prods)
+
+                        for p in new_prods:
+                            db.insert_avis_tare(p)
+                        total_added += len(new_prods)
+
+                        info_msg = f"✅ **{f.name}** — {len(new_prods)} produit(s) ajouté(s)"
+                        if skip_dup > 0:
+                            info_msg += f" · ⚠️ {skip_dup} doublon(s) ignoré(s)"
+                        st.success(info_msg)
+
+                        # Aperçu des premiers produits extraits
+                        with st.expander(f"👁️ Aperçu — {f.name} ({len(products)} produits)"):
+                            for p in products[:5]:
+                                st.markdown(
+                                    f'<div class="result-card">'
+                                    f'<span class="badge-hs">{p["hs_code"] or "?"}</span>&nbsp;&nbsp;'
+                                    f'<b>{p["nom"][:80]}</b><br>'
+                                    f'<small style="color:#6b7280">{p["description"][:120]}…</small><br>'
+                                    f'<small style="color:#9ca3af">Mots-clés : {p["mots_cles"][:80]}</small>'
+                                    f'</div>',
+                                    unsafe_allow_html=True
+                                )
+
+                    progress.progress((i+1)/len(files))
+
+                status.success(f"✅ Import terminé — **{total_added}** produit(s) enregistré(s) !")
+                st.rerun()
+
+        # Fichiers déjà importés
+        filenames_at = db.get_avis_tares_filenames()
+        if filenames_at:
+            st.markdown("---")
+            st.markdown("**📂 Fichiers déjà en base :**")
+            for fn in filenames_at:
+                count = len([d for d in db.get_all_avis_tares() if d.get("filename") == fn])
+                st.markdown(
+                    f'<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;'
+                    f'padding:8px 14px;margin-bottom:4px;display:flex;justify-content:space-between;">'
+                    f'<span style="color:#374151;font-size:0.85rem;">📄 {fn}</span>'
+                    f'<span style="color:#1a56db;font-size:0.82rem;font-weight:700;">{count} produits</span>'
+                    f'</div>',
+                    unsafe_allow_html=True
+                )
+
+    # ── Modifier ──────────────────────────────────────────────────────────────
+    elif page == "✏️ Modifier":
+        st.markdown("<h2 style='color:#0a1628;'>✏️ Modifier / Supprimer</h2>", unsafe_allow_html=True)
+        st.markdown("---")
+
+        docs = db.get_all_avis_tares()
+        if not docs:
+            st.info("Aucun produit disponible.")
+        else:
+            q_mod = st.text_input("Rechercher par code HS ou nom", placeholder="ex: 0402, lait, fromage")
+            if q_mod:
+                docs = [d for d in docs if
+                        q_mod.lower() in (d.get("hs_code") or "").lower() or
+                        q_mod.lower() in (d.get("nom") or "").lower()]
+            if not docs:
+                st.warning("Aucun résultat.")
+            else:
+                opts = {
+                    f"[{d['id']}] {d.get('hs_code','')} — {(d.get('nom') or '')[:50]}": d['id']
+                    for d in docs
+                }
+                sel = st.selectbox("Choisir un produit", list(opts.keys()))
+                doc = db.get_avis_tare_by_id(opts[sel])
+
+                tab_e, tab_d = st.tabs(["✏️ Modifier", "🗑️ Supprimer"])
+
+                with tab_e:
+                    with st.form("edit_at"):
+                        c1, c2 = st.columns(2)
+                        hs_e  = c1.text_input("Code HS",    value=doc.get("hs_code")   or "")
+                        ref_e = c2.text_input("Réf. N°",    value=doc.get("ref_numero") or "")
+                        nom_e = st.text_input("Nom",         value=doc.get("nom")       or "")
+                        desc_e = st.text_area("Description", value=doc.get("description") or "", height=120)
+                        mots_e = st.text_area("Mots-clés (séparés par /)",
+                                              value=doc.get("mots_cles") or "", height=60)
+                        if st.form_submit_button("💾 Enregistrer", type="primary"):
+                            db.update_avis_tare(opts[sel], {
+                                "hs_code":     hs_e,
+                                "nom":         nom_e,
+                                "description": desc_e,
+                                "mots_cles":   mots_e,
+                                "ref_numero":  ref_e,
+                            })
+                            st.success("✅ Mis à jour !"); st.rerun()
+
+                with tab_d:
+                    st.warning(f"⚠️ Supprimer **{doc.get('hs_code')} — {doc.get('nom','')}** ?")
+                    if st.checkbox("Je confirme la suppression"):
+                        if st.button("🗑️ Supprimer", type="primary"):
+                            db.delete_avis_tare(opts[sel])
+                            st.success("Supprimé."); st.rerun()
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -1004,7 +1251,6 @@ elif module == "users" and is_admin:
 
     with tab_pwd:
         st.markdown("**Modifier le mot de passe d'un utilisateur**")
-
         users_list2 = auth.get_all_users()
         opts_pwd = {f"{u['nom']} ({u['email']})": u['id'] for u in users_list2}
 
