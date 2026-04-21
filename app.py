@@ -985,37 +985,29 @@ elif module == "avis_tares":
 
                     desc_short = desc_val[:200] + ("…" if len(desc_val) > 200 else "")
 
+                    ref_html  = f'<div style="font-size:0.72rem;color:#9ca3af;">Réf. {ref_val}</div>' if ref_val else ''
+                    desc_html = (
+                        '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;'
+                        f'padding:10px 14px;margin-bottom:10px;color:#374151;font-size:0.84rem;line-height:1.6;">{desc_short}</div>'
+                    ) if desc_short else ''
+                    mots_html = (
+                        '<div style="margin-top:4px;">'
+                        '<span style="color:#9ca3af;font-size:0.68rem;font-weight:700;letter-spacing:0.5px;margin-right:6px;">MOTS-CLÉS :</span>'
+                        f'{badges_html}</div>'
+                    ) if badges_html else ''
+
                     card = (
                         '<div style="background:#ffffff;border:1.5px solid #e2e8f0;border-radius:14px;'
-                        'padding:18px 22px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">'
-
-                        # Header : badge HS + nom + ref
+                        f'padding:18px 22px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">'
                         '<div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:12px;">'
-                        '<div><span class="badge-hs">' + hs_display + '</span></div>'
+                        f'<div><span class="badge-hs">{hs_display}</span></div>'
                         '<div style="flex:1;">'
-                        '<div style="font-size:1rem;font-weight:800;color:#0a1628;margin-bottom:2px;">' + nom_val + '</div>'
-                        + (f'<div style="font-size:0.72rem;color:#9ca3af;">Réf. {ref_val}</div>' if ref_val else '') +
+                        f'<div style="font-size:1rem;font-weight:800;color:#0a1628;margin-bottom:2px;">{nom_val}</div>'
+                        f'{ref_html}'
                         '</div>'
                         '</div>'
-
-                        # Description
-                        + (
-                            '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;'
-                            'padding:10px 14px;margin-bottom:10px;color:#374151;font-size:0.84rem;line-height:1.6;">'
-                            + desc_short +
-                            '</div>'
-                            if desc_short else ''
-                        ) +
-
-                        # Mots-clés
-                        + (
-                            '<div style="margin-top:4px;">'
-                            '<span style="color:#9ca3af;font-size:0.68rem;font-weight:700;letter-spacing:0.5px;margin-right:6px;">MOTS-CLÉS :</span>'
-                            + badges_html +
-                            '</div>'
-                            if badges_html else ''
-                        ) +
-
+                        f'{desc_html}'
+                        f'{mots_html}'
                         '</div>'
                     )
                     st.markdown(card, unsafe_allow_html=True)
