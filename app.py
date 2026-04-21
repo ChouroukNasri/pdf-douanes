@@ -93,7 +93,7 @@ section[data-testid="stMain"] hr { border-color:#e5e7eb !important; }
 .badge-green  { background:#dcfce7; border:1px solid #86efac; color:#15803d !important; border-radius:4px; padding:2px 8px; font-size:0.82rem; }
 .badge-purple { background:#ede9fe; border:1px solid #c4b5fd; color:#6d28d9 !important; border-radius:4px; padding:2px 8px; font-size:0.82rem; }
 .badge-blue   { background:#dbeafe; border:1px solid #93c5fd; color:#1d4ed8 !important; border-radius:4px; padding:2px 8px; font-size:0.75rem; font-weight:600; margin:2px 2px 2px 0; display:inline-block; }
-.badge-hs     { background:#4c1d95; color:white !important; border-radius:6px; padding:4px 12px; font-size:0.88rem; font-weight:800; letter-spacing:0.5px; }
+.badge-hs     { background:#ede9fe; border:2px solid #7c3aed; color:#5b21b6 !important; border-radius:6px; padding:4px 12px; font-size:0.88rem; font-weight:800; letter-spacing:0.5px; }
 </style>
 """, unsafe_allow_html=True)
 
