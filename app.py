@@ -968,44 +968,44 @@ elif module == "avis_tares":
                     mots_val = doc.get("mots_cles")   or ""
                     ref_val  = doc.get("ref_numero")  or ""
 
-                    # Générer les badges mots-clés
-                    mots_list = [m.strip() for m in re.split(r'[/,]', mots_val) if m.strip()] if mots_val else []
+                    # Badges HS — un badge par code (ex: "0405.2011, 0405.2091" → 2 badges)
+                    q_stripped = q_at.strip()
+                    hs_codes_list = [c.strip() for c in hs_val.split(",") if c.strip()] if hs_val != "—" else [hs_val]
+                    hs_badges_html = ""
+                    for code in hs_codes_list:
+                        if q_stripped and q_stripped in code:
+                            code_disp = code.replace(q_stripped,
+                                f'<span style="background:#fef08a;border-radius:2px;padding:0 2px;">{q_stripped}</span>')
+                        else:
+                            code_disp = code
+                        hs_badges_html += f'<span class="badge-hs" style="margin-right:6px;margin-bottom:4px;display:inline-block;">{code_disp}</span>'
+
+                    # Badges mots-clés
+                    mots_list = [m.strip() for m in re.split(r'[/]', mots_val) if m.strip()] if mots_val else []
                     badges_html = "".join(
-                        f'<span class="badge-blue">{m}</span>' for m in mots_list[:8]
+                        f'<span class="badge-blue">{m}</span>' for m in mots_list[:10]
                     )
 
-                    # Highlight code HS si recherche partielle
-                    hs_display = hs_val
-                    q_stripped = q_at.strip()
-                    if q_stripped in hs_val:
-                        hs_display = hs_val.replace(
-                            q_stripped,
-                            f'<span style="background:#fef08a;border-radius:2px;padding:0 2px;">{q_stripped}</span>'
-                        )
-
-                    desc_short = desc_val[:200] + ("…" if len(desc_val) > 200 else "")
-
-                    ref_html  = f'<div style="font-size:0.72rem;color:#9ca3af;">Réf. {ref_val}</div>' if ref_val else ''
+                    ref_html  = f'<div style="font-size:0.72rem;color:#9ca3af;margin-bottom:6px;">Réf. {ref_val}</div>' if ref_val else ''
                     desc_html = (
                         '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;'
-                        f'padding:10px 14px;margin-bottom:10px;color:#374151;font-size:0.84rem;line-height:1.6;">{desc_short}</div>'
-                    ) if desc_short else ''
+                        f'padding:12px 16px;margin-bottom:10px;color:#374151;font-size:0.85rem;line-height:1.7;">{desc_val}</div>'
+                    ) if desc_val else ''
                     mots_html = (
-                        '<div style="margin-top:4px;">'
+                        '<div style="margin-top:6px;">'
                         '<span style="color:#9ca3af;font-size:0.68rem;font-weight:700;letter-spacing:0.5px;margin-right:6px;">MOTS-CLÉS :</span>'
                         f'{badges_html}</div>'
                     ) if badges_html else ''
 
                     card = (
                         '<div style="background:#ffffff;border:1.5px solid #e2e8f0;border-radius:14px;'
-                        f'padding:18px 22px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">'
-                        '<div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:12px;">'
-                        f'<div><span class="badge-hs">{hs_display}</span></div>'
-                        '<div style="flex:1;">'
-                        f'<div style="font-size:1rem;font-weight:800;color:#0a1628;margin-bottom:2px;">{nom_val}</div>'
+                        'padding:18px 22px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">'
+                        # Codes HS en haut
+                        f'<div style="margin-bottom:10px;">{hs_badges_html}</div>'
+                        # Nom
+                        f'<div style="font-size:1rem;font-weight:800;color:#0a1628;margin-bottom:4px;">{nom_val}</div>'
                         f'{ref_html}'
-                        '</div>'
-                        '</div>'
+                        # Description complète
                         f'{desc_html}'
                         f'{mots_html}'
                         '</div>'
